@@ -1,0 +1,3 @@
+$headers = @{ "Authorization" = "Bearer YOUR_KEY_HERE"; "Content-Type" = "application/json" }
+$body = '{"model":"azure/genailab-maas-gpt-4.1","messages":[{"role":"user","content":"hi"}]}'
+Invoke-RestMethod -Uri "https://genailab.tcs.in/v1/chat/completions" -Method POST -Headers $headers -Body $body
