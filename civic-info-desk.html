@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Civic Information Desk — Public Service Chatbot</title>
+<title>Civic Information Desk</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -13,97 +13,127 @@
     --stamp:#A93226; --stamp-dark:#7E2A20;
     --sage:#57715F;
     --line:#CBBF9E; --line-soft:#DED4B9;
-    --radius:2px;
   }
   *{box-sizing:border-box;}
-  html,body{margin:0;padding:0;}
+  html,body{margin:0;padding:0; scroll-behavior:smooth;}
   body{
     background:var(--parchment);
     background-image:repeating-linear-gradient(0deg, rgba(30,42,56,0.025) 0px, rgba(30,42,56,0.025) 1px, transparent 1px, transparent 3px);
-    color:var(--ink); font-family:'IBM Plex Sans', sans-serif;
-    min-height:100vh; display:flex; flex-direction:column;
+    color:var(--ink); font-family:'IBM Plex Sans', sans-serif; min-height:100vh;
   }
   ::selection{background:var(--stamp); color:var(--paper);}
   :focus-visible{outline:2px solid var(--stamp); outline-offset:2px;}
+  a{color:inherit;}
 
-  header.masthead{
+  nav.topnav{
+    position:sticky; top:0; z-index:50;
     background:var(--ink); color:var(--parchment);
-    padding:18px 28px; display:flex; align-items:center; justify-content:space-between;
-    border-bottom:5px solid var(--stamp); flex-wrap:wrap; gap:10px;
+    border-bottom:5px solid var(--stamp);
+    display:flex; align-items:center; justify-content:space-between;
+    padding:14px 26px; flex-wrap:wrap; gap:10px;
   }
-  .masthead-left{display:flex; align-items:center; gap:14px;}
-  .seal{width:42px; height:42px; flex-shrink:0;}
-  .masthead-title{font-family:'Fraunces', serif; font-weight:600; font-size:1.35rem;}
-  .masthead-sub{font-family:'IBM Plex Mono', monospace; font-size:0.68rem; letter-spacing:0.14em; text-transform:uppercase; color:#B9C3CE; margin-top:2px;}
-  .status-badge{
-    font-family:'IBM Plex Mono', monospace; border:1px solid #4A5A6C; padding:6px 12px;
-    font-size:0.68rem; letter-spacing:0.06em; color:#D8DEE4; display:flex; align-items:center; gap:7px;
+  .brand{display:flex; align-items:center; gap:12px; cursor:pointer;}
+  .brand svg{width:34px; height:34px; flex-shrink:0;}
+  .brand-text{font-family:'Fraunces', serif; font-weight:600; font-size:1.15rem;}
+  .nav-links{display:flex; gap:4px; align-items:center; flex-wrap:wrap;}
+  .nav-link{
+    font-size:0.83rem; font-weight:500; padding:8px 14px; cursor:pointer;
+    color:#C7CFD8; border-bottom:2px solid transparent; transition:color .15s ease, border-color .15s ease;
+    background:none; border-top:none; border-left:none; border-right:none; font-family:inherit;
   }
-  .status-dot{width:8px; height:8px; border-radius:50%; background:#8a8; flex-shrink:0;}
+  .nav-link:hover{color:var(--parchment);}
+  .nav-link.active{color:var(--parchment); border-bottom-color:var(--stamp);}
+  .nav-status{
+    font-family:'IBM Plex Mono', monospace; font-size:0.65rem; letter-spacing:0.06em;
+    border:1px solid #4A5A6C; padding:5px 10px; color:#D8DEE4; display:flex; align-items:center; gap:6px;
+  }
+  .status-dot{width:7px; height:7px; border-radius:50%; background:#8a8;}
   .status-dot.offline{background:var(--stamp);}
 
-  .desk{
-    flex:1; width:100%; max-width:1280px; margin:0 auto;
-    display:grid; grid-template-columns:230px 1fr 250px; gap:22px; padding:28px 22px 40px;
+  .view{display:none; animation:fadeIn .25s ease both;}
+  .view.active{display:block;}
+  @keyframes fadeIn{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);}}
+
+  .hero{max-width:900px; margin:0 auto; padding:70px 24px 40px; text-align:center;}
+  .hero-eyebrow{font-family:'IBM Plex Mono', monospace; font-size:0.72rem; letter-spacing:0.16em; text-transform:uppercase; color:var(--stamp); margin-bottom:14px;}
+  .hero h1{font-family:'Fraunces', serif; font-weight:600; font-size:2.5rem; line-height:1.15; margin:0 0 16px;}
+  .hero p{font-size:1.02rem; color:var(--ink-soft); max-width:560px; margin:0 auto 30px; line-height:1.6;}
+  .hero-actions{display:flex; gap:12px; justify-content:center; flex-wrap:wrap;}
+  .btn-primary, .btn-secondary{
+    font-family:'IBM Plex Mono', monospace; font-size:0.78rem; letter-spacing:0.06em; text-transform:uppercase;
+    padding:13px 24px; cursor:pointer; border:none; text-decoration:none; display:inline-block;
   }
-  @media (max-width:1050px){ .desk{grid-template-columns:1fr; padding:18px 14px 32px;} }
+  .btn-primary{background:var(--stamp); color:var(--paper);}
+  .btn-primary:hover{background:var(--stamp-dark);}
+  .btn-secondary{background:transparent; color:var(--ink); border:1px solid var(--line);}
+  .btn-secondary:hover{border-color:var(--stamp); color:var(--stamp);}
+
+  .stat-row{max-width:900px; margin:10px auto 60px; padding:0 24px; display:grid; grid-template-columns:repeat(3, 1fr); gap:16px;}
+  @media (max-width:700px){ .stat-row{grid-template-columns:1fr;} .hero h1{font-size:1.9rem;} }
+  .stat-card{background:var(--paper); border:1px solid var(--line); padding:20px; text-align:left;}
+  .stat-card .k{font-family:'IBM Plex Mono', monospace; font-size:1.4rem; font-weight:600; color:var(--stamp);}
+  .stat-card .l{font-size:0.78rem; color:var(--ink-soft); margin-top:4px;}
+
+  .home-section{max-width:1100px; margin:0 auto; padding:20px 24px 70px;}
+  .home-section h2{font-family:'Fraunces', serif; font-size:1.3rem; margin-bottom:22px;}
+  .window-grid{display:grid; grid-template-columns:repeat(auto-fit, minmax(220px,1fr)); gap:16px;}
+  .window-card{background:var(--paper); border:1px solid var(--line); padding:22px; cursor:pointer; transition:border-color .15s ease, transform .15s ease;}
+  .window-card:hover{border-color:var(--stamp); transform:translateY(-2px);}
+  .window-card svg{width:26px; height:26px; stroke:var(--stamp); margin-bottom:12px;}
+  .window-card h3{font-family:'Fraunces', serif; font-size:1.02rem; margin:0 0 8px;}
+  .window-card p{font-size:0.82rem; color:var(--ink-soft); line-height:1.5; margin:0;}
+
+  .page-header{max-width:1100px; margin:0 auto; padding:46px 24px 10px;}
+  .page-header h1{font-family:'Fraunces', serif; font-size:1.8rem; margin:0 0 8px;}
+  .page-header p{color:var(--ink-soft); max-width:560px; line-height:1.55; margin:0;}
+  .services-grid{max-width:1100px; margin:30px auto 70px; padding:0 24px; display:grid; grid-template-columns:repeat(auto-fit, minmax(250px,1fr)); gap:18px;}
+  .service-card{background:var(--paper); border:1px solid var(--line); padding:24px; display:flex; flex-direction:column; gap:12px;}
+  .service-card svg{width:28px; height:28px; stroke:var(--stamp);}
+  .service-card h3{font-family:'Fraunces', serif; font-size:1.08rem; margin:0;}
+  .service-card p{font-size:0.83rem; color:var(--ink-soft); line-height:1.55; margin:0; flex:1;}
+  .service-card ul{margin:0; padding-left:18px; font-size:0.8rem; color:var(--ink-soft); line-height:1.7;}
+  .service-card .open-btn{
+    align-self:flex-start; margin-top:6px; background:var(--ink); color:var(--parchment);
+    border:none; font-family:'IBM Plex Mono', monospace; font-size:0.7rem; letter-spacing:0.06em;
+    text-transform:uppercase; padding:9px 16px; cursor:pointer;
+  }
+  .service-card .open-btn:hover{background:var(--stamp);}
+
+  .assistant-wrap{max-width:1280px; margin:0 auto; padding:26px 22px 60px; display:grid; grid-template-columns:230px 1fr 250px; gap:22px;}
+  @media (max-width:1050px){ .assistant-wrap{grid-template-columns:1fr;} }
 
   .windows{display:flex; flex-direction:column; gap:10px;}
-  .windows-label{
-    font-family:'IBM Plex Mono', monospace; font-size:0.68rem; letter-spacing:0.16em; text-transform:uppercase;
-    color:var(--ink-soft); border-bottom:1px solid var(--line); padding-bottom:8px; margin-bottom:2px;
-  }
-  .window-btn{
-    display:flex; align-items:center; gap:10px; background:var(--paper);
-    border:1px solid var(--line-soft); border-left:3px solid transparent; padding:12px;
-    text-align:left; font-size:0.87rem; font-weight:500; color:var(--ink); cursor:pointer;
-    transition:border-color .15s ease, background .15s ease;
-  }
+  .windows-label{font-family:'IBM Plex Mono', monospace; font-size:0.68rem; letter-spacing:0.16em; text-transform:uppercase; color:var(--ink-soft); border-bottom:1px solid var(--line); padding-bottom:8px; margin-bottom:2px;}
+  .window-btn{display:flex; align-items:center; gap:10px; background:var(--paper); width:100%; border:1px solid var(--line-soft); border-left:3px solid transparent; padding:12px; text-align:left; font-size:0.87rem; font-weight:500; color:var(--ink); cursor:pointer;}
   .window-btn svg{flex-shrink:0; width:18px; height:18px; stroke:var(--ink-soft);}
   .window-btn:hover{background:#F4EFE2;}
   .window-btn.active{border-left-color:var(--stamp); background:#F6F1E6;}
   .window-btn.active svg{stroke:var(--stamp);}
 
   .sample-chips{display:flex; flex-direction:column; gap:6px; margin-top:4px;}
-  .chip{
-    text-align:left; background:transparent; border:1px dashed var(--line); color:var(--ink-soft);
-    font-size:0.78rem; padding:7px 9px; cursor:pointer; line-height:1.3;
-  }
+  .chip{text-align:left; background:transparent; border:1px dashed var(--line); color:var(--ink-soft); font-size:0.78rem; padding:7px 9px; cursor:pointer; line-height:1.3;}
   .chip:hover{border-color:var(--stamp); color:var(--ink);}
 
-  .scenario-toggle{
-    display:flex; align-items:center; gap:8px; margin-top:14px; padding:10px;
-    border:1px solid var(--line-soft); background:var(--paper); cursor:pointer; font-size:0.8rem;
-  }
+  .scenario-toggle{display:flex; align-items:center; gap:8px; margin-top:14px; padding:10px; border:1px solid var(--line-soft); background:var(--paper); cursor:pointer; font-size:0.8rem;}
   .scenario-toggle input{accent-color:var(--stamp);}
   .scenario-toggle.on{border-color:var(--sage); background:#EEF2EE;}
   .scenario-note{font-size:0.7rem; color:var(--ink-soft); margin-top:6px; line-height:1.4;}
 
-  .ledger-wrap{
-    background:var(--paper); border:1px solid var(--line);
-    display:flex; flex-direction:column; min-height:520px; max-height:74vh;
-  }
-  .ledger-head{
-    padding:14px 20px; border-bottom:1px solid var(--line);
-    display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:6px;
-  }
+  .ledger-wrap{background:var(--paper); border:1px solid var(--line); display:flex; flex-direction:column; min-height:520px; max-height:74vh;}
+  .ledger-head{padding:14px 20px; border-bottom:1px solid var(--line); display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:6px;}
   .ledger-head h1{font-family:'Fraunces', serif; font-weight:600; font-size:1.05rem; margin:0;}
   .ledger-head span{font-family:'IBM Plex Mono', monospace; font-size:0.68rem; color:var(--ink-soft); letter-spacing:0.06em;}
   .ledger{flex:1; overflow-y:auto; padding:18px 20px; display:flex; flex-direction:column; gap:22px;}
   .entry{display:flex; flex-direction:column; gap:8px;}
   .entry-num{font-family:'IBM Plex Mono', monospace; font-size:0.65rem; color:var(--ink-soft); letter-spacing:0.1em;}
   .q-row, .a-row{display:flex; gap:10px; align-items:flex-start;}
-  .bubble{padding:10px 13px; border-radius:var(--radius); font-size:0.92rem; line-height:1.55; max-width:80%; white-space:pre-wrap;}
+  .bubble{padding:10px 13px; font-size:0.92rem; line-height:1.55; max-width:80%; white-space:pre-wrap;}
   .q-row{justify-content:flex-end;}
   .q-row .bubble{background:var(--ink); color:var(--parchment); border-top-right-radius:0;}
   .a-row .bubble{background:#F4EFE2; border:1px solid var(--line-soft); border-top-left-radius:0;}
   .a-row.error .bubble{background:#F7E6E3; border-color:#D9B3AC; color:var(--stamp-dark);}
 
-  /* Journey tracker */
-  .journey{
-    display:flex; flex-direction:column; gap:6px; padding:10px 13px;
-    background:#F4EFE2; border:1px solid var(--line-soft); max-width:80%; font-family:'IBM Plex Mono', monospace; font-size:0.72rem;
-  }
+  .journey{display:flex; flex-direction:column; gap:6px; padding:10px 13px; background:#F4EFE2; border:1px solid var(--line-soft); max-width:80%; font-family:'IBM Plex Mono', monospace; font-size:0.72rem;}
   .journey-step{display:flex; align-items:center; gap:8px; color:var(--line); opacity:0.4; transition:opacity .2s ease, color .2s ease;}
   .journey-step.active{color:var(--ink-soft); opacity:1;}
   .journey-step.done{color:var(--sage); opacity:1;}
@@ -115,116 +145,176 @@
   @keyframes stampIn{0%{opacity:0; transform:scale(1.9) rotate(-24deg);} 70%{opacity:1;} 100%{opacity:1; transform:scale(1) rotate(-9deg);}}
 
   .composer{border-top:1px solid var(--line); padding:14px 20px; display:flex; gap:10px;}
-  .composer input{
-    flex:1; border:none; border-bottom:2px solid var(--line); background:transparent;
-    font-size:0.92rem; padding:8px 2px; color:var(--ink);
-  }
+  .composer input{flex:1; border:none; border-bottom:2px solid var(--line); background:transparent; font-size:0.92rem; padding:8px 2px; color:var(--ink);}
   .composer input:focus{border-bottom-color:var(--stamp); outline:none;}
-  .composer button{
-    background:var(--stamp); color:var(--paper); border:none; font-family:'IBM Plex Mono', monospace;
-    font-size:0.72rem; letter-spacing:0.08em; text-transform:uppercase; padding:0 18px; cursor:pointer;
-  }
+  .composer button{background:var(--stamp); color:var(--paper); border:none; font-family:'IBM Plex Mono', monospace; font-size:0.72rem; letter-spacing:0.08em; text-transform:uppercase; padding:0 18px; cursor:pointer;}
   .composer button:hover{background:var(--stamp-dark);}
   .composer button:disabled{opacity:.5; cursor:not-allowed;}
 
-  /* Passport panel */
   .passport{display:flex; flex-direction:column; gap:10px;}
-  .passport-label{
-    font-family:'IBM Plex Mono', monospace; font-size:0.68rem; letter-spacing:0.16em; text-transform:uppercase;
-    color:var(--ink-soft); border-bottom:1px solid var(--line); padding-bottom:8px;
-  }
-  .passport-card{
-    background:var(--ink); color:var(--parchment); padding:14px; font-family:'Fraunces', serif;
-  }
+  .passport-label{font-family:'IBM Plex Mono', monospace; font-size:0.68rem; letter-spacing:0.16em; text-transform:uppercase; color:var(--ink-soft); border-bottom:1px solid var(--line); padding-bottom:8px;}
+  .passport-card{background:var(--ink); color:var(--parchment); padding:14px; font-family:'Fraunces', serif;}
   .passport-name{font-size:0.95rem; font-weight:600;}
   .passport-sub{font-family:'IBM Plex Mono', monospace; font-size:0.64rem; color:#B9C3CE; letter-spacing:0.08em; margin-top:4px;}
   .passport-count{font-size:1.8rem; font-weight:700; margin-top:10px; font-family:'IBM Plex Mono', monospace;}
   .passport-count-label{font-size:0.62rem; letter-spacing:0.1em; text-transform:uppercase; color:#B9C3CE;}
   .passport-stamps{display:flex; flex-direction:column; gap:6px; max-height:340px; overflow-y:auto;}
-  .stamp-row{
-    display:flex; justify-content:space-between; gap:8px; padding:8px 9px; background:var(--paper);
-    border:1px solid var(--line-soft); font-size:0.72rem;
-  }
+  .stamp-row{display:flex; justify-content:space-between; gap:8px; padding:8px 9px; background:var(--paper); border:1px solid var(--line-soft); font-size:0.72rem;}
   .stamp-row .cat{font-weight:600;}
   .stamp-row .time{font-family:'IBM Plex Mono', monospace; color:var(--ink-soft); font-size:0.65rem; white-space:nowrap;}
   .passport-empty{font-size:0.75rem; color:var(--ink-soft); font-style:italic;}
 
-  footer{text-align:center; font-family:'IBM Plex Mono', monospace; font-size:0.66rem; letter-spacing:0.06em; color:var(--ink-soft); padding:16px 10px 26px;}
+  .requests-wrap{max-width:900px; margin:0 auto; padding:46px 24px 70px;}
+  .requests-table{width:100%; border-collapse:collapse; margin-top:24px; background:var(--paper); border:1px solid var(--line);}
+  .requests-table th, .requests-table td{text-align:left; padding:12px 14px; border-bottom:1px solid var(--line-soft); font-size:0.85rem;}
+  .requests-table th{font-family:'IBM Plex Mono', monospace; font-size:0.68rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--ink-soft); background:#F4EFE2;}
+  .requests-empty{padding:40px 20px; text-align:center; color:var(--ink-soft); font-style:italic; background:var(--paper); border:1px solid var(--line);}
 
-  @media (prefers-reduced-motion: reduce){ .stamp-mark, .spin{animation:none !important;} }
+  .about-wrap{max-width:700px; margin:0 auto; padding:46px 24px 80px; line-height:1.7; color:var(--ink-soft);}
+  .about-wrap h1{font-family:'Fraunces', serif; color:var(--ink); font-size:1.8rem;}
+  .about-wrap h2{font-family:'Fraunces', serif; color:var(--ink); font-size:1.1rem; margin-top:32px;}
+
+  footer{text-align:center; font-family:'IBM Plex Mono', monospace; font-size:0.66rem; letter-spacing:0.06em; color:var(--ink-soft); padding:16px 10px 30px;}
+
+  @media (prefers-reduced-motion: reduce){ .stamp-mark, .spin, .view{animation:none !important;} }
 </style>
 </head>
 <body>
 
-<header class="masthead">
-  <div class="masthead-left">
-    <svg class="seal" viewBox="0 0 48 48" fill="none">
+<nav class="topnav">
+  <div class="brand" data-nav="home">
+    <svg viewBox="0 0 48 48" fill="none">
       <circle cx="24" cy="24" r="21" stroke="#D9C98C" stroke-width="1.5"/>
       <circle cx="24" cy="24" r="15.5" stroke="#D9C98C" stroke-width="1"/>
       <path d="M24 12 L27 20 L35 20 L28.5 25 L31 33 L24 28 L17 33 L19.5 25 L13 20 L21 20 Z" fill="#D9C98C"/>
     </svg>
-    <div>
-      <div class="masthead-title">Civic Information Desk</div>
-      <div class="masthead-sub">Public Service Query Assistant</div>
+    <span class="brand-text">Civic Information Desk</span>
+  </div>
+  <div class="nav-links">
+    <button class="nav-link" data-nav="home">Home</button>
+    <button class="nav-link" data-nav="services">Services</button>
+    <button class="nav-link" data-nav="assistant">Assistant</button>
+    <button class="nav-link" data-nav="requests">My Requests</button>
+    <button class="nav-link" data-nav="about">About</button>
+  </div>
+  <div class="nav-status"><span class="status-dot offline" id="statusDot"></span><span id="statusText">Connecting…</span></div>
+</nav>
+
+<section class="view" id="view-home">
+  <div class="hero">
+    <div class="hero-eyebrow">Public Service Information Access</div>
+    <h1>One desk for every civic question.</h1>
+    <p>Permits, tax payments, and local regulations — ask in plain language and get a routed, cited answer instead of digging through department websites.</p>
+    <div class="hero-actions">
+      <button class="btn-primary" data-nav="assistant">Start an Inquiry</button>
+      <button class="btn-secondary" data-nav="services">Browse Services</button>
     </div>
   </div>
-  <div class="status-badge"><span class="status-dot offline" id="statusDot"></span><span id="statusText">Connecting…</span></div>
-</header>
+  <div class="stat-row">
+    <div class="stat-card"><div class="k">3</div><div class="l">Service departments covered</div></div>
+    <div class="stat-card"><div class="k">24/7</div><div class="l">Always open, no queue</div></div>
+    <div class="stat-card"><div class="k">AI</div><div class="l">Answers routed &amp; stamped per inquiry</div></div>
+  </div>
+  <div class="home-section">
+    <h2>Jump to a service window</h2>
+    <div class="window-grid" id="homeWindowGrid"></div>
+  </div>
+</section>
 
-<div class="desk">
-  <aside class="windows">
-    <div class="windows-label">Service Windows</div>
-    <button class="window-btn active" data-cat="permits">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4"/><path d="M9 12h6M9 16h6"/></svg>
-      Permits &amp; Licenses
-    </button>
-    <button class="window-btn" data-cat="tax">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M9 9.5c0-1.4 1.3-2.5 3-2.5s3 1 3 2.2c0 3-6 1.3-6 4.2 0 1.4 1.3 2.6 3 2.6s3-1 3-2.4"/></svg>
-      Tax Payments
-    </button>
-    <button class="window-btn" data-cat="regulations">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M12 3v3M12 3l-6 3.5M12 3l6 3.5M3 8l3-1.5M21 8l-3-1.5M4 8h4l-2 5-2-5zM16 8h4l-2 5-2-5zM6 13v6M18 13v6M4 21h16M9 21V10M15 21V10"/></svg>
-      Local Regulations
-    </button>
-    <button class="window-btn" data-cat="general">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M9.2 9.2a2.8 2.8 0 1 1 3.7 2.6c-.9.35-1 .9-1 1.7M12 17h.01"/></svg>
-      General Help
-    </button>
+<section class="view" id="view-services">
+  <div class="page-header">
+    <h1>Service Windows</h1>
+    <p>Each window is staffed by a specialized assistant that only answers within its own department — pick the one that matches your question.</p>
+  </div>
+  <div class="services-grid" id="servicesGrid"></div>
+</section>
 
-    <div class="windows-label" style="margin-top:14px;">Try Asking</div>
-    <div class="sample-chips" id="chips"></div>
+<section class="view" id="view-assistant">
+  <div class="assistant-wrap">
+    <aside class="windows">
+      <div class="windows-label">Service Windows</div>
+      <button class="window-btn active" data-cat="permits">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4"/><path d="M9 12h6M9 16h6"/></svg>
+        Permits &amp; Licenses
+      </button>
+      <button class="window-btn" data-cat="tax">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M9 9.5c0-1.4 1.3-2.5 3-2.5s3 1 3 2.2c0 3-6 1.3-6 4.2 0 1.4 1.3 2.6 3 2.6s3-1 3-2.4"/></svg>
+        Tax Payments
+      </button>
+      <button class="window-btn" data-cat="regulations">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M12 3v3M12 3l-6 3.5M12 3l6 3.5M3 8l3-1.5M21 8l-3-1.5M4 8h4l-2 5-2-5zM16 8h4l-2 5-2-5zM6 13v6M18 13v6M4 21h16M9 21V10M15 21V10"/></svg>
+        Local Regulations
+      </button>
+      <button class="window-btn" data-cat="general">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M9.2 9.2a2.8 2.8 0 1 1 3.7 2.6c-.9.35-1 .9-1 1.7M12 17h.01"/></svg>
+        General Help
+      </button>
 
-    <label class="scenario-toggle" id="scenarioToggle">
-      <input type="checkbox" id="scenarioCheckbox">
-      <span>Scenario Check mode</span>
-    </label>
-    <div class="scenario-note">Describe something you're planning — get a verdict before you file anything.</div>
-  </aside>
+      <div class="windows-label" style="margin-top:14px;">Try Asking</div>
+      <div class="sample-chips" id="chips"></div>
 
-  <main class="ledger-wrap">
-    <div class="ledger-head">
-      <h1>Inquiry Ledger</h1>
-      <span id="dateStamp"></span>
+      <label class="scenario-toggle" id="scenarioToggle">
+        <input type="checkbox" id="scenarioCheckbox">
+        <span>Scenario Check mode</span>
+      </label>
+      <div class="scenario-note">Describe something you're planning — get a verdict before you file anything.</div>
+    </aside>
+
+    <main class="ledger-wrap">
+      <div class="ledger-head">
+        <h1>Inquiry Ledger</h1>
+        <span id="dateStamp"></span>
+      </div>
+      <div class="ledger" id="ledger" aria-live="polite"></div>
+      <form class="composer" id="composer">
+        <label for="userInput" style="position:absolute;left:-9999px;">Type your question</label>
+        <input id="userInput" type="text" placeholder="Ask about a permit, tax payment, or local regulation…" autocomplete="off">
+        <button type="submit" id="sendBtn">Submit Inquiry</button>
+      </form>
+    </main>
+
+    <aside class="passport">
+      <div class="passport-label">Civic Passport</div>
+      <div class="passport-card">
+        <div class="passport-name">Resident Record</div>
+        <div class="passport-sub">ISSUED ON FIRST VISIT</div>
+        <div class="passport-count" id="passportCount">0</div>
+        <div class="passport-count-label">Inquiries Stamped</div>
+      </div>
+      <div class="passport-stamps" id="passportStamps"></div>
+    </aside>
+  </div>
+</section>
+
+<section class="view" id="view-requests">
+  <div class="requests-wrap">
+    <div class="page-header" style="padding:0 0 10px;">
+      <h1>My Requests</h1>
+      <p>Every inquiry you've had stamped by the desk, saved to this browser.</p>
     </div>
-    <div class="ledger" id="ledger" aria-live="polite"></div>
-    <form class="composer" id="composer">
-      <label for="userInput" style="position:absolute;left:-9999px;">Type your question</label>
-      <input id="userInput" type="text" placeholder="Ask about a permit, tax payment, or local regulation…" autocomplete="off">
-      <button type="submit" id="sendBtn">Submit Inquiry</button>
-    </form>
-  </main>
+    <div id="requestsTableWrap"></div>
+  </div>
+</section>
 
-  <aside class="passport">
-    <div class="passport-label">Civic Passport</div>
-    <div class="passport-card">
-      <div class="passport-name">Resident Record</div>
-      <div class="passport-sub">ISSUED ON FIRST VISIT</div>
-      <div class="passport-count" id="passportCount">0</div>
-      <div class="passport-count-label">Inquiries Stamped</div>
-    </div>
-    <div class="passport-stamps" id="passportStamps"></div>
-  </aside>
-</div>
+<section class="view" id="view-about">
+  <div class="about-wrap">
+    <h1>About this prototype</h1>
+    <p>The Civic Information Desk is a conversational AI chatbot for public service
+    information access, built for TCS AI Friday Season 2. It routes citizen questions
+    about permits, tax payments, and local regulations to a specialized assistant
+    per department, with an animated routing sequence, a scenario-check mode for
+    planning ahead of filing, and a persistent record of past inquiries.</p>
+    <h2>How it works</h2>
+    <p>Each question is sent to a Flask backend, which calls a large language model
+    with a department-specific persona and, in scenario mode, a structured
+    verdict format. The frontend never talks to the model directly — the API key
+    stays server-side.</p>
+    <h2>Scope</h2>
+    <p>This is a working prototype, not a production civic service. Fees, dates,
+    and procedures are described in general terms and should be confirmed with
+    the relevant department before acting on them.</p>
+  </div>
+</section>
 
 <footer>Prototype — TCS AI Friday Season 2 · Conversational AI Chatbot for Public Service Information Access</footer>
 
@@ -237,65 +327,119 @@ const SAMPLES = {
   regulations: ["What are the noise ordinance hours?", "What are the waste disposal rules?", "How do I check zoning for a property?"],
   general: ["Hi", "Can I talk to a person?", "What can you help me with?"]
 };
-
 const DEPARTMENTS = {
   permits: "Permits & Licensing Office",
   tax: "Tax & Revenue Office",
   regulations: "Regulatory Affairs Office",
   general: "General Inquiries Desk"
 };
+const ICONS = {
+  permits: `<path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4"/><path d="M9 12h6M9 16h6"/>`,
+  tax: `<circle cx="12" cy="12" r="9"/><path d="M12 7v10M9 9.5c0-1.4 1.3-2.5 3-2.5s3 1 3 2.2c0 3-6 1.3-6 4.2 0 1.4 1.3 2.6 3 2.6s3-1 3-2.4"/>`,
+  regulations: `<path d="M12 3v3M12 3l-6 3.5M12 3l6 3.5M3 8l3-1.5M21 8l-3-1.5M4 8h4l-2 5-2-5zM16 8h4l-2 5-2-5zM6 13v6M18 13v6M4 21h16M9 21V10M15 21V10"/>`,
+  general: `<circle cx="12" cy="12" r="9"/><path d="M9.2 9.2a2.8 2.8 0 1 1 3.7 2.6c-.9.35-1 .9-1 1.7M12 17h.01"/>`
+};
+const DESCRIPTIONS = {
+  permits: { short:"Building permits, business licenses, and parking permits.", bullets:["Building & renovation permits","Business licensing","Residential parking permits"] },
+  tax: { short:"Property tax, payment methods, penalties, and filing.", bullets:["Property tax due dates","Payment methods & portals","Penalties and payment plans"] },
+  regulations: { short:"Noise ordinances, waste disposal, and zoning.", bullets:["Noise & quiet hours","Waste & recycling schedules","Zoning and land use"] },
+  general: { short:"Not sure which window you need? Start here.", bullets:["General orientation","Route to the right department","Speak to a human agent"] }
+};
 
 let ticket = 0;
 let currentCat = "permits";
 let scenarioMode = false;
 
-const ledger = document.getElementById('ledger');
-const chips = document.getElementById('chips');
-const composer = document.getElementById('composer');
-const input = document.getElementById('userInput');
-const sendBtn = document.getElementById('sendBtn');
-const statusDot = document.getElementById('statusDot');
-const statusText = document.getElementById('statusText');
-const scenarioToggle = document.getElementById('scenarioToggle');
-const scenarioCheckbox = document.getElementById('scenarioCheckbox');
-const passportCount = document.getElementById('passportCount');
-const passportStamps = document.getElementById('passportStamps');
+function goTo(view){
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-' + view).classList.add('active');
+  document.querySelectorAll('.nav-link').forEach(b => b.classList.toggle('active', b.dataset.nav === view));
+  window.location.hash = view;
+  window.scrollTo({top:0, behavior:'instant'});
+  if(view === 'requests') renderRequestsPage();
+}
+document.querySelectorAll('[data-nav]').forEach(el=>{
+  el.addEventListener('click', ()=> goTo(el.dataset.nav));
+});
+window.addEventListener('hashchange', ()=>{
+  const v = window.location.hash.replace('#','') || 'home';
+  if(document.getElementById('view-' + v)) goTo(v);
+});
 
-document.getElementById('dateStamp').textContent =
-  new Date().toLocaleDateString('en-US', { day:'2-digit', month:'short', year:'numeric' }).toUpperCase();
+function openAssistant(cat){
+  currentCat = cat;
+  document.querySelectorAll('.window-btn').forEach(b => b.classList.toggle('active', b.dataset.cat === cat));
+  renderChips(cat);
+  goTo('assistant');
+}
 
-// ---------- Passport (persisted in localStorage) ----------
+const homeGrid = document.getElementById('homeWindowGrid');
+const servicesGrid = document.getElementById('servicesGrid');
+Object.keys(DEPARTMENTS).forEach(cat=>{
+  const desc = DESCRIPTIONS[cat];
+  const icon = ICONS[cat];
+
+  const homeCard = document.createElement('div');
+  homeCard.className = "window-card";
+  homeCard.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke-width="1.6">${icon}</svg>
+    <h3>${DEPARTMENTS[cat]}</h3><p>${desc.short}</p>`;
+  homeCard.addEventListener('click', ()=> openAssistant(cat));
+  homeGrid.appendChild(homeCard);
+
+  const svcCard = document.createElement('div');
+  svcCard.className = "service-card";
+  svcCard.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke-width="1.6">${icon}</svg>
+    <h3>${DEPARTMENTS[cat]}</h3><p>${desc.short}</p>
+    <ul>${desc.bullets.map(b=>`<li>${b}</li>`).join('')}</ul>
+    <button class="open-btn">Open Window</button>`;
+  svcCard.querySelector('.open-btn').addEventListener('click', ()=> openAssistant(cat));
+  servicesGrid.appendChild(svcCard);
+});
+
 function loadPassport(){
   try { return JSON.parse(localStorage.getItem('civicPassport') || '[]'); }
   catch { return []; }
 }
-function savePassport(list){
-  localStorage.setItem('civicPassport', JSON.stringify(list));
-}
+function savePassport(list){ localStorage.setItem('civicPassport', JSON.stringify(list)); }
 function renderPassport(){
   const list = loadPassport();
-  passportCount.textContent = list.length;
+  document.getElementById('passportCount').textContent = list.length;
+  const el = document.getElementById('passportStamps');
   if(list.length === 0){
-    passportStamps.innerHTML = `<div class="passport-empty">No stamps yet — your first resolved inquiry will appear here.</div>`;
+    el.innerHTML = `<div class="passport-empty">No stamps yet — your first resolved inquiry will appear here.</div>`;
     return;
   }
-  passportStamps.innerHTML = list.slice().reverse().map(item => `
-    <div class="stamp-row">
-      <span class="cat">${escapeHTML(item.department)}</span>
-      <span class="time">${escapeHTML(item.time)}</span>
-    </div>
+  el.innerHTML = list.slice().reverse().map(item => `
+    <div class="stamp-row"><span class="cat">${escapeHTML(item.department)}</span><span class="time">${escapeHTML(item.time)}</span></div>
   `).join('');
 }
-function addPassportStamp(department){
+function addPassportStamp(department, question){
   const list = loadPassport();
-  list.push({ department, time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) });
+  list.push({ department, question, time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}), date: new Date().toLocaleDateString() });
   savePassport(list);
   renderPassport();
 }
+function renderRequestsPage(){
+  const list = loadPassport();
+  const wrap = document.getElementById('requestsTableWrap');
+  if(list.length === 0){
+    wrap.innerHTML = `<div class="requests-empty">No requests yet. Visit the Assistant to ask your first question.</div>`;
+    return;
+  }
+  wrap.innerHTML = `<table class="requests-table">
+    <thead><tr><th>Department</th><th>Question</th><th>Date</th><th>Time</th></tr></thead>
+    <tbody>${list.slice().reverse().map(item => `
+      <tr><td>${escapeHTML(item.department)}</td><td>${escapeHTML(item.question || '—')}</td><td>${escapeHTML(item.date || '—')}</td><td>${escapeHTML(item.time)}</td></tr>
+    `).join('')}</tbody>
+  </table>`;
+}
 renderPassport();
 
-// ---------- Category / chips ----------
+document.getElementById('dateStamp').textContent =
+  new Date().toLocaleDateString('en-US', { day:'2-digit', month:'short', year:'numeric' }).toUpperCase();
+
 function renderChips(cat){
+  const chips = document.getElementById('chips');
   chips.innerHTML = "";
   SAMPLES[cat].forEach(q=>{
     const b = document.createElement('button');
@@ -315,6 +459,9 @@ document.querySelectorAll('.window-btn').forEach(btn=>{
   });
 });
 
+const scenarioToggle = document.getElementById('scenarioToggle');
+const scenarioCheckbox = document.getElementById('scenarioCheckbox');
+const input = document.getElementById('userInput');
 scenarioCheckbox.addEventListener('change', ()=>{
   scenarioMode = scenarioCheckbox.checked;
   scenarioToggle.classList.toggle('on', scenarioMode);
@@ -331,50 +478,40 @@ function stampSVG(){
     <text x="24" y="29" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="6.2" fill="#A93226" font-weight="600">DESK</text>
   </svg>`;
 }
-function escapeHTML(str){
-  const d = document.createElement('div'); d.textContent = str; return d.innerHTML;
-}
+function escapeHTML(str){ const d = document.createElement('div'); d.textContent = str; return d.innerHTML; }
 
-// ---------- Journey tracker ----------
 function buildJourney(department){
-  const steps = [
-    "Inquiry received",
-    `Routed to ${department}`,
-    "Reviewing",
-    "Response stamped"
-  ];
+  const steps = ["Inquiry received", `Routed to ${department}`, "Reviewing", "Response stamped"];
   const wrap = document.createElement('div');
   wrap.className = "journey";
-  wrap.innerHTML = steps.map((s,i)=>`
-    <div class="journey-step" data-i="${i}">
-      <span class="journey-dot"></span><span class="label">${escapeHTML(s)}</span>
-    </div>`).join('');
+  wrap.innerHTML = steps.map((s,i)=>`<div class="journey-step" data-i="${i}"><span class="journey-dot"></span><span class="label">${escapeHTML(s)}</span></div>`).join('');
   return wrap;
 }
 function advanceJourney(journeyEl, index){
-  const stepEls = journeyEl.querySelectorAll('.journey-step');
-  stepEls.forEach((el, i)=>{
+  journeyEl.querySelectorAll('.journey-step').forEach((el, i)=>{
     el.classList.remove('active');
     if(i < index) el.classList.add('done');
     if(i === index){
       el.classList.add('active');
       const dot = el.querySelector('.journey-dot');
-      dot.outerHTML = '<span class="spin"></span>';
+      if(dot) dot.outerHTML = '<span class="spin"></span>';
     }
   });
 }
+function sleep(ms){ return new Promise(r => setTimeout(r, ms)); }
 
 async function addEntry(question){
   ticket++;
+  const sendBtn = document.getElementById('sendBtn');
   sendBtn.disabled = true;
   const department = DEPARTMENTS[currentCat];
+  const ledger = document.getElementById('ledger');
 
   const entry = document.createElement('div');
   entry.className = "entry";
   const num = document.createElement('div');
   num.className = "entry-num";
-  num.textContent = "ENTRY " + String(ticket).padStart(3,'0') + " · " + new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})
-    + (scenarioMode ? " · SCENARIO CHECK" : "");
+  num.textContent = "ENTRY " + String(ticket).padStart(3,'0') + " · " + new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) + (scenarioMode ? " · SCENARIO CHECK" : "");
   entry.appendChild(num);
 
   const qRow = document.createElement('div');
@@ -391,22 +528,17 @@ async function addEntry(question){
   ledger.appendChild(entry);
   ledger.scrollTop = ledger.scrollHeight;
 
-  advanceJourney(journeyEl, 0);
-  await sleep(280);
-  advanceJourney(journeyEl, 1);
-  await sleep(320);
+  advanceJourney(journeyEl, 0); await sleep(280);
+  advanceJourney(journeyEl, 1); await sleep(320);
   advanceJourney(journeyEl, 2);
 
   try {
     const res = await fetch(BACKEND_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
+      method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ message: question, category: currentCat, mode: scenarioMode ? "scenario" : "chat" })
     });
     const data = await res.json();
-
-    advanceJourney(journeyEl, 3);
-    await sleep(260);
+    advanceJourney(journeyEl, 3); await sleep(260);
     journeyRow.remove();
 
     const aRow = document.createElement('div');
@@ -416,7 +548,7 @@ async function addEntry(question){
     } else {
       aRow.className = "a-row";
       aRow.innerHTML = `${stampSVG()}<div class="bubble">${escapeHTML(data.answer)}</div>`;
-      addPassportStamp(data.department || department);
+      addPassportStamp(data.department || department, question);
     }
     entry.appendChild(aRow);
     setStatus(true);
@@ -428,16 +560,13 @@ async function addEntry(question){
     entry.appendChild(aRow);
     setStatus(false);
   }
-
   ledger.scrollTop = ledger.scrollHeight;
   sendBtn.disabled = false;
 }
 
-function sleep(ms){ return new Promise(r => setTimeout(r, ms)); }
-
 function setStatus(online){
-  statusDot.classList.toggle('offline', !online);
-  statusText.textContent = online ? "Connected" : "Backend offline";
+  document.getElementById('statusDot').classList.toggle('offline', !online);
+  document.getElementById('statusText').textContent = online ? "Connected" : "Backend offline";
 }
 async function checkHealth(){
   try { const res = await fetch(BACKEND_URL.replace('/api/chat', '/health')); setStatus(res.ok); }
@@ -446,12 +575,14 @@ async function checkHealth(){
 checkHealth();
 
 function ask(text){ if(text.trim()) addEntry(text.trim()); }
-
-composer.addEventListener('submit', (e)=>{
+document.getElementById('composer').addEventListener('submit', (e)=>{
   e.preventDefault();
   ask(input.value);
   input.value = "";
 });
+
+const initial = window.location.hash.replace('#','') || 'home';
+goTo(document.getElementById('view-' + initial) ? initial : 'home');
 </script>
 </body>
 </html>
