@@ -1,0 +1,153 @@
+"""
+Civic Information Desk — backend server (genailab.tcs.in / LiteLLM version)
+
+LiteLLM proxies usually expose an OpenAI-compatible API, so we use
+langchain_openai's ChatOpenAI client but point it at your TCS endpoint
+instead of OpenAI's servers.
+
+Run:
+    pip install -r requirements.txt
+    Fill in the values in .env (see .env.example)
+    python server.py
+"""
+
+import os
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+import httpx
+from langchain_openai import ChatOpenAI
+from dotenv import load_dotenv
+import traceback
+
+load_dotenv()  # reads variables from a local .env file if present
+
+app = Flask(__name__)
+CORS(app)
+
+BASE_URL = os.environ.get("LITELLM_BASE_URL")   # e.g. https://genailab.tcs.in/v1
+API_KEY = os.environ.get("LITELLM_API_KEY")
+MODEL_NAME = os.environ.get("LITELLM_MODEL")     # e.g. the model string your team was given
+
+missing = [name for name, val in [
+    ("LITELLM_BASE_URL", BASE_URL),
+    ("LITELLM_API_KEY", API_KEY),
+    ("LITELLM_MODEL", MODEL_NAME),
+] if not val]
+
+if missing:
+    raise RuntimeError(
+        f"Missing required environment variable(s): {', '.join(missing)}. "
+        "Set them in a .env file (see .env.example) before running this server."
+    )
+
+# Set up HTTPX client with SSL verification disabled (needed on the TCS network)
+httpx_client = httpx.Client(verify=False)
+
+# Build ChatOpenAI client from langchain_openai
+llm = ChatOpenAI(
+    base_url=BASE_URL.rstrip("/"),  # Ensure no trailing slash
+    model=MODEL_NAME,
+    api_key=API_KEY,
+    http_client=httpx_client
+)
+
+# ---------------------------------------------------------------------------
+# Window personas — each service window answers in a distinct clerk voice,
+# while staying strictly factual. The persona changes tone, not accuracy.
+# ---------------------------------------------------------------------------
+BASE_RULES = """You are a clerk at the Civic Information Desk, a public service
+information chatbot. You only cover: permits & licenses, tax payments, and
+local regulations.
+
+Rules that never change regardless of persona:
+- Give accurate, concise answers (2-4 sentences).
+- If a question is outside these topics, say so plainly and suggest the
+  relevant department or the general inquiries line.
+- Never invent specific fees, dates, or phone numbers — speak in general
+  terms (e.g. "typically 10-15 business days") rather than fabricating figures.
+- Do not break character with meta-commentary about being an AI persona.
+"""
+
+PERSONAS = {
+    "permits": BASE_RULES + """
+Voice: the Permits & Licensing clerk. Brisk, efficient, no wasted words.
+Give the answer first, in short direct sentences, like someone processing
+a queue of applicants and keeping things moving. Skip pleasantries.
+""",
+    "tax": BASE_RULES + """
+Voice: the Tax & Revenue clerk. Patient and reassuring — many people asking
+about tax are anxious about deadlines or penalties. Explain things a little
+more fully than the other windows, and proactively mention if there's a way
+to avoid a penalty or make things easier.
+""",
+    "regulations": BASE_RULES + """
+Voice: the Regulatory Affairs clerk. Dry, a little wry about the amount of
+paperwork bureaucracy involves, but never unhelpful or sarcastic toward the
+citizen — the wit is about the system, not the person. Keep it brief.
+""",
+    "general": BASE_RULES + """
+Voice: the General Inquiries clerk at the front desk. Warm and welcoming,
+helps people figure out which window they actually need.
+""",
+}
+
+SCENARIO_SUFFIX = """
+
+You are now in SCENARIO CHECK mode. The citizen is describing something
+they're planning to do (e.g. a home addition, starting a business) and wants
+to know if it's likely to require a permit or run into a regulation, BEFORE
+they file anything.
+
+Respond in this structure:
+1. **Verdict:** one of "Likely requires a permit/approval", "Likely fine as-is",
+   or "Depends on details" — pick the closest fit.
+2. **Why:** 1-2 sentences of reasoning in general terms.
+3. **Before you apply:** one practical next step (e.g. what to confirm, or
+   which window to check with) — since this is a simulation, not a final
+   determination.
+"""
+
+DEPARTMENT_NAMES = {
+    "permits": "Permits & Licensing Office",
+    "tax": "Tax & Revenue Office",
+    "regulations": "Regulatory Affairs Office",
+    "general": "General Inquiries Desk",
+}
+
+
+@app.route("/api/chat", methods=["POST"])
+def chat():
+    data = request.get_json(force=True) or {}
+    user_message = (data.get("message") or "").strip()
+    category = data.get("category") or "general"
+    mode = data.get("mode") or "chat"  # "chat" or "scenario"
+
+    if not user_message:
+        return jsonify({"error": "No message provided"}), 400
+
+    system_prompt = PERSONAS.get(category, PERSONAS["general"])
+    if mode == "scenario":
+        system_prompt += SCENARIO_SUFFIX
+
+    try:
+        # Compose prompt: prepend system prompt, then user message (as a single string)
+        prompt = f"{system_prompt.strip()}\n\nUser: {user_message}"
+        response = llm.invoke(prompt)
+        # The LangChain result can have .content or be just a string depending on model wrapper
+        answer = getattr(response, "content", str(response))
+        return jsonify({
+            "answer": answer,
+            "department": DEPARTMENT_NAMES.get(category, "General Inquiries Desk"),
+        })
+    except Exception as e:
+        traceback.print_exc()
+        return jsonify({"error": f"AI request failed: {str(e)}"}), 502
+
+
+@app.route("/health", methods=["GET"])
+def health():
+    return jsonify({"status": "ok"})
+
+
+if __name__ == "__main__":
+    app.run(host="127.0.0.1", port=5000, debug=True)
