@@ -82,3 +82,12 @@ same `python server.py`.
 
 No new setup steps — same `.env`, same `requirements.txt`, same `python server.py`.
 `server.py` now also reads `language` and `context` from each request.
+
+
+
+# Deepgram (Speech-to-Text) - https://console.deepgram.com/ (registro = $200 de crédito)
+DEEPGRAM_API_KEY=96c355b5e00c8141e499ad2cb12342b0aa0fb905
+
+# ElevenLabs (Text-to-Speech) - https://elevenlabs.io/ (plan gratuito disponible)
+ELEVENLABS_API_KEY=sk_350e255969dbeae35ab00bf3a037caeab4ba0ea9d368bd16
+ELEVENLABS_VOICE_ID=21m00Tcm4TlvDq8ikWAM
