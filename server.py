@@ -14,8 +14,10 @@ Run:
 import os
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from openai import OpenAI
+import httpx
+from langchain_openai import ChatOpenAI
 from dotenv import load_dotenv
+import traceback
 
 load_dotenv()  # reads variables from a local .env file if present
 
@@ -38,7 +40,16 @@ if missing:
         "Set them in a .env file (see .env.example) before running this server."
     )
 
-client = OpenAI(base_url=BASE_URL, api_key=API_KEY)
+# Set up HTTPX client with SSL verification disabled (as in the sample code)
+httpx_client = httpx.Client(verify=False)
+
+# Build ChatOpenAI client from langchain_openai
+llm = ChatOpenAI(
+    base_url=BASE_URL.rstrip("/"),  # Ensure no trailing slash
+    model=MODEL_NAME,
+    api_key=API_KEY,
+    http_client=httpx_client
+)
 
 SYSTEM_PROMPT = """You are the Civic Information Desk assistant, a conversational AI chatbot
 for public service information access. You help citizens with questions about:
@@ -66,19 +77,15 @@ def chat():
         return jsonify({"error": "No message provided"}), 400
 
     try:
-        response = client.chat.completions.create(
-            model=MODEL_NAME,
-            max_tokens=300,
-            messages=[
-                {"role": "system", "content": SYSTEM_PROMPT},
-                {"role": "user", "content": user_message},
-            ],
-        )
-        answer = response.choices[0].message.content
+        # Compose prompt: prepend system prompt, then user message (as a single string)
+        prompt = f"{SYSTEM_PROMPT.strip()}\n\nUser: {user_message}"
+        response = llm.invoke(prompt)
+        # The LangChain result can have .content or be just a string depending on model wrapper
+        answer = getattr(response, "content", str(response))
         return jsonify({"answer": answer})
-
     except Exception as e:
-        return jsonify({"error": f"LiteLLM request failed: {str(e)}"}), 502
+        traceback.print_exc()
+        return jsonify({"error": f"AI request failed: {str(e)}"}), 502
 
 
 @app.route("/health", methods=["GET"])
