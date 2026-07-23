@@ -216,19 +216,61 @@
   .composer button.submit:hover{background:var(--stamp-dark);}
   .composer button:disabled{opacity:.5; cursor:not-allowed;}
 
-  /* Talk Mode floating orb */
-  .talk-orb{
-    position:absolute; right:26px; bottom:20px; width:58px; height:58px; border-radius:50%;
-    background:var(--ink); color:var(--parchment); border:2px solid var(--stamp); cursor:pointer;
-    display:flex; align-items:center; justify-content:center; z-index:10; box-shadow:0 4px 14px rgba(0,0,0,0.2);
+  /* Talk Mode — small trigger button in the composer */
+  .wave-btn{
+    position:relative; flex-shrink:0; width:36px; height:36px; border-radius:50%;
+    background:var(--paper); border:1px solid var(--line-soft); cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 1px 4px rgba(30,42,56,0.12);
   }
-  .talk-orb svg{width:22px; height:22px;}
-  .talk-orb .ring{position:absolute; inset:-8px; border:2px solid var(--stamp); border-radius:50%; opacity:0;}
-  .talk-orb.listening .ring{animation:ringPulse 1.4s ease-out infinite;}
-  .talk-orb.speaking{background:var(--sage); border-color:var(--sage);}
-  .talk-orb.thinking{background:var(--ink-soft);}
-  @keyframes ringPulse{0%{opacity:.7; transform:scale(1);} 100%{opacity:0; transform:scale(1.6);}}
-  .talk-status{position:absolute; right:26px; bottom:82px; background:var(--ink); color:var(--parchment); font-family:'IBM Plex Mono', monospace; font-size:0.68rem; padding:6px 10px; z-index:10; white-space:nowrap;}
+  .wave-btn:hover{border-color:var(--stamp);}
+  .wave-bars{display:flex; align-items:center; gap:2.5px; height:14px;}
+  .wave-bars span{display:block; width:2px; border-radius:2px; background:var(--ink); height:6px;}
+
+  /* Talk Mode — full-screen immersive overlay */
+  .talk-overlay{
+    position:fixed; inset:0; z-index:150; background:rgba(30,42,56,0.94);
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:22px;
+  }
+  .talk-overlay.hidden{display:none;}
+  .talk-overlay-dept{
+    font-family:'IBM Plex Mono', monospace; font-size:0.72rem; letter-spacing:0.12em; text-transform:uppercase;
+    color:var(--gold);
+  }
+  .talk-circle{
+    position:relative; width:150px; height:150px; border-radius:50%;
+    background:var(--paper); border:none; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 8px 30px rgba(0,0,0,0.35);
+  }
+  .talk-ring{position:absolute; inset:0; border-radius:50%; border:2px solid var(--stamp); opacity:0;}
+  .talk-circle.listening .talk-ring.r1{animation:ringPulse 1.6s ease-out infinite;}
+  .talk-circle.listening .talk-ring.r2{animation:ringPulse 1.6s ease-out infinite .5s;}
+  @keyframes ringPulse{0%{opacity:.6; transform:scale(1);} 100%{opacity:0; transform:scale(1.55);}}
+  .talk-icon-mic{width:44px; height:44px; color:var(--ink); stroke-width:1.4;}
+  .talk-circle.speaking .talk-icon-mic, .talk-circle.thinking .talk-icon-mic{display:none;}
+  .talk-icon-bars{display:none; align-items:center; gap:5px; height:40px;}
+  .talk-circle.speaking .talk-icon-bars{display:flex;}
+  .talk-icon-bars span{display:block; width:5px; border-radius:3px; background:var(--sage); height:10px; animation:waveBounce 0.55s ease-in-out infinite;}
+  .talk-icon-bars span:nth-child(1){animation-delay:0s;}
+  .talk-icon-bars span:nth-child(2){animation-delay:0.1s;}
+  .talk-icon-bars span:nth-child(3){animation-delay:0.2s;}
+  .talk-icon-bars span:nth-child(4){animation-delay:0.3s;}
+  .talk-icon-bars span:nth-child(5){animation-delay:0.4s;}
+  @keyframes waveBounce{0%,100%{height:10px;} 50%{height:38px;}}
+  .talk-circle.thinking{background:var(--line-soft);}
+  .talk-circle.thinking::after{
+    content:""; width:34px; height:34px; border:3px solid var(--ink-soft); border-top-color:transparent;
+    border-radius:50%; animation:spin .8s linear infinite;
+  }
+  .talk-overlay-status{font-family:'IBM Plex Mono', monospace; font-size:0.8rem; color:var(--parchment); letter-spacing:0.04em;}
+  .talk-overlay-close{
+    width:52px; height:52px; border-radius:50%; background:var(--paper); border:none; cursor:pointer;
+    display:flex; align-items:center; justify-content:center; color:var(--ink); margin-top:10px;
+    box-shadow:0 4px 14px rgba(0,0,0,0.3);
+  }
+  .talk-overlay-close svg{width:20px; height:20px;}
+  .talk-overlay-close:hover{background:var(--stamp); color:var(--paper);}
 
   .passport{display:flex; flex-direction:column; gap:10px;}
   .passport-label{font-family:'IBM Plex Mono', monospace; font-size:0.68rem; letter-spacing:0.16em; text-transform:uppercase; color:var(--ink-soft); border-bottom:1px solid var(--line); padding-bottom:8px;}
@@ -270,7 +312,7 @@
 
   footer{text-align:center; font-family:'IBM Plex Mono', monospace; font-size:0.66rem; letter-spacing:0.06em; color:var(--ink-soft); padding:16px 10px 30px;}
 
-  @media (prefers-reduced-motion: reduce){ .stamp-mark, .spin, .view, .icon-btn.recording, .hero-stamp, .talk-orb .ring{animation:none !important;} }
+  @media (prefers-reduced-motion: reduce){ .stamp-mark, .spin, .view, .icon-btn.recording, .hero-stamp, .talk-ring, .talk-icon-bars span{animation:none !important;} }
 </style>
 </head>
 <body>
@@ -283,6 +325,20 @@
     <input type="text" id="nameInput" placeholder="Your name" autocomplete="given-name">
     <button id="nameSubmit">Continue</button>
   </div>
+</div>
+
+<div id="talkOverlay" class="talk-overlay hidden">
+  <div class="talk-overlay-dept" id="talkOverlayDept"></div>
+  <button class="talk-circle" id="talkCircle">
+    <span class="talk-ring r1"></span>
+    <span class="talk-ring r2"></span>
+    <svg class="talk-icon-mic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>
+    <span class="talk-icon-bars"><span></span><span></span><span></span><span></span><span></span></span>
+  </button>
+  <div class="talk-overlay-status" id="talkOverlayStatus">Listening…</div>
+  <button class="talk-overlay-close" id="talkClose" title="End Talk Mode">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg>
+  </button>
 </div>
 
 <nav class="topnav">
@@ -395,14 +451,11 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>
         </button>
         <input id="userInput" type="text" placeholder="Ask about a permit, tax payment, or local regulation…" autocomplete="off">
+        <button type="button" class="wave-btn" id="talkTrigger" title="Start Talk Mode">
+          <span class="wave-bars"><span></span><span></span><span></span><span></span><span></span></span>
+        </button>
         <button type="submit" class="submit" id="sendBtn">Submit</button>
       </form>
-
-      <button class="talk-orb" id="talkOrb" title="Start Talk Mode">
-        <span class="ring"></span>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>
-      </button>
-      <div class="talk-status" id="talkStatus" style="display:none;"></div>
     </main>
 
     <aside class="passport">
