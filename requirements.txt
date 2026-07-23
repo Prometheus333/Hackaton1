@@ -1,4 +1,6 @@
 flask
 flask-cors
 openai
+langchain-openai
+httpx
 python-dotenv

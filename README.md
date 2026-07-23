@@ -82,3 +82,35 @@ same `python server.py`.
 
 No new setup steps — same `.env`, same `requirements.txt`, same `python server.py`.
 `server.py` now also reads `language` and `context` from each request.
+
+## New: Call the Desk (simulated phone call)
+
+A phone icon next to the mic button in the Assistant composer opens a
+push-to-talk call modal:
+
+1. Hold the mic button and speak, release to send.
+2. Your clip is transcribed by **Deepgram** (`/v1/listen`, `nova-2` model).
+3. The transcript is answered by the same persona/scenario logic as the
+   text chat.
+4. The reply is spoken back with **ElevenLabs** TTS and plays automatically.
+5. Each turn is logged as a Civic Passport stamp, same as text chat.
+
+### Extra setup for this feature
+Add two more values to your `.env` (see `.env.example`):
+```
+DEEPGRAM_API_KEY=your-deepgram-key
+ELEVENLABS_API_KEY=your-elevenlabs-key
+ELEVENLABS_VOICE_ID=21m00Tcm4TlvDq8ikWAM   # optional, defaults to "Rachel"
+```
+- Get a Deepgram key at https://console.deepgram.com/
+- Get an ElevenLabs key at https://elevenlabs.io/app/settings/api-keys
+- No new pip packages needed — both are called with plain HTTPS requests via
+  the `httpx` client already in `server.py`. (`requirements.txt` has also
+  been corrected to include `httpx` and `langchain-openai`, which `server.py`
+  imports but which were missing from the original file.)
+- The browser needs mic permission and `MediaRecorder` support (Chrome/Edge/
+  Firefox all work; Safari support varies by version).
+- If you see "Recording not supported in this browser," try Chrome or Edge.
+- If a call turn fails with a 502 mentioning Deepgram or ElevenLabs, double
+  check the corresponding API key in `.env` and that your account has
+  remaining credits.
