@@ -1291,7 +1291,6 @@
   <div class="nav-links">
     <button class="nav-link" data-nav="home">Home</button>
     <button class="nav-link" data-nav="services">Services</button>
-    <button class="nav-link" data-scroll="schemeSection">Schemes</button>
     <button class="nav-link" data-nav="assistant">Assistant</button>
     <button class="nav-link" data-nav="insights">Insights</button>
     <button class="nav-link" data-nav="help">Help Center</button>
@@ -1393,10 +1392,10 @@
       <div class="bot-copy">
         <div class="bot-eyebrow">Central AI Assistant</div>
         <h2>Meet CivicBot — one assistant for every department.</h2>
-        <p>Permits, taxes, regulations, schemes, appointments, office locations — ask anything in one place. CivicBot answers across all categories and routes you onward only when a specialist window is genuinely needed.</p>
+        <p>Permits, taxes, regulations, appointments, office locations — ask anything in one place. CivicBot answers across all categories and routes you onward only when a specialist window is genuinely needed.</p>
         <button class="bot-cta" id="botCta">Ask CivicBot anything</button>
         <div class="bot-skills">
-          <span>All departments</span><span>Voice &amp; text</span><span>3 languages</span><span>Scheme guidance</span>
+          <span>All departments</span><span>Voice &amp; text</span><span>3 languages</span><span>Follow-up questions</span>
         </div>
       </div>
     </div>
@@ -1405,37 +1404,6 @@
   <div class="home-section">
     <h2>Important Services</h2>
     <div class="pill-row" id="importantServices"></div>
-  </div>
-
-  <div class="scheme-section" id="schemeSection">
-    <div class="scheme-head">
-      <div>
-        <h2>Scheme Spotlight</h2>
-        <p>Recently highlighted government schemes, with eligibility and benefits at a glance.</p>
-      </div>
-      <div class="scheme-live"><i></i>Updated this week</div>
-    </div>
-    <div class="scheme-body">
-      <div class="scheme-column">
-        <div class="scheme-column-head"><span>Latest Schemes</span><span id="schemeCount"></span></div>
-        <div class="scheme-list" id="schemeList"></div>
-      </div>
-      <div class="scheme-feature" id="schemeFeature"></div>
-    </div>
-  </div>
-
-  <div class="poster-wall-section">
-    <div class="poster-wall-head">
-      <h2>Scheme Posters</h2>
-      <span>Scroll sideways &middot; tap a poster to ask CivicBot about it</span>
-    </div>
-    <div class="poster-wall" id="posterWall"></div>
-  </div>
-
-  <div class="scheme-disclaimer">
-    Scheme names shown here are real central-government programmes, but the summaries are
-    condensed prototype content for demonstration. Always confirm eligibility, amounts and
-    deadlines on the official scheme portal before applying.
   </div>
 
   <div class="poster-section">
@@ -1572,7 +1540,7 @@
         <h1>Inquiry Ledger</h1>
         <span id="dateStamp"></span>
       </div>
-      <div class="all-mode-note" id="allModeNote" style="display:none;">You are in the all-department window — ask about permits, taxes, regulations, government schemes, offices or appointments in the same conversation.</div>
+      <div class="all-mode-note" id="allModeNote" style="display:none;">You are in the all-department window — ask about permits, taxes, regulations, offices or appointments in the same conversation.</div>
       <div id="reminderWrap" style="padding:0 20px;"></div>
       <div class="ledger" id="ledger" aria-live="polite"></div>
       <div id="attachChipWrap"></div>
@@ -1703,7 +1671,7 @@ const SAMPLES = {
   tax: ["When is property tax due?", "How can I pay my taxes?", "What happens if I pay late?", "How do I file my income tax return?"],
   regulations: ["What are the noise ordinance hours?", "What are the waste disposal rules?", "How do I check zoning for a property?"],
   general: ["Hi", "Can I talk to a person?", "What can you help me with?"],
-  all: ["What government schemes am I likely to be eligible for?", "I want to open a small shop — what permits and loans do I need?", "When is property tax due and can I pay online?", "What are the quiet hours in a residential area?", "Book an appointment"]
+  all: ["I want to open a small shop — what permits and loans do I need?", "When is property tax due and can I pay online?", "What are the quiet hours in a residential area?", "Book an appointment", "How do I check my permit application status?"]
 };
 const DEPARTMENTS = {
   permits: "Permits & Licensing Office", tax: "Tax & Revenue Office",
@@ -1721,7 +1689,7 @@ const DESCRIPTIONS = {
   tax: { short:"Property tax, payment methods, penalties, and filing.", bullets:["Property tax due dates","Payment methods & portals","Penalties and payment plans"] },
   regulations: { short:"Noise ordinances, waste disposal, and zoning.", bullets:["Noise & quiet hours","Waste & recycling schedules","Zoning and land use"] },
   general: { short:"Not sure which window you need? Start here.", bullets:["General orientation","Route to the right department","Speak to a human agent"] },
-  all: { short:"One assistant across every department, plus government schemes.", bullets:["Answers spanning all four departments","Government scheme eligibility and benefits","Appointments, offices and documents"] }
+  all: { short:"One assistant across every department.", bullets:["Answers spanning all four departments","Follow-up questions to narrow down your answer","Appointments, offices and documents"] }
 };
 
 // The unified window is not a department, so it lives outside DEPARTMENTS
@@ -1738,6 +1706,11 @@ const HELP_ARTICLES = [
 const STAMP_COLORS = { permits:"var(--ink)", tax:"var(--sage)", regulations:"var(--stamp)", general:"var(--gold)" };
 const DISSATISFACTION_PHRASES = ["not satisfied","dissatisfied","doesn't help","did not help","not helpful","want to visit","in person","visit in person","nearby office","talk to someone in person","see someone"];
 const BOOKING_PHRASES = ["book an appointment","schedule an appointment","make an appointment","book appointment"];
+const CLOSING_PHRASES = ["thank you","thanks, bye","thanks bye","that's all","that is all","no that's it","nothing else","goodbye","good bye","bye bye","that will be all","i'm done","im done","no more questions","that's everything"];
+function isClosingPhrase(text){
+  const lower = (text || '').toLowerCase().trim();
+  return CLOSING_PHRASES.some(p => lower.includes(p));
+}
 
 let ticket = 0;
 let currentCat = "permits";
@@ -2232,181 +2205,6 @@ function renderDirectories(){
 }
 renderDirectories();
 
-/* =========================================================================
-   Government scheme spotlight + poster wall.
-   Scheme names are real central-government programmes; the one-line
-   summaries are condensed for the prototype and are not a substitute for
-   the official scheme guidelines.
-   ========================================================================= */
-const SCHEMES = [
-  { name:"Universal Health Cover", subtitle:"National Health Assurance Programme",
-    ministry:"Department of Health & Family Services", tag:"Health",
-    benefit:"Cashless hospital treatment up to the annual cover limit",
-    who:"Households below the notified income threshold, plus registered dependants",
-    status:"Ongoing · apply any time", icon:"🏥",
-    bg:"linear-gradient(135deg,#A82A39 0%,#D2394B 60%,#E2635F 100%)",
-    question:"What does the Universal Health Cover scheme include, who is eligible, and how do I get a card?" },
-
-  { name:"Affordable Housing Assistance", subtitle:"Urban Housing Support Programme",
-    ministry:"Department of Housing & Urban Development", tag:"Housing",
-    benefit:"Grant or interest subsidy towards a first permanent home",
-    who:"Urban households without a permanent home, within the notified income bands",
-    status:"Applications open", icon:"🏠",
-    bg:"linear-gradient(135deg,#1E2A38 0%,#33475C 60%,#4A6480 100%)",
-    question:"How does Affordable Housing Assistance work, who qualifies, and what documents are needed?" },
-
-  { name:"Farmer Income Support", subtitle:"Direct Income Support for Smallholders",
-    ministry:"Department of Agriculture & Rural Development", tag:"Agriculture",
-    benefit:"Fixed income support paid directly in three instalments a year",
-    who:"Registered smallholder farming households, subject to landholding limits",
-    status:"Instalments released periodically", icon:"🌾",
-    bg:"linear-gradient(135deg,#3D5245 0%,#57715F 60%,#7B9683 100%)",
-    question:"What is the Farmer Income Support scheme, who is eligible, and how do I check my instalment status?" },
-
-  { name:"Clean Cooking Fuel Access", subtitle:"Household Energy Transition Programme",
-    ministry:"Department of Energy & Fuel Supply", tag:"Energy",
-    benefit:"Subsidised gas connection with the security deposit waived",
-    who:"Low-income households without an existing clean-fuel connection",
-    status:"Ongoing", icon:"🔥",
-    bg:"linear-gradient(135deg,#6B4A18 0%,#C4762A 55%,#E8871E 100%)",
-    question:"How does the Clean Cooking Fuel Access scheme work and what does a household need to apply?" },
-
-  { name:"Girl Child Education Fund", subtitle:"Long-Term Savings Scheme for Girls",
-    ministry:"Department of Finance · Small Savings", tag:"Savings",
-    benefit:"Tax-advantaged savings account maturing at higher education age",
-    who:"A parent or guardian opening an account for a girl under ten",
-    status:"Open at post offices and authorised banks", icon:"👧",
-    bg:"linear-gradient(135deg,#4A2B6B 0%,#6A5AC9 60%,#8D82E0 100%)",
-    question:"How does the Girl Child Education Fund work and how do I open an account for my daughter?" },
-
-  { name:"Micro Enterprise Credit Guarantee", subtitle:"Small Business Credit Programme",
-    ministry:"Department of Finance · Enterprise Credit", tag:"Livelihood",
-    benefit:"Collateral-free working capital for micro and small businesses",
-    who:"Non-corporate micro enterprises and first-time entrepreneurs",
-    status:"Apply through any participating bank", icon:"💼",
-    bg:"linear-gradient(135deg,#0A5F5E 0%,#0E9594 60%,#3FB7B0 100%)",
-    question:"What is the Micro Enterprise Credit Guarantee, what are the loan tiers, and how do I apply?" },
-
-  { name:"Contributory Pension Plan", subtitle:"Guaranteed Retirement Income Programme",
-    ministry:"Department of Finance · Pension Authority", tag:"Pension",
-    benefit:"Guaranteed monthly pension from age sixty, based on your contribution tier",
-    who:"Working-age bank account holders contributing regularly",
-    status:"Enrol at your bank branch", icon:"🧓",
-    bg:"linear-gradient(135deg,#2C3E50 0%,#4B5D6E 55%,#7285A0 100%)",
-    question:"How does the Contributory Pension Plan work, what does it cost each month, and how do I enrol?" },
-
-  { name:"Artisan Livelihood Programme", subtitle:"Support for Traditional Crafts",
-    ministry:"Department of Small & Medium Enterprise", tag:"Artisans",
-    benefit:"Skills training, a toolkit grant and collateral-free credit",
-    who:"Registered artisans and craftspeople in the notified trades",
-    status:"Registration open at service centres", icon:"🛠",
-    bg:"linear-gradient(135deg,#6B5A2E 0%,#93803F 55%,#C6AE63 100%)",
-    question:"What support does the Artisan Livelihood Programme offer and how do I register for it?" },
-
-  { name:"Safe Drinking Water Mission", subtitle:"Household Water Connection Programme",
-    ministry:"Department of Water Resources", tag:"Water",
-    benefit:"A metered piped water connection for every household",
-    who:"Households in areas covered by the current implementation phase",
-    status:"Implementation ongoing", icon:"💧",
-    bg:"linear-gradient(135deg,#123E5C 0%,#1D6D9C 55%,#3FA0CC 100%)",
-    question:"What is the Safe Drinking Water Mission and how does a household get a piped connection?" },
-
-  { name:"Skills & Apprenticeship Grant", subtitle:"Youth Employability Programme",
-    ministry:"Department of Labour & Skills", tag:"Skills",
-    benefit:"Free certified training with a monthly stipend during placement",
-    who:"School leavers and jobseekers registered at an employment exchange",
-    status:"Intake open each quarter", icon:"🎓",
-    bg:"linear-gradient(135deg,#5B2E6B 0%,#8E4FA0 55%,#BC7ECB 100%)",
-    question:"What does the Skills & Apprenticeship Grant cover and how do I enrol in a training batch?" },
-];
-
-const GOV_EMBLEM = `<svg viewBox="0 0 48 48" fill="none" aria-hidden="true">
-  <circle cx="24" cy="24" r="21" stroke="currentColor" stroke-width="1.6"/>
-  <circle cx="24" cy="24" r="15" stroke="currentColor" stroke-width="1"/>
-  <circle cx="24" cy="24" r="5.5" stroke="currentColor" stroke-width="1.4"/>
-  <path d="M24 3v42M3 24h42M9 9l30 30M39 9L9 39" stroke="currentColor" stroke-width="0.7" opacity="0.5"/>
-</svg>`;
-
-let schemeIndex = 0;
-
-function renderSchemeColumn(){
-  const list = document.getElementById('schemeList');
-  const count = document.getElementById('schemeCount');
-  if(!list) return;
-  if(count) count.textContent = SCHEMES.length + " listed";
-  list.innerHTML = SCHEMES.map((s, i) => `
-    <button type="button" class="scheme-row ${i===schemeIndex?'active':''}" data-scheme="${i}">
-      <span class="sr-badge" style="background:${s.bg}">${s.icon}</span>
-      <span>
-        <span class="sr-name">${escapeHTML(s.name)}</span>
-        <span class="sr-meta">${escapeHTML(s.ministry)}</span>
-        <span class="sr-tag">${escapeHTML(s.tag)} · ${escapeHTML(s.status)}</span>
-      </span>
-    </button>`).join('');
-  list.querySelectorAll('[data-scheme]').forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-      schemeIndex = parseInt(btn.dataset.scheme, 10);
-      renderSchemeColumn();
-      renderSchemeFeature();
-    });
-  });
-}
-
-function renderSchemeFeature(){
-  const wrap = document.getElementById('schemeFeature');
-  if(!wrap) return;
-  const s = SCHEMES[schemeIndex];
-  wrap.innerHTML = `
-    <div class="sf-poster" style="background:${s.bg}">
-      <div class="sf-govbar">${GOV_EMBLEM}<span>Government Scheme · ${escapeHTML(s.ministry)}</span></div>
-      <h3>${escapeHTML(s.name)}</h3>
-      <div class="sf-sub">${escapeHTML(s.subtitle)}</div>
-      <p class="sf-tagline">${escapeHTML(s.benefit)}</p>
-      <div class="sf-emblem">${s.icon}</div>
-    </div>
-    <div class="sf-meta">
-      <div><div class="k">Benefit</div><div class="v">${escapeHTML(s.benefit)}</div></div>
-      <div><div class="k">Who can apply</div><div class="v">${escapeHTML(s.who)}</div></div>
-      <div><div class="k">Status</div><div class="v">${escapeHTML(s.status)}</div></div>
-    </div>
-    <div class="sf-foot">
-      <button type="button" class="sf-ask" id="schemeAsk">Ask CivicBot about this scheme</button>
-      <span class="sf-note">Confirm eligibility and deadlines on the official scheme portal before applying.</span>
-    </div>`;
-  const ask1 = document.getElementById('schemeAsk');
-  if(ask1) ask1.addEventListener('click', ()=>{ openAssistant('all'); ask(s.question); });
-}
-
-function renderPosterWall(){
-  const wall = document.getElementById('posterWall');
-  if(!wall) return;
-  wall.innerHTML = SCHEMES.map((s, i) => `
-    <div class="scheme-poster" data-poster="${i}">
-      <div class="sp-art" style="background:${s.bg}">
-        <span class="sp-strip"></span>
-        <div class="sp-gov">Government Scheme</div>
-        <div class="sp-icon">${s.icon}</div>
-        <h4>${escapeHTML(s.name)}</h4>
-        <div class="sp-sub">${escapeHTML(s.subtitle)}</div>
-        <div class="sp-benefit">${escapeHTML(s.benefit)}</div>
-      </div>
-      <div class="sp-foot">
-        <span class="sp-min">${escapeHTML(s.ministry)}</span>
-        <span class="sp-link">Ask CivicBot →</span>
-      </div>
-    </div>`).join('');
-  wall.querySelectorAll('[data-poster]').forEach(card=>{
-    card.addEventListener('click', ()=>{
-      const s = SCHEMES[parseInt(card.dataset.poster, 10)];
-      openAssistant('all');
-      ask(s.question);
-    });
-  });
-}
-
-renderSchemeColumn();
-renderSchemeFeature();
-renderPosterWall();
 
 // ---------- CivicBot mascot: opens the all-department assistant ----------
 function openCivicBot(){ openAssistant('all'); }
@@ -2418,6 +2216,7 @@ function openCivicBot(){ openAssistant('all'); }
 // instant, one-tap expectation for a floating assistant bubble.
 function openCivicBotVoice(){
   currentCat = 'all';
+  goTo('assistant');
   startCall();
 }
 const botFabEl0 = document.getElementById('botFab');
@@ -3108,7 +2907,7 @@ function greetingLine(){
   const tod = getTimeOfDay();
   const capTod = tod.charAt(0).toUpperCase() + tod.slice(1);
   const opener = userName ? `Good ${tod}, ${userName}!` : `Good ${tod}!`;
-  return `${opener} You've reached the Civic Information Desk. I can help with permits, tax payments, local regulations, government schemes and appointments. What do you need today?`;
+  return `${opener} You've reached the Civic Information Desk. I can help with permits, tax payments, local regulations and appointments. What do you need today?`;
 }
 
 function simAnswerFor(q){
@@ -3121,7 +2920,7 @@ function simAnswerFor(q){
   }
   const hit = SIM_ANSWERS.find(r => r.k.some(k => lower.includes(k)));
   if(hit) return hit.a;
-  return "I didn't quite catch a specific request there. I can help with permits, tax payments, local regulations, government schemes, or appointments — what would you like to ask?";
+  return "I didn't quite catch a specific request there. I can help with permits, tax payments, local regulations, or appointments — what would you like to ask?";
 }
 
 /* ----- call reference number, line and running duration ----- */
@@ -3200,32 +2999,30 @@ async function handleSimQuestion(text){
   beginCallLedgerEntry(text);
 
   const intent = detectIntent(text);
+  if(isClosingPhrase(text)){
+    const answer = userName ? `You're very welcome, ${userName}! Have a great ${getTimeOfDay()}.` : `You're very welcome! Have a great ${getTimeOfDay()}.`;
+    talkOverlayCaption.textContent = answer;
+    talkOverlayCaption.classList.remove('user-line');
+    finishCallLedgerEntry(answer);
+    simSpeak(answer, ()=> endCall());
+    return;
+  }
   if(intent === 'booking'){
-    const answer = "Sure — I've opened the appointment form on screen so you can fill in the details.";
+    const answer = "Sure — I've opened the appointment form for you. Ending the call now so you can see it and fill it in.";
     talkOverlayCaption.textContent = answer;
     talkOverlayCaption.classList.remove('user-line');
     finishCallLedgerEntry(answer);
     renderBookingForm(currentCat === 'all' ? 'general' : currentCat);
-    simSpeak(answer, ()=>{
-      if(!simMode || !callActive || callPaused) return;
-      setOrbState('listening', simRec ? 'Listening…' : 'Simulated caller…');
-      if(simRec){ try { simRec.start(); } catch {} }
-      else { simTimer = setTimeout(()=> runScriptedTurn(), 2200); }
-    });
+    simSpeak(answer, ()=> endCall());
     return;
   }
   if(intent === 'location'){
-    const answer = "Let me pull up the nearest office for you — check the screen for the map.";
+    const answer = "Let me pull up the nearest office for you. Ending the call now so you can see the map.";
     talkOverlayCaption.textContent = answer;
     talkOverlayCaption.classList.remove('user-line');
     finishCallLedgerEntry(answer);
     renderNearbyOfficeCard();
-    simSpeak(answer, ()=>{
-      if(!simMode || !callActive || callPaused) return;
-      setOrbState('listening', simRec ? 'Listening…' : 'Simulated caller…');
-      if(simRec){ try { simRec.start(); } catch {} }
-      else { simTimer = setTimeout(()=> runScriptedTurn(), 2200); }
-    });
+    simSpeak(answer, ()=> endCall());
     return;
   }
 
