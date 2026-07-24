@@ -1,10 +1,21 @@
-# Civic Information Desk — genailab.tcs.in (LiteLLM) setup
+# Civic Information Desk — genailab.tcs.in (LiteLLM) + live call setup
 
 Files:
-- `server.py` — Flask backend that calls your TCS genailab.tcs.in LiteLLM endpoint
-- `civic-info-desk.html` — the webpage (unchanged — still just calls localhost:5000)
+- `server.py` — Flask backend: text chat endpoint + `/ws/call` WebSocket for
+  the continuous voice call (Deepgram speech-to-text + ElevenLabs
+  text-to-speech)
+- `civic-info-desk.html` — the webpage (still calls localhost:5000)
 - `.env.example` — template for your credentials
 - `requirements.txt` — Python packages needed
+
+## ⚠️ About the previous version of this README
+
+An earlier version of this file had real Deepgram and ElevenLabs API keys
+pasted directly into it in plain text. **If those keys are still active,
+revoke/regenerate them now** in the Deepgram and ElevenLabs dashboards —
+anything committed to a repo or shared as a doc should be treated as
+compromised. Keys belong only in your local `.env` file, never in the
+README or any other tracked file.
 
 ## 1. Install Python (if you don't have it)
 https://www.python.org/downloads/ — check "Add Python to PATH" during install.
@@ -22,13 +33,17 @@ pip install -r requirements.txt
 LITELLM_BASE_URL=https://genailab.tcs.in/v1
 LITELLM_API_KEY=your-actual-token
 LITELLM_MODEL=your-actual-model-name
+
+DEEPGRAM_API_KEY=your-deepgram-key
+ELEVENLABS_API_KEY=your-elevenlabs-key
+ELEVENLABS_VOICE_ID=21m00Tcm4TlvDq8ikWAM
 ```
 `.env` is already in `.gitignore` so it won't get uploaded to GitHub by accident.
 
-> Note: the exact base URL path (whether it ends in `/v1`, `/v1/chat/completions`,
-> or something else) depends on how your org's LiteLLM proxy is configured.
-> If you get a 404, check with whoever gave you the endpoint for the exact
-> base URL and model name to use.
+> Note: the exact LiteLLM base URL path (whether it ends in `/v1`,
+> `/v1/chat/completions`, or something else) depends on how your org's
+> LiteLLM proxy is configured. If you get a 404, check with whoever gave you
+> the endpoint for the exact base URL and model name to use.
 
 ## 4. Run the backend
 ```powershell
@@ -43,74 +58,56 @@ The status badge should say "Connected" once it reaches the backend.
 ## Troubleshooting
 - **404 / model not found** — double check `LITELLM_BASE_URL` and
   `LITELLM_MODEL` match exactly what you were given.
-- **401 / unauthorized** — check `LITELLM_API_KEY` has no extra spaces or
+- **401 / unauthorized** — check the relevant API key has no extra spaces or
   quotes around it in the `.env` file.
 - **Backend offline in the page** — make sure `python server.py` is still
   running in its terminal.
+- **Call button doesn't connect** — make sure `DEEPGRAM_API_KEY` and
+  `ELEVENLABS_API_KEY` are set in `.env` and the server was restarted after
+  adding them. Browser mic permission must also be granted.
 
-## What's new: the four features
+## What's new: the call feature
 
-1. **Visible journey** — each question now shows an animated routing sequence
-   (Inquiry received → Routed to [department] → Reviewing → Response stamped)
-   before the answer appears.
-2. **Window personas** — Permits, Tax, Regulations, and General each answer in
-   a distinct clerk voice (set server-side in `server.py`'s `PERSONAS` dict),
-   while staying strictly factual.
-3. **Scenario Check mode** — toggle the checkbox in the sidebar, then describe
-   something you're planning (e.g. "add a second floor"). The bot returns a
-   Verdict / Why / Before-you-apply structure instead of a plain answer.
-4. **Civic Passport** — every successfully stamped inquiry is logged in the
-   right-hand panel and saved in your browser's local storage, so it persists
-   across visits (per browser, not shared between people).
+The old "Talk Mode" (browser Web Speech API push-to-talk-ish recognition +
+browser TTS) and the single-shot mic button have been removed. In their
+place is a single **Call** button (the wave icon next to the composer) that
+starts a real, uninterrupted phone-style call:
 
-No new setup steps — same `.env`, same `pip install -r requirements.txt`,
-same `python server.py`.
+1. Click the wave button — the browser asks for mic permission once.
+2. The overlay opens and the call connects over a WebSocket to
+   `/ws/call` on the backend.
+3. Talk normally — there's no button to hold. Your mic streams
+   continuously to the backend, which relays it to **Deepgram** for live
+   transcription. When you pause (end of an utterance), the backend sends
+   your question to the LLM and speaks the answer back using
+   **ElevenLabs**, exactly like a phone call. The mic briefly mutes itself
+   while the clerk is talking so it doesn't pick up its own voice, then
+   un-mutes automatically.
+4. Every exchange is also written to the Inquiry Ledger (tagged 🎙 CALL) and
+   the Civic Passport, just like typed questions.
+5. Say something like "I'd like to book an appointment" during the call and
+   the clerk will ask you for your name, contact info, date, time, and
+   reason one at a time by voice. Once you've answered them all, the
+   booking form on screen is **automatically filled in** with what you said
+   — you just review it and press "Book Appointment" to confirm (still a
+   prototype simulation, no real appointment is created).
+6. Click the ✕ in the overlay to hang up at any time.
 
-## Latest additions
+No new setup steps beyond adding the two new keys to `.env` (step 3 above).
 
-- **Voice input** — mic icon in the composer (Chrome/Edge best support; falls
-  back to an alert if the browser doesn't support Web Speech API).
-- **Document attach** — paperclip icon lets you attach a `.txt`/`.md` file;
-  its content is sent to the AI as context for your next question, then cleared.
-- **Language selector** — EN/ES/HI in the top nav; the AI's answer comes back
-  in the selected language (UI chrome itself stays in English).
-- **Insights page** — replaces the old "My Requests" page: a bar chart of
-  inquiries per department plus the full history table, both computed live
-  from your saved local data.
-- **Help Center** — a static, searchable FAQ page, separate from the AI
-  assistant (no backend call — instant answers for common questions).
+## Everything else (unchanged from before)
 
-No new setup steps — same `.env`, same `requirements.txt`, same `python server.py`.
-`server.py` now also reads `language` and `context` from each request.
-
-## New: Call the Desk (simulated phone call)
-
-A phone icon next to the mic button in the Assistant composer opens a
-push-to-talk call modal:
-
-1. Hold the mic button and speak, release to send.
-2. Your clip is transcribed by **Deepgram** (`/v1/listen`, `nova-2` model).
-3. The transcript is answered by the same persona/scenario logic as the
-   text chat.
-4. The reply is spoken back with **ElevenLabs** TTS and plays automatically.
-5. Each turn is logged as a Civic Passport stamp, same as text chat.
-
-### Extra setup for this feature
-Add two more values to your `.env` (see `.env.example`):
-```
-DEEPGRAM_API_KEY=your-deepgram-key
-ELEVENLABS_API_KEY=your-elevenlabs-key
-ELEVENLABS_VOICE_ID=21m00Tcm4TlvDq8ikWAM   # optional, defaults to "Rachel"
-```
-- Get a Deepgram key at https://console.deepgram.com/
-- Get an ElevenLabs key at https://elevenlabs.io/app/settings/api-keys
-- No new pip packages needed — both are called with plain HTTPS requests via
-  the `httpx` client already in `server.py`. (`requirements.txt` has also
-  been corrected to include `httpx` and `langchain-openai`, which `server.py`
-  imports but which were missing from the original file.)
-- The browser needs mic permission and `MediaRecorder` support (Chrome/Edge/
-  Firefox all work; Safari support varies by version).
-- If you see "Recording not supported in this browser," try Chrome or Edge.
-- If a call turn fails with a 502 mentioning Deepgram or ElevenLabs, double
-  check the corresponding API key in `.env` and that your account has
-  remaining credits.
+- **Visible journey** — each typed question shows an animated routing
+  sequence before the answer appears.
+- **Window personas** — Permits, Tax, Regulations, and General each answer
+  in a distinct clerk voice (server-side `PERSONAS` dict).
+- **Scenario Check mode** — toggle in the sidebar for a Verdict / Why /
+  Before-you-apply structure instead of a plain answer.
+- **Civic Passport** — every successfully stamped inquiry is logged and
+  saved in your browser's local storage.
+- **Document attach** — paperclip icon lets you attach a `.txt`/`.md` file
+  as context for your next typed question.
+- **Language selector** — EN/ES/HI in the top nav; also used to pick the
+  Deepgram transcription language and the language the clerk replies in
+  during a call.
+- **Insights page**, **Help Center** — unchanged.
