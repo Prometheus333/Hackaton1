@@ -2771,9 +2771,7 @@ function toggleCallPause(){
     if(window.speechSynthesis && window.speechSynthesis.speaking){
       setOrbState('speaking', 'Speaking…');
     } else {
-      setOrbState('listening', simRec ? 'Listening…' : 'Simulated caller…');
-      if(simRec){ try { simRec.start(); } catch {} }
-      else { simTimer = setTimeout(()=> runScriptedTurn(), 900); }
+      resumeListening();
     }
   } else if(currentAudioEl && isPlayingAudio){
     setOrbState('speaking', 'Speaking…');
@@ -2984,9 +2982,7 @@ function startSimulatedCall(){
       };
       simRec.onerror = () => {};
       simRec.onend = () => {
-        if(simMode && callActive && !callPaused && orbCurrentState === 'listening'){
-          try { simRec.start(); } catch {}
-        }
+        if(simMode && callActive && !callPaused && orbCurrentState === 'listening') resumeListening();
       };
     } catch { simRec = null; }
   }
@@ -3008,7 +3004,17 @@ function runScriptedTurn(){
 function resumeListening(){
   if(!simMode || !callActive || callPaused) return;
   setOrbState('listening', simRec ? 'Listening…' : 'Simulated caller…');
-  if(simRec){ try { simRec.start(); } catch {} }
+  if(simRec){
+    // The Web Speech API needs a beat after stop() before start() is valid
+    // again — calling it immediately can silently fail (InvalidStateError),
+    // which is what made the mic look "stuck" until the pause button was
+    // clicked. A short delay plus one retry makes this reliable.
+    setTimeout(()=>{
+      if(!simMode || !callActive || callPaused) return;
+      try { simRec.start(); }
+      catch { setTimeout(()=>{ try { simRec.start(); } catch {} }, 400); }
+    }, 250);
+  }
   else { simTimer = setTimeout(()=> runScriptedTurn(), 2200); }
 }
 
@@ -3122,33 +3128,66 @@ function startVoiceBooking(){
   simSpeak(answer, resumeListening);
 }
 
+function normalizeSpokenContact(text){
+  let t = text.trim();
+  t = t.replace(/\s+at\s+/gi, '@').replace(/\s+dot\s+/gi, '.')
+       .replace(/\s+underscore\s+/gi, '_').replace(/\s+dash\s+/gi, '-');
+  if(t.includes('@')) t = t.replace(/\s+/g, '');
+  return t;
+}
+function isValidContact(text){
+  const email = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const phone = /^[\d+\-\s()]{7,15}$/;
+  return email.test(text) || phone.test(text.trim());
+}
+
 function handleVoiceBookingAnswer(text){
   beginCallLedgerEntry(text);
   const step = voiceBooking.steps[voiceBooking.idx];
   const captured = text.trim();
   let spokenBack = captured;
   let fieldId = null;
+  let retry = false;
+  let retryMessage = '';
 
   if(step === 'name'){ fieldId='bkName'; voiceBooking.data.name = captured; }
-  else if(step === 'contact'){ fieldId='bkContact'; voiceBooking.data.contact = captured; }
-  else if(step === 'date'){
+  else if(step === 'contact'){
+    fieldId='bkContact';
+    const normalized = normalizeSpokenContact(captured);
+    if(isValidContact(normalized)){
+      voiceBooking.data.contact = normalized;
+      spokenBack = normalized;
+    } else {
+      retry = true;
+      retryMessage = "That didn't quite sound like a valid email or phone number. Could you say it again — for an email, just say it naturally, like 'name at example dot com'?";
+    }
+  } else if(step === 'date'){
     fieldId='bkDate';
     const parsed = parseSpokenDate(captured);
-    voiceBooking.data.date = parsed || '';
-    spokenBack = parsed ? formatDateForSpeech(parsed) : `${captured} — please double-check the date on screen`;
+    if(parsed){ voiceBooking.data.date = parsed; spokenBack = formatDateForSpeech(parsed); }
+    else { retry = true; retryMessage = "I didn't catch a clear date there. Could you say it again — for example, 'the 30th of July' or 'next Tuesday'?"; }
   } else if(step === 'time'){
     fieldId='bkTime';
     const parsed = parseSpokenTime(captured);
-    voiceBooking.data.time = parsed || '';
-    spokenBack = parsed ? formatTimeForSpeech(parsed) : `${captured} — please double-check the time on screen`;
+    if(parsed){ voiceBooking.data.time = parsed; spokenBack = formatTimeForSpeech(parsed); }
+    else { retry = true; retryMessage = "I didn't catch a clear time there. Could you say it again — for example, '3 PM' or '15:00'?"; }
   } else if(step === 'reason'){
     fieldId='bkReason';
     if(/^(skip|no|none|nothing|no thanks)$/i.test(captured)){ voiceBooking.data.reason = ''; spokenBack = ''; }
     else voiceBooking.data.reason = captured;
   }
+
+  if(retry){
+    talkOverlayCaption.textContent = retryMessage;
+    talkOverlayCaption.classList.remove('user-line');
+    finishCallLedgerEntry(retryMessage);
+    simSpeak(retryMessage, resumeListening);
+    return;
+  }
+
   if(fieldId){
     const el = document.getElementById(fieldId);
-    if(el) el.value = (step === 'date' || step === 'time') ? (voiceBooking.data[step] || '') : captured;
+    if(el) el.value = (step === 'date' || step === 'time') ? (voiceBooking.data[step] || '') : (voiceBooking.data[step] ?? captured);
   }
   updateBookingProgressUI();
 
@@ -3160,7 +3199,7 @@ function handleVoiceBookingAnswer(text){
   } else {
     voiceBooking.awaitingConfirm = true;
     const d = voiceBooking.data;
-    answer = `Here's what I have: ${d.name}, contact ${d.contact}, ${formatDateForSpeech(d.date)} at ${formatTimeForSpeech(d.time)}${d.reason ? ', for ' + d.reason : ''}. Should I go ahead and book it?`;
+    answer = `Here's what I have: ${d.name}, contact ${d.contact}, ${formatDateForSpeech(d.date)} at ${formatTimeForSpeech(d.time)}${d.reason ? ', for ' + d.reason : ''}. Should I go ahead and book it, or would you like to change something?`;
   }
   talkOverlayCaption.textContent = answer;
   talkOverlayCaption.classList.remove('user-line');
@@ -3203,19 +3242,34 @@ function handleVoiceBookingConfirmation(text){
   beginCallLedgerEntry(text);
   const lower = text.toLowerCase();
   const yes = /\b(yes|yeah|yep|correct|confirm|go ahead|sure|that's right|thats right|book it)\b/.test(lower);
-  const no = /\b(no|nope|wrong|change|redo|start over)\b/.test(lower);
+  const cancel = /\bcancel\b/.test(lower);
+  let fieldToFix = null;
+  if(/\bname\b/.test(lower)) fieldToFix = 'name';
+  else if(/\b(contact|email|phone|number)\b/.test(lower)) fieldToFix = 'contact';
+  else if(/\b(date|day)\b/.test(lower)) fieldToFix = 'date';
+  else if(/\btime\b/.test(lower)) fieldToFix = 'time';
+  else if(/\breason\b/.test(lower)) fieldToFix = 'reason';
+  const no = /\b(no|nope|wrong|change|redo|start over|incorrect)\b/.test(lower);
+
   let answer;
   if(yes){
     const ref = submitVoiceBooking();
     answer = `Perfect — you're booked. Your reference number is ${ref}. Anything else I can help with?`;
     voiceBooking = null;
     document.getElementById('talkBookingProgress')?.classList.add('hidden');
-  } else if(no){
+  } else if(fieldToFix){
+    voiceBooking.awaitingConfirm = false;
+    voiceBooking.steps = [fieldToFix];
+    voiceBooking.idx = 0;
+    answer = `Sure — ${bookingQuestionFor(fieldToFix)}`;
+  } else if(cancel){
     voiceBooking = null;
     document.getElementById('talkBookingProgress')?.classList.add('hidden');
     answer = "No problem, I've left it unbooked for now. Anything else I can help with?";
+  } else if(no){
+    answer = "No problem — which should I fix: your name, contact, date, time, or reason? Or say 'cancel' to drop the booking.";
   } else {
-    answer = "Sorry, should I go ahead and book it — yes or no?";
+    answer = "Sorry, should I go ahead and book it — yes or no? Or tell me what to change.";
   }
   talkOverlayCaption.textContent = answer;
   talkOverlayCaption.classList.remove('user-line');
@@ -3272,12 +3326,7 @@ async function handleSimQuestion(text){
   talkOverlayCaption.textContent = answer;
   talkOverlayCaption.classList.remove('user-line');
   finishCallLedgerEntry(answer);
-  simSpeak(answer, ()=>{
-    if(!simMode || !callActive || callPaused) return;
-    setOrbState('listening', simRec ? 'Listening…' : 'Simulated caller…');
-    if(simRec){ try { simRec.start(); } catch {} }
-    else { simTimer = setTimeout(()=> runScriptedTurn(), 2200); }
-  });
+  simSpeak(answer, resumeListening);
 }
 
 function simSpeak(text, done){
