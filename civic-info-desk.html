@@ -5,30 +5,30 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Civic Information Desk</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    /* Civic wayfinding system — the desk's job is routing you to the right
-       window, so departments are colour-coded like transit lines and the
-       surfaces read as signage rather than paperwork. */
-    --ink:#101A24; --ink-soft:#53657A;
-    --parchment:#EDF1F5;          /* cool page wash (was warm parchment) */
-    --paper:#FFFFFF;              /* cards sit as clean panels on the wash */
-    --stamp:#D2394B; --stamp-dark:#A82A39;   /* signal red — alerts, primary CTA */
-    --sage:#0E9594;               /* teal — tax & revenue line */
-    --gold:#E8871E;               /* amber — permits line */
-    --violet:#6A5AC9;             /* violet — general enquiries line */
-    --line:#D3DCE4; --line-soft:#E3E9EF;
+    /* Warm civic desk palette — parchment, ink, a single restrained
+       stamp-red accent. Department colour tints stay for wayfinding icons
+       and tags, but the surfaces themselves read as plain, official paper. */
+    --ink:#1E2A38; --ink-soft:#3A4A5C;
+    --parchment:#EFE9DA;
+    --paper:#FBF8F0;
+    --stamp:#A93226; --stamp-dark:#7E2A20;   /* the one accent colour */
+    --sage:#57715F;               /* tax & revenue line */
+    --gold:#C9A227;               /* permits line */
+    --violet:#6B5B95;             /* general enquiries line */
+    --line:#CBBF9E; --line-soft:#DED4B9;
 
     /* department line colours, referenced by data-dept */
-    --c-permits:#E8871E;
-    --c-tax:#0E9594;
-    --c-regulations:#D2394B;
-    --c-general:#6A5AC9;
+    --c-permits:#B8792A;
+    --c-tax:#57715F;
+    --c-regulations:#A93226;
+    --c-general:#6B5B95;
 
-    --shadow-sm:0 1px 2px rgba(16,26,36,.06), 0 2px 6px rgba(16,26,36,.05);
-    --shadow-md:0 2px 4px rgba(16,26,36,.06), 0 8px 20px rgba(16,26,36,.08);
-    --shadow-lg:0 10px 34px rgba(16,26,36,.16);
+    --shadow-sm:none;
+    --shadow-md:none;
+    --shadow-lg:none;
   }
   @media (prefers-reduced-motion: reduce){
     *, *::before, *::after{
@@ -36,19 +36,19 @@
       transition-duration:.001ms !important; scroll-behavior:auto !important;
     }
   }
-  :focus-visible{outline:3px solid var(--gold); outline-offset:2px;}
+  :focus-visible{outline:2px solid var(--stamp); outline-offset:2px;}
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0; scroll-behavior:smooth;}
   body{
     background:var(--parchment);
     color:var(--ink);
-    font-family:'Inter', sans-serif;
+    font-family:'IBM Plex Sans', sans-serif;
     font-size:16px; line-height:1.55;
     -webkit-font-smoothing:antialiased;
     min-height:100vh;
   }
   /* Display type is set tight and heavy — signage, not editorial. */
-  h1,h2,h3,h4{font-family:'Archivo', sans-serif; letter-spacing:-0.02em; font-weight:700;}
+  h1,h2,h3,h4{font-family:'Fraunces', serif; letter-spacing:0; font-weight:600;}
   ::selection{background:var(--stamp); color:#fff;}
   a{color:inherit;}
   button{font-family:inherit;}
@@ -61,7 +61,7 @@
   #nameGate.hidden{display:none;}
   .gate-card{background:var(--paper); border:1px solid var(--line); padding:34px; max-width:380px; width:100%; text-align:center;}
   .gate-card svg{width:40px; height:40px; margin:0 auto 14px;}
-  .gate-card h2{font-family:'Archivo', sans-serif; font-size:1.3rem; margin:0 0 8px;}
+  .gate-card h2{font-family:'Fraunces', serif; font-size:1.3rem; margin:0 0 8px;}
   .gate-card p{font-size:0.85rem; color:var(--ink-soft); margin:0 0 20px; line-height:1.5;}
   .gate-card input{width:100%; padding:11px 12px; border:1px solid var(--line); background:var(--parchment); font-size:0.92rem; margin-bottom:14px;}
   .gate-card input:focus{border-color:var(--stamp); outline:none;}
@@ -75,7 +75,7 @@
   }
   .brand{display:flex; align-items:center; gap:12px; cursor:pointer;}
   .brand svg{width:34px; height:34px; flex-shrink:0;}
-  .brand-text{font-family:'Archivo', sans-serif; font-weight:600; font-size:1.15rem;}
+  .brand-text{font-family:'Fraunces', serif; font-weight:600; font-size:1.15rem;}
   .nav-links{display:flex; gap:2px; align-items:center; flex-wrap:wrap;}
   .nav-link{
     font-size:0.8rem; font-weight:500; padding:8px 12px; cursor:pointer;
@@ -104,7 +104,7 @@
   .greeting-dropdown.hidden{display:none;}
   .greeting-dropdown button{
     width:100%; text-align:left; padding:10px 14px; background:none; border:none; cursor:pointer;
-    font-family:'Inter', sans-serif; font-size:0.82rem; color:var(--ink); transition:background .12s ease;
+    font-family:'IBM Plex Sans', sans-serif; font-size:0.82rem; color:var(--ink); transition:background .12s ease;
   }
   .greeting-dropdown button:hover{background:var(--parchment); color:var(--stamp);}
   .nav-status{
@@ -136,7 +136,7 @@
     mask-image:radial-gradient(ellipse at 50% 40%, #000 35%, transparent 78%);
     -webkit-mask-image:radial-gradient(ellipse at 50% 40%, #000 35%, transparent 78%);
   }
-  .coffee-ring{display:none;}
+  .coffee-ring{position:absolute; width:220px; height:220px; border-radius:50%; border:10px solid rgba(169,50,38,0.07); top:-40px; right:6%; pointer-events:none;}
   .hero-stampfield{position:relative; max-width:980px; margin:0 auto; padding:34px 24px 0; height:96px;}
   .hero-stamp{position:absolute; width:64px; height:64px; opacity:0; pointer-events:none; animation:stampFall .5s cubic-bezier(.2,1.5,.4,1) both;}
   @keyframes stampFall{0%{opacity:0; transform:scale(2.2) rotate(-30deg);} 65%{opacity:.5;} 100%{opacity:.4; transform:scale(1) rotate(var(--rot,-8deg));}}
@@ -148,14 +148,14 @@
   }
   .hero-eyebrow::before{content:""; width:6px; height:6px; border-radius:50%; background:var(--gold);}
   .hero h1{
-    font-family:'Archivo', sans-serif; font-weight:800; font-size:clamp(2.3rem, 5.6vw, 4rem);
+    font-family:'Fraunces', serif; font-weight:800; font-size:clamp(2.3rem, 5.6vw, 4rem);
     line-height:1.02; letter-spacing:-0.035em; margin:0 0 18px; color:#fff;
   }
   .hero h1 em{font-style:normal; color:var(--gold);}
   .hero p{font-size:1.04rem; color:#AFBECD; max-width:590px; margin:0 auto 26px; line-height:1.65;}
   .hero-actions{display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-top:26px;}
   .btn-primary, .btn-secondary{
-    font-family:'Archivo', sans-serif; font-size:0.86rem; font-weight:700; letter-spacing:0.01em;
+    font-family:'Fraunces', serif; font-size:0.86rem; font-weight:700; letter-spacing:0.01em;
     padding:14px 26px; cursor:pointer; border:none; text-decoration:none; display:inline-block; border-radius:3px;
     transition:transform .12s ease, background .15s ease;
   }
@@ -172,21 +172,21 @@
   .stat-card .l{font-size:0.78rem; color:var(--ink-soft); margin-top:4px;}
 
   .home-section{max-width:1100px; margin:0 auto; padding:20px 24px 70px;}
-  .home-section h2{font-family:'Archivo', sans-serif; font-size:1.3rem; margin-bottom:22px;}
+  .home-section h2{font-family:'Fraunces', serif; font-size:1.3rem; margin-bottom:22px;}
   .window-grid{display:grid; grid-template-columns:repeat(auto-fit, minmax(220px,1fr)); gap:16px;}
   .window-card{background:var(--paper); border:1px solid var(--line); padding:22px; cursor:pointer; transition:border-color .15s ease, transform .15s ease;}
   .window-card:hover{border-color:var(--stamp); transform:translateY(-2px);}
   .window-card svg{width:26px; height:26px; stroke:var(--stamp); margin-bottom:12px;}
-  .window-card h3{font-family:'Archivo', sans-serif; font-size:1.02rem; margin:0 0 8px;}
+  .window-card h3{font-family:'Fraunces', serif; font-size:1.02rem; margin:0 0 8px;}
   .window-card p{font-size:0.82rem; color:var(--ink-soft); line-height:1.5; margin:0;}
 
   .page-header{max-width:1100px; margin:0 auto; padding:46px 24px 10px;}
-  .page-header h1{font-family:'Archivo', sans-serif; font-size:1.8rem; margin:0 0 8px;}
+  .page-header h1{font-family:'Fraunces', serif; font-size:1.8rem; margin:0 0 8px;}
   .page-header p{color:var(--ink-soft); max-width:620px; line-height:1.55; margin:0;}
   .services-grid{max-width:1100px; margin:30px auto 70px; padding:0 24px; display:grid; grid-template-columns:repeat(auto-fit, minmax(250px,1fr)); gap:18px;}
   .service-card{background:var(--paper); border:1px solid var(--line); padding:24px; display:flex; flex-direction:column; gap:12px;}
   .service-card svg{width:28px; height:28px; stroke:var(--stamp);}
-  .service-card h3{font-family:'Archivo', sans-serif; font-size:1.08rem; margin:0;}
+  .service-card h3{font-family:'Fraunces', serif; font-size:1.08rem; margin:0;}
   .service-card p{font-size:0.83rem; color:var(--ink-soft); line-height:1.55; margin:0; flex:1;}
   .service-card ul{margin:0; padding-left:18px; font-size:0.8rem; color:var(--ink-soft); line-height:1.7;}
   .service-card .open-btn{align-self:flex-start; margin-top:6px; background:var(--ink); color:var(--parchment); border:none; font-family:'IBM Plex Mono', monospace; font-size:0.7rem; letter-spacing:0.06em; text-transform:uppercase; padding:9px 16px; cursor:pointer;}
@@ -215,7 +215,7 @@
   /* Most Viewed + Suggest two-column row */
   .two-col{display:grid; grid-template-columns:1.2fr 1fr; gap:36px; align-items:start;}
   @media (max-width:800px){ .two-col{grid-template-columns:1fr;} }
-  .most-viewed-block h2, .suggest-block h2{font-family:'Archivo', sans-serif; font-size:1.15rem; margin:0 0 16px;}
+  .most-viewed-block h2, .suggest-block h2{font-family:'Fraunces', serif; font-size:1.15rem; margin:0 0 16px;}
   .most-viewed-list{display:flex; flex-direction:column; gap:0;}
   .most-viewed-row{
     display:flex; align-items:center; gap:14px; padding:12px 0; border-bottom:1px solid var(--line-soft);
@@ -229,7 +229,7 @@
 
   .suggest-sub{font-size:0.82rem; color:var(--ink-soft); line-height:1.5; margin:0 0 14px;}
   #suggestFormWrap textarea{
-    width:100%; font-family:'Inter', sans-serif; font-size:0.85rem; padding:10px 12px;
+    width:100%; font-family:'IBM Plex Sans', sans-serif; font-size:0.85rem; padding:10px 12px;
     border:1px solid var(--line-soft); resize:vertical; margin-bottom:10px; background:var(--paper);
   }
   .suggest-thanks{
@@ -241,7 +241,7 @@
     background:var(--ink); color:var(--parchment); text-align:center; padding:48px 24px;
     display:flex; flex-direction:column; align-items:center; gap:4px;
   }
-  .stat-band-num{font-family:'Archivo', sans-serif; font-size:2.6rem; color:var(--gold);}
+  .stat-band-num{font-family:'Fraunces', serif; font-size:2.6rem; color:var(--gold);}
   .stat-band-label{font-size:1rem; letter-spacing:0.02em;}
   .stat-band-sub{font-size:0.82rem; color:#B7C0CB; margin-top:4px;}
 
@@ -251,7 +251,7 @@
   .faq-question{
     width:100%; text-align:left; background:none; border:none; cursor:pointer; padding:16px 4px;
     display:flex; justify-content:space-between; align-items:center; gap:12px;
-    font-family:'Inter', sans-serif; font-size:0.9rem; font-weight:500; color:var(--ink);
+    font-family:'IBM Plex Sans', sans-serif; font-size:0.9rem; font-weight:500; color:var(--ink);
   }
   .faq-question::after{content:"+"; font-size:1.2rem; color:var(--stamp); flex-shrink:0; transition:transform .15s ease;}
   .faq-item.open .faq-question::after{transform:rotate(45deg);}
@@ -296,7 +296,7 @@
     font-family:'IBM Plex Mono', monospace; font-size:0.7rem; padding:0 10px; cursor:pointer; outline:none;
   }
   .hero-search input{
-    flex:1; border:none; padding:14px 16px; font-family:'Inter', sans-serif; font-size:0.9rem;
+    flex:1; border:none; padding:14px 16px; font-family:'IBM Plex Sans', sans-serif; font-size:0.9rem;
     background:transparent; color:var(--ink); outline:none; min-width:0;
   }
   .hero-search button{
@@ -322,13 +322,13 @@
   .metric-item{text-align:center; padding:8px 10px; border-right:1px solid var(--line-soft);}
   .metric-item:last-child{border-right:none;}
   .metric-icon{font-size:1.05rem; margin-bottom:4px; opacity:0.85;}
-  .metric-value{font-family:'Archivo', sans-serif; font-size:1.9rem; color:var(--stamp); line-height:1.1;}
+  .metric-value{font-family:'Fraunces', serif; font-size:1.9rem; color:var(--stamp); line-height:1.1;}
   .metric-label{font-size:0.75rem; color:var(--ink-soft); margin-top:3px;}
 
   /* ===== Poster carousel ===== */
   .poster-section{max-width:1100px; margin:0 auto; padding:44px 24px 60px;}
   .poster-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;}
-  .poster-head h2{font-family:'Archivo', sans-serif; font-size:1.3rem; margin:0;}
+  .poster-head h2{font-family:'Fraunces', serif; font-size:1.3rem; margin:0;}
   .poster-nav{display:flex; gap:8px;}
   .poster-nav button{
     width:34px; height:34px; border:1px solid var(--line); background:var(--paper); color:var(--ink);
@@ -338,28 +338,25 @@
   .poster-viewport{overflow:hidden;}
   .poster-track{display:flex; transition:transform .45s cubic-bezier(.4,0,.2,1);}
   .poster-card{
-    flex:0 0 100%; min-height:250px; padding:38px 40px; color:#fff; position:relative; overflow:hidden;
+    flex:0 0 100%; min-height:250px; padding:40px 44px; color:#fff; position:relative; overflow:hidden;
     display:flex; flex-direction:column; justify-content:center; cursor:pointer;
   }
-  .poster-card::after{
-    content:""; position:absolute; right:-60px; top:-60px; width:280px; height:280px; border-radius:50%;
-    border:1.5px solid rgba(255,255,255,0.16);
-  }
   .poster-card::before{
-    content:""; position:absolute; right:10px; bottom:-90px; width:200px; height:200px; border-radius:50%;
-    border:1.5px dashed rgba(255,255,255,0.13);
+    content:""; position:absolute; right:-70px; top:-70px; width:260px; height:260px; border-radius:50%;
+    border:1px solid rgba(255,255,255,0.14);
   }
   .poster-tag{
     font-family:'IBM Plex Mono', monospace; font-size:0.6rem; letter-spacing:0.16em; text-transform:uppercase;
-    border:1px solid rgba(255,255,255,0.45); padding:4px 10px; align-self:flex-start; margin-bottom:16px;
+    border:1px solid rgba(255,255,255,0.4); padding:4px 10px; align-self:flex-start; margin-bottom:18px; opacity:0.9;
   }
-  .poster-card h3{font-family:'Archivo', sans-serif; font-size:2rem; margin:0 0 10px; max-width:620px; line-height:1.15;}
-  .poster-card p{font-size:0.92rem; margin:0 0 20px; max-width:520px; line-height:1.55; color:rgba(255,255,255,0.9);}
+  .poster-card h3{font-family:'Fraunces', serif; font-weight:600; font-size:2rem; margin:0 0 10px; max-width:620px; line-height:1.15;}
+  .poster-card p{font-size:0.94rem; margin:0 0 22px; max-width:480px; line-height:1.6; color:rgba(255,255,255,0.82);}
   .poster-cta{
-    align-self:flex-start; background:rgba(255,255,255,0.95); color:var(--ink); border:none; padding:10px 20px;
+    align-self:flex-start; background:transparent; color:#fff; border:1.5px solid rgba(255,255,255,0.75); padding:10px 22px;
     font-family:'IBM Plex Mono', monospace; font-size:0.68rem; letter-spacing:0.09em; text-transform:uppercase; cursor:pointer;
+    transition:background .15s ease, color .15s ease;
   }
-  .poster-cta:hover{background:#fff;}
+  .poster-cta:hover{background:#fff; color:var(--ink);}
   .poster-dots{display:flex; gap:7px; justify-content:center; margin-top:18px;}
   .poster-dots button{
     width:26px; height:4px; border:none; background:var(--line); cursor:pointer; padding:0;
@@ -369,7 +366,7 @@
   /* ===== Spotlight ===== */
   .spotlight-section{background:var(--ink); color:var(--parchment); padding:52px 0;}
   .spotlight-inner{max-width:1100px; margin:0 auto; padding:0 24px;}
-  .spotlight-head h2{font-family:'Archivo', sans-serif; font-size:1.5rem; margin:0 0 4px; color:var(--gold);}
+  .spotlight-head h2{font-family:'Fraunces', serif; font-size:1.5rem; margin:0 0 4px; color:var(--gold);}
   .spotlight-head p{font-size:0.85rem; color:#B7C0CB; margin:0 0 26px;}
   .spotlight-body{display:grid; grid-template-columns:1.7fr 1fr; gap:30px; align-items:start;}
   @media (max-width:820px){ .spotlight-body{grid-template-columns:1fr;} }
@@ -378,20 +375,20 @@
     height:130px; position:relative; display:flex; align-items:center; justify-content:center; overflow:hidden;
   }
   .spot-banner span{
-    font-family:'Archivo', sans-serif; font-size:2.6rem; color:rgba(255,255,255,0.28); letter-spacing:0.05em;
+    font-family:'Fraunces', serif; font-size:2.6rem; color:rgba(255,255,255,0.28); letter-spacing:0.05em;
   }
   .spot-content{padding:22px 26px 26px;}
   .spot-month{font-family:'IBM Plex Mono', monospace; font-size:0.63rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--gold);}
-  .spotlight-feature h3{font-family:'Archivo', sans-serif; font-size:1.3rem; margin:8px 0 12px; color:#fff;}
+  .spotlight-feature h3{font-family:'Fraunces', serif; font-size:1.3rem; margin:8px 0 12px; color:#fff;}
   .spotlight-feature p{font-size:0.87rem; line-height:1.65; color:#C8D0D9; margin:0 0 10px;}
   .spot-stats{display:flex; gap:26px; margin-top:18px; padding-top:16px; border-top:1px solid #35434F; flex-wrap:wrap;}
-  .spot-stat .n{font-family:'Archivo', sans-serif; font-size:1.3rem; color:var(--gold);}
+  .spot-stat .n{font-family:'Fraunces', serif; font-size:1.3rem; color:var(--gold);}
   .spot-stat .t{font-size:0.7rem; color:#9AA6B3; margin-top:2px;}
   .spotlight-archive{display:flex; flex-direction:column;}
   .archive-label{font-family:'IBM Plex Mono', monospace; font-size:0.63rem; letter-spacing:0.14em; text-transform:uppercase; color:#8E9BA9; border-bottom:1px solid #35434F; padding-bottom:9px; margin-bottom:4px;}
   .archive-item{
     text-align:left; background:none; border:none; border-bottom:1px solid #2A3742; cursor:pointer;
-    padding:13px 6px; color:#C8D0D9; font-family:'Inter', sans-serif; font-size:0.84rem; line-height:1.4;
+    padding:13px 6px; color:#C8D0D9; font-family:'IBM Plex Sans', sans-serif; font-size:0.84rem; line-height:1.4;
   }
   .archive-item .m{display:block; font-family:'IBM Plex Mono', monospace; font-size:0.6rem; letter-spacing:0.1em; text-transform:uppercase; color:#8E9BA9; margin-bottom:3px;}
   .archive-item:hover{color:#fff; background:#26333F;}
@@ -408,7 +405,7 @@
   .news-meta{display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
   .news-source{font-family:'IBM Plex Mono', monospace; font-size:0.6rem; letter-spacing:0.11em; text-transform:uppercase; color:var(--stamp);}
   .news-date{font-family:'IBM Plex Mono', monospace; font-size:0.63rem; color:var(--ink-soft);}
-  .news-card h3{font-family:'Archivo', sans-serif; font-size:1rem; margin:0; line-height:1.3;}
+  .news-card h3{font-family:'Fraunces', serif; font-size:1rem; margin:0; line-height:1.3;}
   .news-card p{font-size:0.82rem; color:var(--ink-soft); line-height:1.55; margin:0; flex:1;}
   .news-link{
     align-self:flex-start; background:none; border:none; padding:0; cursor:pointer; color:var(--stamp);
@@ -463,7 +460,7 @@
 
   .ledger-wrap{background:var(--paper); border:1px solid var(--line); display:flex; flex-direction:column; min-height:520px; max-height:74vh;}
   .ledger-head{padding:14px 20px; border-bottom:1px solid var(--line); display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:6px;}
-  .ledger-head h1{font-family:'Archivo', sans-serif; font-weight:600; font-size:1.05rem; margin:0;}
+  .ledger-head h1{font-family:'Fraunces', serif; font-weight:600; font-size:1.05rem; margin:0;}
   .ledger-head span{font-family:'IBM Plex Mono', monospace; font-size:0.68rem; color:var(--ink-soft); letter-spacing:0.06em;}
   .ledger{flex:1; overflow-y:auto; padding:18px 20px; display:flex; flex-direction:column; gap:22px;}
   .entry{display:flex; flex-direction:column; gap:8px;}
@@ -492,7 +489,7 @@
 
   /* Nearby office card */
   .office-card{background:#F4EFE2; border:1px solid var(--line-soft); padding:14px; max-width:90%;}
-  .office-card h4{font-family:'Archivo', sans-serif; font-size:0.95rem; margin:0 0 8px;}
+  .office-card h4{font-family:'Fraunces', serif; font-size:0.95rem; margin:0 0 8px;}
   .office-card p{font-size:0.8rem; color:var(--ink-soft); margin:0 0 10px; line-height:1.5;}
   .map-hover{height:38px; overflow:hidden; transition:height .3s ease; border:1px solid var(--line); position:relative; background:var(--paper);}
   .map-hover.expanded{height:220px;}
@@ -508,7 +505,7 @@
 
   /* Booking form */
   .booking-card{background:#F4EFE2; border:1px solid var(--line-soft); padding:18px; max-width:90%;}
-  .booking-card h4{font-family:'Archivo', sans-serif; font-size:1rem; margin:0;}
+  .booking-card h4{font-family:'Fraunces', serif; font-size:1rem; margin:0;}
   .booking-card-head{display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:12px;}
   .booking-close{
     background:none; border:1px solid var(--line-soft); width:26px; height:26px; border-radius:50%;
@@ -517,7 +514,7 @@
   }
   .booking-close:hover{background:var(--stamp); border-color:var(--stamp); color:#fff;}
   .booking-ai-note{
-    font-family:'Inter', sans-serif; font-size:0.78rem; color:var(--sage); background:#EEF2EE;
+    font-family:'IBM Plex Sans', sans-serif; font-size:0.78rem; color:var(--sage); background:#EEF2EE;
     border:1px solid var(--sage); padding:8px 12px; margin-bottom:14px;
   }
   .booking-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
@@ -592,22 +589,35 @@
   }
   .talk-overlay-status{font-family:'IBM Plex Mono', monospace; font-size:0.8rem; color:var(--parchment); letter-spacing:0.04em;}
   .talk-overlay-caption{
-    max-width:600px; text-align:center; font-family:'Inter', sans-serif; font-size:1.05rem;
+    max-width:600px; text-align:center; font-family:'IBM Plex Sans', sans-serif; font-size:1.05rem;
     line-height:1.5; color:var(--paper); padding:0 24px; min-height:1.6em;
   }
   .talk-overlay-caption.user-line{color:var(--gold); font-style:italic;}
   .talk-overlay-close{
     width:52px; height:52px; border-radius:50%; background:var(--paper); border:none; cursor:pointer;
-    display:flex; align-items:center; justify-content:center; color:var(--ink); margin-top:10px;
+    display:flex; align-items:center; justify-content:center; color:var(--ink); margin:0; padding:0; align-self:center;
     box-shadow:0 4px 14px rgba(0,0,0,0.3);
   }
   .talk-overlay-close svg{width:20px; height:20px;}
   .talk-overlay-close:hover{background:var(--stamp); color:var(--paper);}
 
+  .talk-controls{display:flex; align-items:center; gap:16px; margin-top:10px;}
+  .talk-overlay-pause{
+    width:52px; height:52px; border-radius:50%; border:2px solid var(--gold); cursor:pointer; margin:0; padding:0;
+    background:rgba(232,135,30,0.14); color:var(--gold); align-self:center;
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 4px 14px rgba(0,0,0,0.3); transition:background .15s ease, color .15s ease, transform .12s ease;
+  }
+  .talk-overlay-pause svg{width:22px; height:22px;}
+  .talk-overlay-pause:hover{background:var(--gold); color:var(--ink); transform:scale(1.06);}
+  .talk-circle.paused{background:#B9C4CE;}
+  .talk-circle.paused .talk-icon-mic{opacity:0.45;}
+  .talk-circle.paused .talk-ring{animation:none !important; opacity:0;}
+
   .sidebar-panel{display:flex; flex-direction:column; gap:22px;}
   .panel-label{font-family:'IBM Plex Mono', monospace; font-size:0.68rem; letter-spacing:0.16em; text-transform:uppercase; color:var(--ink-soft); border-bottom:1px solid var(--line); padding-bottom:8px; margin-bottom:10px;}
   .dept-card{background:var(--paper); border:1px solid var(--line-soft); padding:14px;}
-  .dept-card h4{font-family:'Archivo', sans-serif; font-size:0.95rem; margin:0 0 6px;}
+  .dept-card h4{font-family:'Fraunces', serif; font-size:0.95rem; margin:0 0 6px;}
   .dept-card p{font-size:0.78rem; color:var(--ink-soft); line-height:1.5; margin:0 0 8px;}
   .dept-card ul{margin:0; padding-left:16px; font-size:0.76rem; color:var(--ink-soft); line-height:1.65;}
   .quick-actions{display:flex; flex-direction:column; gap:8px;}
@@ -629,7 +639,7 @@
 
   .insights-wrap{max-width:1000px; margin:0 auto; padding:0 24px 70px;}
   .chart-card{background:var(--paper); border:1px solid var(--line); padding:24px; margin-bottom:26px;}
-  .chart-card h3{font-family:'Archivo', sans-serif; font-size:1rem; margin:0 0 20px;}
+  .chart-card h3{font-family:'Fraunces', serif; font-size:1rem; margin:0 0 20px;}
   .bar-row{display:flex; align-items:center; gap:12px; margin-bottom:12px;}
   .bar-label{width:180px; font-size:0.78rem; color:var(--ink-soft); flex-shrink:0;}
   .bar-track{flex:1; background:#F0EAD8; height:20px; position:relative;}
@@ -661,12 +671,12 @@
   .help-search:focus{border-color:var(--stamp); outline:none;}
   .help-item{background:var(--paper); border:1px solid var(--line-soft); padding:16px 18px; margin-bottom:10px;}
   .help-item .cat-tag{font-family:'IBM Plex Mono', monospace; font-size:0.62rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--stamp);}
-  .help-item h4{font-family:'Archivo', sans-serif; font-size:0.98rem; margin:6px 0 6px;}
+  .help-item h4{font-family:'Fraunces', serif; font-size:0.98rem; margin:6px 0 6px;}
   .help-item p{font-size:0.83rem; color:var(--ink-soft); line-height:1.55; margin:0;}
   .help-empty{padding:30px; text-align:center; color:var(--ink-soft); font-style:italic;}
 
   .about-wrap{max-width:700px; margin:0 auto; padding:0 24px 80px; line-height:1.7; color:var(--ink-soft);}
-  .about-wrap h2{font-family:'Archivo', sans-serif; color:var(--ink); font-size:1.1rem; margin-top:32px;}
+  .about-wrap h2{font-family:'Fraunces', serif; color:var(--ink); font-size:1.1rem; margin-top:32px;}
 
   footer{text-align:center; font-family:'IBM Plex Mono', monospace; font-size:0.66rem; letter-spacing:0.06em; color:var(--ink-soft); padding:16px 10px 30px;}
 
@@ -726,7 +736,7 @@
     font-family:'IBM Plex Mono', monospace; font-size:0.66rem; letter-spacing:0.16em;
     text-transform:uppercase; color:var(--gold); margin-bottom:10px;
   }
-  .bot-copy h2{font-family:'Archivo', sans-serif; font-size:1.9rem; line-height:1.15; margin:0 0 10px; color:#fff;}
+  .bot-copy h2{font-family:'Fraunces', serif; font-size:1.9rem; line-height:1.15; margin:0 0 10px; color:#fff;}
   .bot-copy p{margin:0 0 18px; color:rgba(255,255,255,.78); font-size:0.95rem; line-height:1.6;}
   .bot-copy .bot-cta{
     background:var(--gold); color:#101A24; border:0; border-radius:999px;
@@ -779,7 +789,7 @@
     max-width:1100px; margin:0 auto; padding:34px 24px 20px;
   }
   .scheme-head{display:flex; align-items:flex-end; justify-content:space-between; gap:16px; flex-wrap:wrap; margin-bottom:20px;}
-  .scheme-head h2{font-family:'Archivo', sans-serif; font-size:1.3rem; margin:0 0 4px;}
+  .scheme-head h2{font-family:'Fraunces', serif; font-size:1.3rem; margin:0 0 4px;}
   .scheme-head p{margin:0; color:var(--ink-soft); font-size:0.86rem;}
   .scheme-head .scheme-live{
     display:inline-flex; align-items:center; gap:7px; font-family:'IBM Plex Mono', monospace;
@@ -840,8 +850,8 @@
     color:rgba(255,255,255,.85); position:relative; z-index:1;
   }
   .sf-govbar svg{width:24px; height:24px; flex:0 0 auto;}
-  .sf-poster h3{font-family:'Archivo', sans-serif; font-size:1.75rem; line-height:1.12; margin:0 0 4px; position:relative; z-index:1; max-width:80%;}
-  .sf-native{font-size:0.95rem; color:rgba(255,255,255,.82); margin:0 0 12px; position:relative; z-index:1;}
+  .sf-poster h3{font-family:'Fraunces', serif; font-size:1.75rem; line-height:1.12; margin:0 0 4px; position:relative; z-index:1; max-width:80%;}
+  .sf-sub{font-size:0.95rem; color:rgba(255,255,255,.82); margin:0 0 12px; position:relative; z-index:1;}
   .sf-poster .sf-tagline{
     font-size:0.9rem; color:rgba(255,255,255,.9); margin:0; max-width:78%;
     position:relative; z-index:1; line-height:1.55;
@@ -870,7 +880,7 @@
   /* ----- 2b. Scheme poster wall ----- */
   .poster-wall-section{max-width:1100px; margin:0 auto; padding:10px 24px 60px;}
   .poster-wall-head{display:flex; align-items:baseline; justify-content:space-between; gap:14px; flex-wrap:wrap; margin-bottom:8px;}
-  .poster-wall-head h2{font-family:'Archivo', sans-serif; font-size:1.3rem; margin:0;}
+  .poster-wall-head h2{font-family:'Fraunces', serif; font-size:1.3rem; margin:0;}
   .poster-wall-head span{font-size:0.78rem; color:var(--ink-soft);}
   .poster-wall{
     display:flex; gap:16px; overflow-x:auto; padding:16px 4px 22px;
@@ -890,7 +900,7 @@
   }
   .sp-strip{
     position:absolute; left:0; right:0; top:0; height:5px;
-    background:linear-gradient(90deg,#FF9933 0 33%,#FFFFFF 33% 66%,#138808 66% 100%);
+    background:linear-gradient(90deg, var(--gold) 0%, var(--stamp) 45%, var(--sage) 100%);
   }
   .sp-gov{
     font-family:'IBM Plex Mono', monospace; font-size:0.53rem; letter-spacing:0.12em;
@@ -898,10 +908,10 @@
   }
   .sp-icon{font-size:2.4rem; position:relative; z-index:1; margin-bottom:8px;}
   .sp-art h4{
-    font-family:'Archivo', sans-serif; font-size:1.02rem; line-height:1.2; margin:0 0 3px;
+    font-family:'Fraunces', serif; font-size:1.02rem; line-height:1.2; margin:0 0 3px;
     position:relative; z-index:1;
   }
-  .sp-art .sp-native{font-size:0.76rem; color:rgba(255,255,255,.85); position:relative; z-index:1; margin-bottom:8px;}
+  .sp-art .sp-sub{font-size:0.76rem; color:rgba(255,255,255,.85); position:relative; z-index:1; margin-bottom:8px;}
   .sp-art .sp-benefit{
     position:relative; z-index:1; font-size:0.7rem; font-weight:600;
     background:rgba(255,255,255,.18); border:1px solid rgba(255,255,255,.28);
@@ -937,6 +947,278 @@
   @media (prefers-reduced-motion: reduce){
     .robot, .robot *, .bot-stage .bot-halo, .bot-glow, .fab-ping, .scheme-live i{animation:none !important;}
   }
+
+  /* ==========================================================================
+     COLOUR PASS
+     The layout was already doing the work; this only adds colour so the page
+     reads as a wayfinding system. Each department keeps one line colour and
+     that colour follows it across cards, icons and hovers.
+     ========================================================================== */
+
+  [data-dept="permits"]{--accent:var(--c-permits);}
+  [data-dept="tax"]{--accent:var(--c-tax);}
+  [data-dept="regulations"]{--accent:var(--c-regulations);}
+  [data-dept="general"]{--accent:var(--c-general);}
+  [data-dept="all"]{--accent:var(--gold);}
+
+  /* --- top bar --- */
+  nav.topnav{
+    background:linear-gradient(100deg,#0B141C 0%,#101A24 42%,#1B2B3C 100%);
+    border-bottom:5px solid transparent;
+    border-image:linear-gradient(90deg,var(--gold) 0%,var(--stamp) 40%,var(--sage) 80%,var(--violet) 100%) 1;
+  }
+  .nav-link.active{border-bottom-color:var(--gold); color:#fff;}
+  .nav-link:hover{color:#fff; background:rgba(255,255,255,.05);}
+  .brand-text{
+    background:linear-gradient(90deg,#FFFFFF 0%,#F0D9A8 100%);
+    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
+  }
+  .announce-label{background:var(--stamp); color:#fff;}
+
+  /* --- section headings get a coloured rule --- */
+  .home-section h2, .scheme-head h2, .poster-wall-head h2, .poster-head h2{
+    position:relative; padding-left:14px;
+  }
+  .home-section h2::before, .scheme-head h2::before, .poster-wall-head h2::before, .poster-head h2::before{
+    content:""; position:absolute; left:0; top:0.18em; bottom:0.18em; width:5px; border-radius:3px;
+    background:linear-gradient(180deg,var(--gold),var(--stamp));
+  }
+
+  /* --- department-coloured cards --- */
+  .window-card{
+    border-top:3px solid var(--accent, var(--stamp));
+    border-radius:0 0 10px 10px; box-shadow:var(--shadow-sm);
+    background:linear-gradient(180deg,#FFFFFF 0%,#FBFCFE 100%);
+  }
+  .window-card:hover{border-color:var(--line); border-top-color:var(--accent, var(--stamp)); box-shadow:var(--shadow-md);}
+  .window-card svg{stroke:var(--accent, var(--stamp));}
+  .service-card{
+    border-top:3px solid var(--accent, var(--stamp)); border-radius:0 0 10px 10px;
+    box-shadow:var(--shadow-sm); transition:box-shadow .15s ease, transform .15s ease;
+  }
+  .service-card:hover{box-shadow:var(--shadow-md); transform:translateY(-2px);}
+  .service-card svg{stroke:var(--accent, var(--stamp));}
+  .service-card .open-btn{background:var(--accent, var(--ink)); color:#fff; border-radius:6px;}
+  .service-card .open-btn:hover{filter:brightness(.9);}
+  .service-pill{border-radius:999px; transition:all .15s ease;}
+  .service-pill svg{stroke:var(--accent, var(--stamp));}
+  .service-pill:hover{
+    border-color:var(--accent, var(--stamp)); color:var(--accent, var(--stamp));
+    background:color-mix(in srgb, var(--accent, var(--stamp)) 10%, #fff);
+  }
+
+  /* --- metric band --- */
+  .metric-icon{
+    font-size:1rem; opacity:1; width:34px; height:34px; margin:0 auto 6px;
+    display:grid; place-items:center; border-radius:50%;
+    background:linear-gradient(135deg,#FFF3E2,#FFE3E7);
+  }
+  .metric-item:nth-child(2) .metric-icon{background:linear-gradient(135deg,#E2F5F4,#DDEBFB);}
+  .metric-item:nth-child(3) .metric-icon{background:linear-gradient(135deg,#EAE7FB,#F6E7F5);}
+  .metric-item:nth-child(4) .metric-icon{background:linear-gradient(135deg,#E7F3E3,#F3F6DE);}
+  .metric-value{color:var(--ink);}
+
+  /* --- trending chips --- */
+  .trend-chip{transition:all .15s ease; border-radius:999px;}
+  .trend-chip:hover{background:var(--gold); border-color:var(--gold); color:#fff;}
+
+  /* --- notices --- */
+  .news-card{border-radius:0 0 10px 10px; box-shadow:var(--shadow-sm);}
+  .news-card{background:linear-gradient(180deg,#F2FAFA 0%,#FFFFFF 46%);}
+  .news-card.notice{background:linear-gradient(180deg,#FDF1F2 0%,#FFFFFF 46%);}
+  .news-card.update{background:linear-gradient(180deg,#FFF6EB 0%,#FFFFFF 46%);}
+  .news-card.notice .news-source{color:var(--stamp);}
+  .news-card.update .news-source{color:var(--gold);}
+  .news-card:not(.notice):not(.update) .news-source{color:var(--sage);}
+
+  /* --- directories --- */
+  .directory-tile{border-radius:10px; box-shadow:var(--shadow-sm); background:var(--paper);}
+  .directory-tile .dir-icon{
+    width:44px; height:44px; border-radius:50%; display:grid; place-items:center; font-size:1.25rem;
+    background:linear-gradient(135deg,#EDF1F5,#DDE7F1);
+  }
+  .directory-tile:nth-child(1) .dir-icon{background:linear-gradient(135deg,#FFEFDC,#FFD9B3);}
+  .directory-tile:nth-child(2) .dir-icon{background:linear-gradient(135deg,#DFF3F2,#BEE7E5);}
+  .directory-tile:nth-child(3) .dir-icon{background:linear-gradient(135deg,#FDE2E5,#F8C4CB);}
+  .directory-tile:nth-child(4) .dir-icon{background:linear-gradient(135deg,#E7E3FA,#CFC8F3);}
+  .directory-tile:nth-child(5) .dir-icon{background:linear-gradient(135deg,#E6F2DE,#C9E6BB);}
+  .directory-tile:hover{box-shadow:var(--shadow-md);}
+
+  /* --- FAQ --- */
+  .faq-item.open{background:linear-gradient(90deg,#FFF7EC,transparent 70%);}
+  .faq-item.open .faq-question{color:var(--stamp);}
+
+  /* --- stat band --- */
+  .stat-band{background:linear-gradient(135deg,#0B141C 0%,#1B2B3C 50%,#2A4258 100%);}
+  .stat-band-num{
+    background:linear-gradient(90deg,var(--gold),#F6C67A);
+    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
+  }
+
+  /* --- primary actions --- */
+  .btn-primary{background:linear-gradient(135deg,var(--stamp),var(--stamp-dark)); border-color:transparent; color:#fff;}
+  .btn-primary:hover{filter:brightness(1.06);}
+
+  /* --- scheme spotlight polish --- */
+  .scheme-column{border-radius:14px;}
+  .scheme-row.active{background:linear-gradient(90deg,#FFF4E6,#FFFFFF);}
+  .scheme-row .sr-tag{color:var(--gold);}
+  .scheme-head .scheme-live{
+    background:color-mix(in srgb, var(--stamp) 12%, #fff);
+    border:1px solid color-mix(in srgb, var(--stamp) 35%, #fff);
+    padding:6px 12px; border-radius:999px;
+  }
+  .sf-meta .k{color:var(--stamp);}
+  .sf-foot .sf-ask{background:linear-gradient(135deg,var(--ink),#33475C);}
+  .sf-foot .sf-ask:hover{background:linear-gradient(135deg,var(--stamp),var(--stamp-dark));}
+  .scheme-poster:hover .sp-foot .sp-link{color:var(--gold);}
+
+  /* --- assistant chrome --- */
+  .window-btn[data-cat="permits"]{--accent:var(--c-permits);}
+  .window-btn[data-cat="tax"]{--accent:var(--c-tax);}
+  .window-btn[data-cat="regulations"]{--accent:var(--c-regulations);}
+  .window-btn[data-cat="general"]{--accent:var(--c-general);}
+  .window-btn:not(.all-btn) svg{stroke:var(--accent, var(--ink));}
+  .window-btn:not(.all-btn).active{box-shadow:inset 3px 0 0 var(--accent, var(--stamp));}
+  .all-mode-note{
+    background:linear-gradient(90deg,#FFF6EA,#F1F6FB);
+    border-color:color-mix(in srgb, var(--gold) 35%, #fff);
+    color:var(--ink);
+  }
+
+
+  /* ==========================================================================
+     WHITE THEME
+     The page now sits on plain white. Every band that used to be dark navy is
+     a light surface instead, and colour comes from the department accents,
+     the poster art and the buttons rather than from large dark blocks. Only
+     the call overlay and the name gate stay dark, because both are modals
+     that need to sit clearly above the page.
+     ========================================================================== */
+  body{background:#FFFFFF;}
+
+  /* --- top bar --- */
+  nav.topnav{
+    background:#FFFFFF; color:var(--ink);
+    box-shadow:0 2px 12px rgba(16,26,36,.06);
+    border-bottom:3px solid transparent;
+    border-image:linear-gradient(90deg,var(--gold) 0%,var(--stamp) 40%,var(--sage) 78%,var(--violet) 100%) 1;
+  }
+  .brand-text{background:linear-gradient(90deg,var(--ink) 0%,var(--stamp) 100%);}
+  .brand svg circle{stroke:var(--stamp);}
+  .brand svg path{fill:var(--gold);}
+  .nav-link{color:#5C6C7D;}
+  .nav-link:hover{color:var(--ink); background:#F3F7FB;}
+  .nav-link.active{color:var(--stamp); border-bottom-color:var(--stamp);}
+  .lang-select{background:#F3F7FB; color:var(--ink); border:1px solid var(--line);}
+  .nav-status{color:var(--ink-soft);}
+  .greeting{color:var(--ink); border-color:var(--line);}
+  .greeting::after{color:var(--ink-soft);}
+  .greeting:hover, .greeting-menu.open .greeting{border-color:var(--stamp); background:#F9FAFC;}
+  .greeting-dropdown{background:#fff; border:1px solid var(--line);}
+  .greeting-dropdown button{color:var(--ink);}
+  .greeting-dropdown button:hover{background:#F3F7FB; color:var(--stamp);}
+
+  /* --- announcements --- */
+  .announce-bar{background:#FFF8F0; border-bottom:1px solid var(--line-soft);}
+  .announce-item{color:#48586A;}
+  .announce-item::before{color:#B4670F; border-color:#EDD6B8;}
+  .announce-toggle{color:#8E9BA9; border-left:1px solid var(--line-soft);}
+  .announce-toggle:hover{color:var(--stamp);}
+
+  /* --- hero --- */
+  .hero-wrap{
+    background:#FFFFFF;
+    border-bottom:1px solid var(--line-soft);
+  }
+  .hero-wrap::before{
+    background-image:none;
+  }
+  .hero h1{color:var(--ink);}
+  .hero p{color:var(--ink-soft);}
+  .hero-eyebrow{color:#64758A; background:#fff; border-color:var(--line);}
+  .hero-search{box-shadow:var(--shadow-md); border-radius:10px; overflow:hidden;}
+  .hero-search select{background:#F3F7FB; color:var(--ink);}
+  .hero-search button{background:var(--stamp); color:#fff; border:none;}
+
+  /* --- metric strip --- */
+  .metric-band{background:#F8FAFC; border-top:1px solid var(--line-soft); border-bottom:1px solid var(--line-soft);}
+
+  /* --- CivicBot band --- */
+  .bot-band{
+    background:linear-gradient(135deg,#FFF7EE 0%,#F3F8FC 58%,#FFFFFF 100%);
+    color:var(--ink); border-bottom:1px solid var(--line-soft);
+  }
+  .bot-band::before{background:radial-gradient(circle at 50% 118%, rgba(232,135,30,.18), transparent 62%);}
+  .bot-copy h2{color:var(--ink);}
+  .bot-copy p{color:var(--ink-soft);}
+  .bot-copy .bot-eyebrow{color:#B4670F;}
+  .bot-skills span{border-color:var(--line); color:var(--ink-soft); background:#fff;}
+  .bot-stage .bot-halo{border-color:rgba(210,57,75,.34);}
+  .bot-stage .bot-halo.h2{border-color:rgba(16,26,36,.14);}
+  .bot-stage .bot-glow{background:rgba(16,26,36,.16);}
+
+  /* --- spotlight --- */
+  .spotlight-section{
+    background:linear-gradient(180deg,#F6F9FC 0%,#FFFFFF 100%);
+    color:var(--ink); border-top:1px solid var(--line-soft); border-bottom:1px solid var(--line-soft);
+  }
+  .spotlight-head h2{color:var(--ink);}
+  .spotlight-head p{color:var(--ink-soft);}
+  .spotlight-feature{background:#fff; border:1px solid var(--line); border-radius:12px; box-shadow:var(--shadow-sm);}
+  .spotlight-feature h3{color:var(--ink);}
+  .spotlight-feature p{color:var(--ink-soft);}
+  .spot-month{color:var(--stamp);}
+  .spot-stats{border-top-color:var(--line-soft);}
+  .spot-stat .n{color:var(--stamp);}
+  .spot-stat .t{color:var(--ink-soft);}
+  .archive-label{color:var(--ink-soft); border-bottom-color:var(--line);}
+  .archive-item{color:var(--ink); border-bottom-color:var(--line-soft);}
+  .archive-item .m{color:var(--ink-soft);}
+  .archive-item:hover{color:var(--ink); background:#F3F7FB;}
+  .archive-item.active{color:var(--stamp); border-left-color:var(--stamp); background:#FFF6EC;}
+
+  /* --- stat band --- */
+  .stat-band{
+    background:linear-gradient(180deg,#FFF7EC 0%,#FFFFFF 100%);
+    color:var(--ink); border-top:1px solid var(--line-soft);
+  }
+  .stat-band-num{background:linear-gradient(90deg,var(--stamp),var(--gold));}
+  .stat-band-label{color:var(--ink);}
+  .stat-band-sub{color:var(--ink-soft);}
+
+  /* --- assistant chrome --- */
+  .window-btn:hover{background:#F3F7FB;}
+  .window-btn.all-btn:hover{filter:brightness(1.08); background:linear-gradient(135deg,#1B2B3C,#33475C);}
+  .ledger-wrap{background:#fff; border:1px solid var(--line); border-radius:12px; overflow:hidden; box-shadow:var(--shadow-sm);}
+  .chart-card, .dept-card, .scenario-toggle{border-radius:10px;}
+  .reminder-banner button{background:var(--stamp); border-radius:5px;}
+  .sf-foot .sf-ask{background:linear-gradient(135deg,var(--stamp),var(--stamp-dark));}
+  .sf-foot .sf-ask:hover{filter:brightness(1.08); background:linear-gradient(135deg,var(--stamp),var(--stamp-dark));}
+  .quick-actions button{border-radius:8px;}
+  .quick-actions button:hover{border-color:var(--stamp); color:var(--stamp); background:#FFF6F7;}
+  .composer button.submit{border-radius:6px;}
+  .icon-btn{border-radius:8px;}
+  .gate-card input{background:#fff;}
+
+  /* --- directory phone lines (simulated) --- */
+  .directory-tile .dir-phone{
+    font-family:'IBM Plex Mono', monospace; font-size:0.7rem; color:var(--sage);
+    letter-spacing:0.03em; margin-top:2px;
+  }
+
+  /* --- call overlay: reference number, line and duration --- */
+  .talk-overlay-meta{
+    display:flex; align-items:center; gap:9px; flex-wrap:wrap; justify-content:center;
+    font-family:'IBM Plex Mono', monospace; font-size:0.68rem; letter-spacing:0.08em;
+    color:#9FB0C2; margin-top:-12px;
+  }
+  .talk-overlay-meta .dot{opacity:.45;}
+  .talk-overlay-meta .call-sim-badge{
+    background:var(--gold); color:#101A24; border-radius:999px; padding:2px 9px;
+    font-size:0.6rem; letter-spacing:0.1em; text-transform:uppercase; font-weight:600;
+  }
+
 </style>
 
 </head>
@@ -949,22 +1231,30 @@
     <p>Before we start, what should we call you?</p>
     <input type="text" id="nameInput" placeholder="Your name" autocomplete="given-name">
     <button id="nameSubmit">Continue</button>
+    <button id="nameSkip" style="width:100%;background:none;border:none;color:var(--ink-soft);font-size:0.8rem;margin-top:10px;cursor:pointer;text-decoration:underline;">Skip for now</button>
   </div>
 </div>
 
 <div id="talkOverlay" class="talk-overlay hidden">
   <div class="talk-overlay-dept" id="talkOverlayDept"></div>
+  <div class="talk-overlay-meta" id="talkOverlayMeta" data-i18n-skip></div>
   <button class="talk-circle" id="talkCircle">
     <span class="talk-ring r1"></span>
     <span class="talk-ring r2"></span>
     <svg class="talk-icon-mic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>
     <span class="talk-icon-bars"><span></span><span></span><span></span><span></span><span></span></span>
   </button>
-  <div class="talk-overlay-status" id="talkOverlayStatus">Listening…</div>
+  <div class="talk-overlay-status" id="talkOverlayStatus">Connecting…</div>
   <div class="talk-overlay-caption" id="talkOverlayCaption"></div>
-  <button class="talk-overlay-close" id="talkClose" title="End Talk Mode">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg>
-  </button>
+  <div class="talk-controls">
+    <button class="talk-overlay-pause" id="talkPause" title="Pause call" aria-label="Pause call">
+      <svg class="pause-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5v14M15 5v14"/></svg>
+      <svg class="play-icon" viewBox="0 0 24 24" fill="currentColor" stroke="none" style="display:none;"><path d="M8 5l11 7-11 7z"/></svg>
+    </button>
+    <button class="talk-overlay-close" id="talkClose" title="End call" aria-label="End call">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+  </div>
 </div>
 
 <nav class="topnav">
@@ -1014,7 +1304,7 @@
     <div class="coffee-ring"></div>
     <div class="hero-stampfield" id="heroStampfield"></div>
     <div class="hero">
-      <div class="hero-eyebrow">Public Service Information Access</div>
+      <div class="hero-eyebrow">Conversational AI Chatbot · Public Service Information Access</div>
       <h1>One desk for every civic question.</h1>
       <p>Permits, tax payments, and local regulations — ask by voice or text, and get a routed answer instead of digging through department websites.</p>
 
@@ -1261,7 +1551,7 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>
         </button>
         <input id="userInput" type="text" placeholder="Ask about a permit, tax payment, or local regulation…" autocomplete="off">
-        <button type="button" class="wave-btn" id="talkTrigger" title="Start Talk Mode">
+        <button type="button" class="wave-btn" id="talkTrigger" title="Start a call with the assistant">
           <span class="wave-bars"><span></span><span></span><span></span><span></span><span></span></span>
         </button>
         <button type="submit" class="submit" id="sendBtn">Submit</button>
@@ -1433,6 +1723,7 @@ function updateGreeting(){
 }
 document.getElementById('nameSubmit').addEventListener('click', submitName);
 document.getElementById('nameInput').addEventListener('keydown', (e)=>{ if(e.key==='Enter') submitName(); });
+document.getElementById('nameSkip').addEventListener('click', ()=>{ nameGate.classList.add('hidden'); });
 function submitName(){
   const val = document.getElementById('nameInput').value.trim();
   if(!val) return;
@@ -1510,12 +1801,14 @@ Object.keys(DEPARTMENTS).forEach(cat=>{
   const desc = DESCRIPTIONS[cat]; const icon = ICONS[cat];
   const homeCard = document.createElement('div');
   homeCard.className = "window-card";
+  homeCard.dataset.dept = cat;
   homeCard.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke-width="1.6">${icon}</svg><h3>${DEPARTMENTS[cat]}</h3><p>${desc.short}</p>`;
   homeCard.addEventListener('click', ()=> openAssistant(cat));
   homeGrid.appendChild(homeCard);
 
   const svcCard = document.createElement('div');
   svcCard.className = "service-card";
+  svcCard.dataset.dept = cat;
   svcCard.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke-width="1.6">${icon}</svg><h3>${DEPARTMENTS[cat]}</h3><p>${desc.short}</p>
     <ul>${desc.bullets.map(b=>`<li>${b}</li>`).join('')}</ul><button class="open-btn">Open Window</button>`;
   svcCard.querySelector('.open-btn').addEventListener('click', ()=> openAssistant(cat));
@@ -1537,7 +1830,7 @@ const FEATURED_SERVICES = [
 const importantWrap = document.getElementById('importantServices');
 FEATURED_SERVICES.slice(0, 5).forEach(svc=>{
   const pill = document.createElement('button');
-  pill.className = "service-pill"; pill.type = "button";
+  pill.className = "service-pill"; pill.type = "button"; pill.dataset.dept = svc.cat;
   pill.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke-width="1.6">${ICONS[svc.cat]}</svg>${escapeHTML(svc.title)}`;
   pill.addEventListener('click', ()=>{ openAssistant(svc.cat); ask(svc.question); });
   importantWrap.appendChild(pill);
@@ -1547,6 +1840,7 @@ const featuredWrap = document.getElementById('featuredServices');
 FEATURED_SERVICES.forEach(svc=>{
   const card = document.createElement('div');
   card.className = "service-card";
+  card.dataset.dept = svc.cat;
   card.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke-width="1.6">${ICONS[svc.cat]}</svg><h3>${escapeHTML(svc.title)}</h3><p>${escapeHTML(svc.desc)}</p><button class="open-btn">Start →</button>`;
   card.querySelector('.open-btn').addEventListener('click', ()=>{ openAssistant(svc.cat); ask(svc.question); });
   featuredWrap.appendChild(card);
@@ -1637,15 +1931,15 @@ const METRICS = [
 
 const POSTERS = [
   { tag:"Tax & Revenue", title:"Pay early, pay less.", body:"Settle your full-year property tax before 31 August and claim the 5% early-payment rebate.", cta:"Check tax deadlines", cat:"tax", question:"When is property tax due and how do I get the early payment rebate?",
-    bg:"linear-gradient(135deg, #7E2A20 0%, #A93226 55%, #C4553F 100%)" },
+    bg:"#57715F" },
   { tag:"Permits & Licensing", title:"Check before you build.", body:"Describe your project in plain language and find out whether it needs a permit — before you file anything.", cta:"Run a scenario check", cat:"permits", question:"I want to add a room to my house. Do I need a building permit?",
-    bg:"linear-gradient(135deg, #1E2A38 0%, #33475C 60%, #4A6480 100%)" },
+    bg:"#B8792A" },
   { tag:"Regulatory Affairs", title:"Rules, in plain words.", body:"Quiet hours, waste collection days and zoning limits — explained without the legal jargon.", cta:"Ask about regulations", cat:"regulations", question:"What are the noise ordinance hours in a residential area?",
-    bg:"linear-gradient(135deg, #3D5245 0%, #57715F 60%, #7B9683 100%)" },
+    bg:"#A93226" },
   { tag:"Appointments", title:"Skip the queue.", body:"Reserve a counter slot at the department you need and get a reminder on the day.", cta:"Book an appointment", cat:"general", question:"book an appointment",
-    bg:"linear-gradient(135deg, #6B5A2E 0%, #93803F 55%, #D9C98C 100%)" },
+    bg:"#6B5B95" },
   { tag:"Accessibility", title:"Ask in your language.", body:"The desk answers in English, Spanish or Hindi — by typing or by speaking, whichever is easier.", cta:"Start an inquiry", cat:"general", question:"What can you help me with?",
-    bg:"linear-gradient(135deg, #2C3E50 0%, #4B5D6E 50%, #7E6A56 100%)" },
+    bg:"#1E2A38" },
 ];
 
 const SPOTLIGHTS = [
@@ -1699,11 +1993,11 @@ const NOTICES = [
 ];
 
 const DIRECTORIES = [
-  { icon:"👤", name:"Who's Who", sub:"Department heads and officers", cat:"general", question:"Who heads the Permits & Licensing Office and how do I reach that office?" },
-  { icon:"📇", name:"Contact Directory", sub:"Office phone and email lines", cat:"general", question:"What are the contact details for the civic departments?" },
-  { icon:"☎", name:"Helplines", sub:"Emergency and grievance numbers", cat:"general", question:"What helpline should I call to raise a civic grievance?" },
-  { icon:"💡", name:"Public Utilities", sub:"Water, power and sanitation", cat:"general", question:"Who do I contact about a water or power utility problem?" },
-  { icon:"📍", name:"Office Locator", sub:"Find the nearest counter", cat:"general", question:"nearby office" },
+  { icon:"👤", name:"Who's Who", phone:"1800 200 1100", sub:"Department heads and officers", cat:"general", question:"Who heads the Permits & Licensing Office and how do I reach that office?" },
+  { icon:"📇", name:"Contact Directory", phone:"1800 200 1120", sub:"Office phone and email lines", cat:"general", question:"What are the contact details for the civic departments?" },
+  { icon:"☎", name:"Helplines", phone:"155 300 · 24×7", sub:"Emergency and grievance numbers", cat:"general", question:"What helpline should I call to raise a civic grievance?" },
+  { icon:"💡", name:"Public Utilities", phone:"1800 200 1180", sub:"Water, power and sanitation", cat:"general", question:"Who do I contact about a water or power utility problem?" },
+  { icon:"📍", name:"Office Locator", phone:"1800 200 1100", sub:"Find the nearest counter", cat:"general", question:"nearby office" },
 ];
 
 // ---------- Announcements ticker ----------
@@ -1862,6 +2156,7 @@ function renderDirectories(){
       <div class="dir-icon">${d.icon}</div>
       <div class="dir-name">${escapeHTML(d.name)}</div>
       <div class="dir-sub">${escapeHTML(d.sub)}</div>
+      <div class="dir-phone">☎ ${escapeHTML(d.phone)}</div>
     </div>`).join('');
   wrap.querySelectorAll('.directory-tile').forEach((tile, i)=>{
     tile.addEventListener('click', ()=>{ openAssistant(DIRECTORIES[i].cat); ask(DIRECTORIES[i].question); });
@@ -1876,77 +2171,85 @@ renderDirectories();
    the official scheme guidelines.
    ========================================================================= */
 const SCHEMES = [
-  { name:"Ayushman Bharat PM-JAY", native:"आयुष्मान भारत प्रधानमंत्री जन आरोग्य योजना",
-    ministry:"Ministry of Health & Family Welfare", tag:"Health",
-    benefit:"Health cover of ₹5 lakh per family each year",
-    who:"Eligible low-income families identified through the official beneficiary database",
+  { name:"Universal Health Cover", subtitle:"National Health Assurance Programme",
+    ministry:"Department of Health & Family Services", tag:"Health",
+    benefit:"Cashless hospital treatment up to the annual cover limit",
+    who:"Households below the notified income threshold, plus registered dependants",
     status:"Ongoing · apply any time", icon:"🏥",
     bg:"linear-gradient(135deg,#A82A39 0%,#D2394B 60%,#E2635F 100%)",
-    question:"What is Ayushman Bharat PM-JAY, who is eligible, and how do I apply for the card?" },
+    question:"What does the Universal Health Cover scheme include, who is eligible, and how do I get a card?" },
 
-  { name:"PM Awas Yojana (Urban)", native:"प्रधानमंत्री आवास योजना (शहरी)",
-    ministry:"Ministry of Housing & Urban Affairs", tag:"Housing",
-    benefit:"Assistance towards a pucca house for urban households",
-    who:"Urban families without a pucca house, within the notified income categories",
+  { name:"Affordable Housing Assistance", subtitle:"Urban Housing Support Programme",
+    ministry:"Department of Housing & Urban Development", tag:"Housing",
+    benefit:"Grant or interest subsidy towards a first permanent home",
+    who:"Urban households without a permanent home, within the notified income bands",
     status:"Applications open", icon:"🏠",
     bg:"linear-gradient(135deg,#1E2A38 0%,#33475C 60%,#4A6480 100%)",
-    question:"What is PM Awas Yojana Urban, who qualifies, and what documents are needed to apply?" },
+    question:"How does Affordable Housing Assistance work, who qualifies, and what documents are needed?" },
 
-  { name:"PM-KISAN", native:"प्रधानमंत्री किसान सम्मान निधि",
-    ministry:"Ministry of Agriculture & Farmers' Welfare", tag:"Agriculture",
-    benefit:"₹6,000 a year paid directly in three instalments",
-    who:"Eligible landholding farmer families, subject to exclusion criteria",
+  { name:"Farmer Income Support", subtitle:"Direct Income Support for Smallholders",
+    ministry:"Department of Agriculture & Rural Development", tag:"Agriculture",
+    benefit:"Fixed income support paid directly in three instalments a year",
+    who:"Registered smallholder farming households, subject to landholding limits",
     status:"Instalments released periodically", icon:"🌾",
     bg:"linear-gradient(135deg,#3D5245 0%,#57715F 60%,#7B9683 100%)",
-    question:"What is PM-KISAN, who is eligible, and how do I check my instalment status?" },
+    question:"What is the Farmer Income Support scheme, who is eligible, and how do I check my instalment status?" },
 
-  { name:"PM Ujjwala Yojana", native:"प्रधानमंत्री उज्ज्वला योजना",
-    ministry:"Ministry of Petroleum & Natural Gas", tag:"Energy",
-    benefit:"Subsidised LPG connection with deposit-free cylinder",
-    who:"Adult women from eligible low-income households without an existing LPG connection",
+  { name:"Clean Cooking Fuel Access", subtitle:"Household Energy Transition Programme",
+    ministry:"Department of Energy & Fuel Supply", tag:"Energy",
+    benefit:"Subsidised gas connection with the security deposit waived",
+    who:"Low-income households without an existing clean-fuel connection",
     status:"Ongoing", icon:"🔥",
     bg:"linear-gradient(135deg,#6B4A18 0%,#C4762A 55%,#E8871E 100%)",
-    question:"What is PM Ujjwala Yojana, who can apply, and what documents does the LPG distributor need?" },
+    question:"How does the Clean Cooking Fuel Access scheme work and what does a household need to apply?" },
 
-  { name:"Sukanya Samriddhi Yojana", native:"सुकन्या समृद्धि योजना",
-    ministry:"Ministry of Finance · Small Savings", tag:"Savings",
-    benefit:"Long-term savings account for a girl child with tax benefits",
-    who:"Guardian of a girl child below ten years of age",
+  { name:"Girl Child Education Fund", subtitle:"Long-Term Savings Scheme for Girls",
+    ministry:"Department of Finance · Small Savings", tag:"Savings",
+    benefit:"Tax-advantaged savings account maturing at higher education age",
+    who:"A parent or guardian opening an account for a girl under ten",
     status:"Open at post offices and authorised banks", icon:"👧",
     bg:"linear-gradient(135deg,#4A2B6B 0%,#6A5AC9 60%,#8D82E0 100%)",
-    question:"How does Sukanya Samriddhi Yojana work, and how do I open an account for my daughter?" },
+    question:"How does the Girl Child Education Fund work and how do I open an account for my daughter?" },
 
-  { name:"PM Mudra Yojana", native:"प्रधानमंत्री मुद्रा योजना",
-    ministry:"Ministry of Finance · MUDRA", tag:"Livelihood",
-    benefit:"Collateral-free credit for micro and small enterprises",
-    who:"Non-corporate, non-farm micro enterprises and first-time entrepreneurs",
+  { name:"Micro Enterprise Credit Guarantee", subtitle:"Small Business Credit Programme",
+    ministry:"Department of Finance · Enterprise Credit", tag:"Livelihood",
+    benefit:"Collateral-free working capital for micro and small businesses",
+    who:"Non-corporate micro enterprises and first-time entrepreneurs",
     status:"Apply through any participating bank", icon:"💼",
     bg:"linear-gradient(135deg,#0A5F5E 0%,#0E9594 60%,#3FB7B0 100%)",
-    question:"What is PM Mudra Yojana, what are the loan categories, and how do I apply through a bank?" },
+    question:"What is the Micro Enterprise Credit Guarantee, what are the loan tiers, and how do I apply?" },
 
-  { name:"Atal Pension Yojana", native:"अटल पेंशन योजना",
-    ministry:"Ministry of Finance · PFRDA", tag:"Pension",
-    benefit:"Guaranteed monthly pension of ₹1,000–₹5,000 from age 60",
-    who:"Savings bank account holders in the eligible age band, contributing regularly",
+  { name:"Contributory Pension Plan", subtitle:"Guaranteed Retirement Income Programme",
+    ministry:"Department of Finance · Pension Authority", tag:"Pension",
+    benefit:"Guaranteed monthly pension from age sixty, based on your contribution tier",
+    who:"Working-age bank account holders contributing regularly",
     status:"Enrol at your bank branch", icon:"🧓",
     bg:"linear-gradient(135deg,#2C3E50 0%,#4B5D6E 55%,#7285A0 100%)",
-    question:"How does Atal Pension Yojana work, what does it cost per month, and how do I enrol?" },
+    question:"How does the Contributory Pension Plan work, what does it cost each month, and how do I enrol?" },
 
-  { name:"PM Vishwakarma", native:"प्रधानमंत्री विश्वकर्मा योजना",
-    ministry:"Ministry of Micro, Small & Medium Enterprises", tag:"Artisans",
-    benefit:"Skill training, toolkit support and collateral-free credit for artisans",
-    who:"Traditional artisans and craftspeople in the notified trades",
-    status:"Registration open at common service centres", icon:"🛠",
+  { name:"Artisan Livelihood Programme", subtitle:"Support for Traditional Crafts",
+    ministry:"Department of Small & Medium Enterprise", tag:"Artisans",
+    benefit:"Skills training, a toolkit grant and collateral-free credit",
+    who:"Registered artisans and craftspeople in the notified trades",
+    status:"Registration open at service centres", icon:"🛠",
     bg:"linear-gradient(135deg,#6B5A2E 0%,#93803F 55%,#C6AE63 100%)",
-    question:"What support does PM Vishwakarma give artisans, and how do I register for it?" },
+    question:"What support does the Artisan Livelihood Programme offer and how do I register for it?" },
 
-  { name:"Jal Jeevan Mission", native:"जल जीवन मिशन",
-    ministry:"Ministry of Jal Shakti", tag:"Water",
-    benefit:"Functional tap water connection for every rural household",
-    who:"Rural households, implemented through village water committees",
+  { name:"Safe Drinking Water Mission", subtitle:"Household Water Connection Programme",
+    ministry:"Department of Water Resources", tag:"Water",
+    benefit:"A metered piped water connection for every household",
+    who:"Households in areas covered by the current implementation phase",
     status:"Implementation ongoing", icon:"💧",
     bg:"linear-gradient(135deg,#123E5C 0%,#1D6D9C 55%,#3FA0CC 100%)",
-    question:"What is the Jal Jeevan Mission and how does a village get a tap water connection under it?" },
+    question:"What is the Safe Drinking Water Mission and how does a household get a piped connection?" },
+
+  { name:"Skills & Apprenticeship Grant", subtitle:"Youth Employability Programme",
+    ministry:"Department of Labour & Skills", tag:"Skills",
+    benefit:"Free certified training with a monthly stipend during placement",
+    who:"School leavers and jobseekers registered at an employment exchange",
+    status:"Intake open each quarter", icon:"🎓",
+    bg:"linear-gradient(135deg,#5B2E6B 0%,#8E4FA0 55%,#BC7ECB 100%)",
+    question:"What does the Skills & Apprenticeship Grant cover and how do I enrol in a training batch?" },
 ];
 
 const GOV_EMBLEM = `<svg viewBox="0 0 48 48" fill="none" aria-hidden="true">
@@ -1989,7 +2292,7 @@ function renderSchemeFeature(){
     <div class="sf-poster" style="background:${s.bg}">
       <div class="sf-govbar">${GOV_EMBLEM}<span>Government Scheme · ${escapeHTML(s.ministry)}</span></div>
       <h3>${escapeHTML(s.name)}</h3>
-      <div class="sf-native">${escapeHTML(s.native)}</div>
+      <div class="sf-sub">${escapeHTML(s.subtitle)}</div>
       <p class="sf-tagline">${escapeHTML(s.benefit)}</p>
       <div class="sf-emblem">${s.icon}</div>
     </div>
@@ -2016,7 +2319,7 @@ function renderPosterWall(){
         <div class="sp-gov">Government Scheme</div>
         <div class="sp-icon">${s.icon}</div>
         <h4>${escapeHTML(s.name)}</h4>
-        <div class="sp-native">${escapeHTML(s.native)}</div>
+        <div class="sp-sub">${escapeHTML(s.subtitle)}</div>
         <div class="sp-benefit">${escapeHTML(s.benefit)}</div>
       </div>
       <div class="sp-foot">
@@ -2347,7 +2650,13 @@ micBtn.addEventListener('click', ()=>{
   singleRecognition.start();
 });
 
-// ---------- Talk Mode (continuous voice conversation, full-screen overlay) ----------
+// ---------- Call Mode ----------
+// Restored from the earlier build, which used the backend audio pipeline
+// rather than the browser's Web Speech API. Once connected, the mic streams
+// continuously to the backend over a WebSocket; the backend transcribes it
+// live, asks the model when you finish a thought, and streams spoken audio
+// back, which plays automatically. Mic capture pauses while the clerk speaks
+// (like a normal phone-call turn) and resumes right after.
 const talkTrigger = document.getElementById('talkTrigger');
 const talkOverlay = document.getElementById('talkOverlay');
 const talkCircle = document.getElementById('talkCircle');
@@ -2355,72 +2664,505 @@ const talkOverlayStatus = document.getElementById('talkOverlayStatus');
 const talkOverlayDept = document.getElementById('talkOverlayDept');
 const talkOverlayCaption = document.getElementById('talkOverlayCaption');
 const talkClose = document.getElementById('talkClose');
-let talkModeActive = false;
-let talkRecognition = null;
-try {
-  if(SpeechRecognitionAPI){
-    talkRecognition = new SpeechRecognitionAPI();
-    talkRecognition.continuous = false;
-    talkRecognition.interimResults = false;
-    talkRecognition.onresult = async (e) => {
-      const text = e.results[0][0].transcript;
-      talkOverlayCaption.textContent = text;
-      talkOverlayCaption.classList.add('user-line');
-      setOrbState('thinking', 'Thinking…');
-      await addEntry(text, { viaVoice:true });
-    };
-    talkRecognition.onerror = () => { if(talkModeActive) setOrbState('listening','Listening…'); };
-    talkRecognition.onend = () => {
-      if(talkModeActive && orbCurrentState === 'listening'){
-        try { talkRecognition.start(); } catch {}
-      }
-    };
-  }
-} catch (e) { talkRecognition = null; }
+const talkPause = document.getElementById('talkPause');
+
 let orbCurrentState = 'idle';
 function setOrbState(state, label){
   orbCurrentState = state;
-  talkCircle.classList.remove('listening','speaking','thinking');
+  talkCircle.classList.remove('listening','speaking','thinking','paused');
   if(state !== 'idle') talkCircle.classList.add(state);
   talkOverlayStatus.textContent = label || '';
 }
-function openTalkOverlay(){
-  if(!talkRecognition){ alert("Voice conversation isn't supported in this browser — try Chrome or Edge."); return; }
-  talkModeActive = true;
+
+let callActive = false;
+let callSocket = null;
+let micStream = null;
+let mediaRecorder = null;
+let micSendEnabled = false;
+let audioQueue = [];
+let isPlayingAudio = false;
+let currentAudioEl = null;
+let pendingCallQuestion = null;
+let lastCallEntry = null;
+let callPaused = false;
+let callGotReady = false;
+let callCategory = null;
+let callRetriedAsGeneral = false;
+
+function callWsURL(){
+  const u = new URL(BACKEND_URL);
+  u.protocol = (u.protocol === 'https:') ? 'wss:' : 'ws:';
+  u.pathname = '/ws/call';
+  return u.toString();
+}
+
+async function startCall(){
+  if(callActive) return;
+  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+    alert("This browser doesn't support microphone access — try Chrome or Edge.");
+    return;
+  }
   talkOverlay.classList.remove('hidden');
   talkOverlayDept.textContent = deptLabel(currentCat);
   talkOverlayCaption.textContent = '';
   talkOverlayCaption.classList.remove('user-line');
-  talkRecognition.lang = currentLang === 'es' ? 'es-ES' : currentLang === 'hi' ? 'hi-IN' : 'en-US';
-  setOrbState('listening', 'Listening…');
-  try { talkRecognition.start(); } catch {}
-}
-function closeTalkOverlay(){
-  talkModeActive = false;
-  talkOverlay.classList.add('hidden');
-  talkOverlayCaption.textContent = '';
-  talkOverlayCaption.classList.remove('user-line');
-  setOrbState('idle');
-  try { talkRecognition.stop(); } catch {}
-  window.speechSynthesis.cancel();
-}
-talkTrigger.addEventListener('click', openTalkOverlay);
-talkClose.addEventListener('click', closeTalkOverlay);
-talkCircle.addEventListener('click', ()=>{
-  if(orbCurrentState === 'listening'){
-    try { talkRecognition.stop(); } catch {}
+  callPaused = false;
+  callRetriedAsGeneral = false;
+  simMode = false;
+  newCallRef();
+  startCallTimer();
+  updatePauseButton();
+  setOrbState('thinking', 'Connecting…');
+
+  try {
+    micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  } catch (e) {
+    setOrbState('idle', '');
+    talkOverlay.classList.add('hidden');
+    alert("Microphone access is needed for the call — please allow it and try again.");
+    return;
   }
-});
-function speakText(text, onDone){
-  talkOverlayCaption.textContent = text;
+
+  callActive = true;
+  openCallSocket(currentCat);
+  // If the live pipeline hasn't answered in a few seconds, fall back to the
+  // simulated call so the feature is still demonstrable.
+  clearTimeout(connectWatchdog);
+  connectWatchdog = setTimeout(()=>{
+    if(callActive && !callGotReady && !simMode) startSimulatedCall();
+  }, 3500);
+}
+
+function openCallSocket(cat){
+  callGotReady = false;
+  callCategory = cat;
+  try {
+    callSocket = new WebSocket(callWsURL());
+  } catch (e) {
+    startSimulatedCall();
+    return;
+  }
+  callSocket.binaryType = 'arraybuffer';
+
+  callSocket.onopen = () => {
+    callSocket.send(JSON.stringify({
+      category: cat,
+      language: currentLang,
+      mode: scenarioMode ? "scenario" : "chat"
+    }));
+  };
+  callSocket.onmessage = (ev) => {
+    if(typeof ev.data === 'string'){
+      let msg; try { msg = JSON.parse(ev.data); } catch { return; }
+      handleCallMessage(msg);
+    } else {
+      queueAudio(new Blob([ev.data], { type: 'audio/mpeg' }));
+    }
+  };
+  callSocket.onerror = () => {};
+  callSocket.onclose = () => {
+    // The unified CivicBot window sends category "all". A backend that only
+    // knows the four department personas will drop the socket before sending
+    // "ready" — in that case retry once as "general" so the call still works.
+    if(callActive && !callGotReady && cat === 'all' && !callRetriedAsGeneral){
+      callRetriedAsGeneral = true;
+      openCallSocket('general');
+      return;
+    }
+    if(callActive && !callGotReady && !simMode){ startSimulatedCall(); return; }
+    if(callActive && !simMode) endCall();
+  };
+}
+
+function handleCallMessage(msg){
+  switch(msg.type){
+    case 'ready':
+      callGotReady = true;
+      clearTimeout(connectWatchdog);
+      renderCallMeta();
+      setOrbState('listening', 'Listening…');
+      startMicStreaming();
+      break;
+    case 'interim':
+      talkOverlayCaption.textContent = msg.text;
+      talkOverlayCaption.classList.add('user-line');
+      break;
+    case 'user_transcript':
+      talkOverlayCaption.textContent = msg.text;
+      talkOverlayCaption.classList.add('user-line');
+      setOrbState('thinking', 'Thinking…');
+      micSendEnabled = false;
+      beginCallLedgerEntry(msg.text);
+      break;
+    case 'department':
+      talkOverlayDept.textContent = msg.department;
+      break;
+    case 'assistant_text':
+      talkOverlayCaption.textContent = msg.text;
+      talkOverlayCaption.classList.remove('user-line');
+      finishCallLedgerEntry(msg.text);
+      break;
+    case 'booking_fill':
+      renderBookingForm(currentCat === 'all' ? 'general' : currentCat);
+      setTimeout(()=> fillBookingForm(msg.data), 60);
+      break;
+    case 'error':
+      talkOverlayCaption.textContent = msg.message;
+      break;
+  }
+}
+
+function startMicStreaming(){
+  if(!micStream) return;
+  const mimeType = (window.MediaRecorder && MediaRecorder.isTypeSupported('audio/webm;codecs=opus'))
+    ? 'audio/webm;codecs=opus' : 'audio/webm';
+  try {
+    mediaRecorder = new MediaRecorder(micStream, { mimeType });
+  } catch (e) {
+    talkOverlayCaption.textContent = "This browser can't record audio for calls — try Chrome or Edge.";
+    return;
+  }
+  mediaRecorder.ondataavailable = (e) => {
+    if(!micSendEnabled || callPaused || !e.data || e.data.size === 0) return;
+    if(!callSocket || callSocket.readyState !== WebSocket.OPEN) return;
+    e.data.arrayBuffer().then(buf => {
+      if(callSocket && callSocket.readyState === WebSocket.OPEN) callSocket.send(buf);
+    });
+  };
+  micSendEnabled = !callPaused;
+  mediaRecorder.start(250);
+}
+
+function queueAudio(blob){
+  audioQueue.push(blob);
+  if(!isPlayingAudio) playNextAudio();
+}
+function playNextAudio(){
+  if(audioQueue.length === 0){
+    isPlayingAudio = false;
+    currentAudioEl = null;
+    if(callActive && !callPaused){ setOrbState('listening', 'Listening…'); micSendEnabled = true; }
+    return;
+  }
+  isPlayingAudio = true;
+  if(!callPaused) setOrbState('speaking', 'Speaking…');
+  micSendEnabled = false; // don't pick up the clerk's own voice
+  const blob = audioQueue.shift();
+  const url = URL.createObjectURL(blob);
+  currentAudioEl = new Audio(url);
+  const cleanup = () => { URL.revokeObjectURL(url); playNextAudio(); };
+  currentAudioEl.onended = cleanup;
+  currentAudioEl.onerror = cleanup;
+  if(!callPaused) currentAudioEl.play().catch(cleanup);
+}
+
+/* ----- Pause / resume, sitting next to the end-call button ----- */
+function updatePauseButton(){
+  if(!talkPause) return;
+  talkPause.classList.toggle('resumed', !callPaused);
+  talkPause.setAttribute('title', callPaused ? 'Resume call' : 'Pause call');
+  talkPause.setAttribute('aria-label', callPaused ? 'Resume call' : 'Pause call');
+  const icon = talkPause.querySelector('.pause-icon');
+  const play = talkPause.querySelector('.play-icon');
+  if(icon) icon.style.display = callPaused ? 'none' : 'block';
+  if(play) play.style.display = callPaused ? 'block' : 'none';
+  if(typeof scheduleI18n === 'function') scheduleI18n();
+}
+function toggleCallPause(){
+  if(!callActive) return;
+  callPaused = !callPaused;
+  if(callPaused){
+    micSendEnabled = false;
+    if(currentAudioEl){ try { currentAudioEl.pause(); } catch {} }
+    if(simMode){
+      clearTimeout(simTimer);
+      try { simRec && simRec.stop(); } catch {}
+      try { window.speechSynthesis && window.speechSynthesis.pause(); } catch {}
+    }
+    setOrbState('paused', 'Paused — microphone is off');
+  } else if(simMode){
+    try { window.speechSynthesis && window.speechSynthesis.resume(); } catch {}
+    if(window.speechSynthesis && window.speechSynthesis.speaking){
+      setOrbState('speaking', 'Speaking…');
+    } else {
+      setOrbState('listening', simRec ? 'Listening…' : 'Simulated caller…');
+      if(simRec){ try { simRec.start(); } catch {} }
+      else { simTimer = setTimeout(()=> runScriptedTurn(), 900); }
+    }
+  } else if(currentAudioEl && isPlayingAudio){
+    setOrbState('speaking', 'Speaking…');
+    currentAudioEl.play().catch(()=>{});
+  } else {
+    micSendEnabled = true;
+    setOrbState('listening', 'Listening…');
+  }
+  updatePauseButton();
+}
+
+function beginCallLedgerEntry(question){
+  pendingCallQuestion = question;
+  ticket++;
+  const ledger = document.getElementById('ledger');
+  const entryWrap = document.createElement('div');
+  entryWrap.className = "entry";
+  const num = document.createElement('div');
+  num.className = "entry-num";
+  const timeLabel = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+  num.textContent = "ENTRY " + String(ticket).padStart(3,'0') + " · " + timeLabel + " · 🎙 CALL";
+  entryWrap.appendChild(num);
+  const qRow = document.createElement('div');
+  qRow.className = "q-row";
+  qRow.innerHTML = `<div class="bubble">${escapeHTML(question)}</div>`;
+  entryWrap.appendChild(qRow);
+  ledger.appendChild(entryWrap);
+  ledger.scrollTop = ledger.scrollHeight;
+  entryWrap.dataset.timeLabel = timeLabel;
+  lastCallEntry = entryWrap;
+}
+function finishCallLedgerEntry(answer){
+  if(!lastCallEntry || !pendingCallQuestion) return;
+  const aRow = document.createElement('div');
+  aRow.className = "a-row";
+  aRow.innerHTML = `${stampSVG()}<div class="bubble">${escapeHTML(answer)}</div>`;
+  lastCallEntry.appendChild(aRow);
+  addPassportStamp(deptLabel(currentCat), pendingCallQuestion);
+  persistLedgerEntry({ question: pendingCallQuestion, answer, timeLabel: lastCallEntry.dataset.timeLabel, viaVoice: true });
+  const ledger = document.getElementById('ledger');
+  ledger.scrollTop = ledger.scrollHeight;
+  pendingCallQuestion = null;
+  lastCallEntry = null;
+}
+
+function fillBookingForm(data){
+  const fieldMap = { name: 'bkName', contact: 'bkContact', date: 'bkDate', time: 'bkTime', reason: 'bkReason' };
+  Object.entries(fieldMap).forEach(([key, id]) => {
+    const el = document.getElementById(id);
+    if(el && data[key] !== undefined) el.value = data[key];
+  });
+  const deptSelect = document.getElementById('bkDept');
+  if(deptSelect && data.department) deptSelect.value = data.department;
+}
+
+function endCall(){
+  callActive = false;
+  micSendEnabled = false;
+  callPaused = false;
+  clearTimeout(connectWatchdog);
+  clearInterval(callTimer); callTimer = null; callStartedAt = 0;
+  stopSimulatedCall();
+  try { mediaRecorder && mediaRecorder.state !== 'inactive' && mediaRecorder.stop(); } catch {}
+  try { micStream && micStream.getTracks().forEach(t => t.stop()); } catch {}
+  try {
+    if(callSocket && callSocket.readyState === WebSocket.OPEN){
+      callSocket.send(JSON.stringify({ type: 'hangup' }));
+    }
+  } catch {}
+  try { callSocket && callSocket.close(); } catch {}
+  callSocket = null;
+  mediaRecorder = null;
+  micStream = null;
+  if(currentAudioEl){ try { currentAudioEl.pause(); } catch {} currentAudioEl = null; }
+  audioQueue = [];
+  isPlayingAudio = false;
+  pendingCallQuestion = null;
+  lastCallEntry = null;
+  talkOverlay.classList.add('hidden');
+  setOrbState('idle', '');
+  updatePauseButton();
+}
+
+talkTrigger.addEventListener('click', startCall);
+talkClose.addEventListener('click', endCall);
+if(talkPause) talkPause.addEventListener('click', toggleCallPause);
+talkCircle.addEventListener('click', toggleCallPause);
+
+
+/* =========================================================================
+   Simulated call fallback.
+   The WebSocket pipeline above is the real thing. When the backend has no
+   /ws/call route (or isn't running at all) the overlay used to open and
+   immediately close, which made the feature impossible to demo. This takes
+   over in that case: the browser handles speech in and out, answers come
+   from /api/chat when the REST backend is reachable and from a small local
+   set when it isn't, and the overlay is clearly marked as simulated.
+   ========================================================================= */
+let simMode = false;
+let simRec = null;
+let simTimer = null;
+let simScriptIdx = 0;
+let connectWatchdog = null;
+let callTimer = null;
+let callStartedAt = 0;
+let callRef = '';
+let callLine = '';
+
+const SIM_SCRIPT = [
+  "How do I apply for a building permit?",
+  "When is property tax due this year?",
+  "What are the quiet hours in a residential area?",
+  "Which schemes could my family be eligible for?"
+];
+
+const SIM_ANSWERS = [
+  { k:["building permit","construction permit","renovation","build"],
+    a:"For a building permit you'll need proof of ownership, stamped site plans and a completed application. Submit it at the Permits and Licensing window; a small project is usually cleared in two to three weeks. Don't start work before approval — that risks a stop-work order." },
+  { k:["business licence","business license","trade licence","shop"],
+    a:"A business licence is a single combined application now. Bring identity proof, proof of premises and your registration certificate. Renewals open sixty days before expiry and can be completed at the counter or online." },
+  { k:["property tax","tax due","pay tax","tax bill"],
+    a:"Property tax runs on the financial year and the full-year amount is due by the thirty-first of August. Paying the whole year before that date earns a five per cent rebate. Instalment arrangements are available if you ask before the due date rather than after." },
+  { k:["noise","quiet hours","ordinance"],
+    a:"In residential zones the quiet hours run from ten at night until seven in the morning, with a stricter limit on Sundays. Persistent noise is handled by code enforcement; a single late-night complaint usually goes to the non-emergency line." },
+  { k:["zoning","land use","plot"],
+    a:"Zoning for any plot can be checked at the Regulatory Affairs window using the survey number. The certificate tells you the permitted use, the height limit and the setback you have to leave on each side." },
+  { k:["waste","garbage","recycling","collection"],
+    a:"Household waste is collected on a fixed weekday for each ward, with recyclables taken on the same round if they're bagged separately. Ward twelve moved to Tuesdays with effect from the first of August." },
+  { k:["scheme","eligible","subsidy","benefit","yojana"],
+    a:"That depends on your household income and situation. The Universal Health Cover and Affordable Housing Assistance schemes both work off the notified income threshold, and the Skills and Apprenticeship Grant is open to any registered jobseeker. Tell me a bit about your household and I'll narrow it down." },
+  { k:["appointment","book","slot","visit"],
+    a:"I can set up an appointment for you. Tell me which department you need and a date that suits you, and I'll open the booking form on screen." },
+  { k:["office","near","location","address"],
+    a:"The nearest civic office to most residents is the district counter, open on weekdays from nine thirty to six during the current extended hours. I can pull it up on the map for you." },
+  { k:["hello","hi","hey","good morning","good evening"],
+    a:"Hello, you've reached the Civic Information Desk. I can help with permits, tax payments, local regulations, government schemes and appointments. What do you need today?" },
+  { k:["your name","who are you","what are you"],
+    a:"I'm CivicBot, the AI assistant for the Civic Information Desk. I help with permits, tax payments and local regulations — what can I help you with?" },
+  { k:["my name","who am i"],
+    a:"I don't have your name on file yet — happy to note it if you tell me. In the meantime, what can I help you with today?" },
+  { k:["how are you","how's it going","how you doing"],
+    a:"Doing well, thanks for asking! I'm here and ready to help with permits, tax payments, or local regulations — what's on your mind?" }
+];
+
+function simAnswerFor(q){
+  const lower = (q || '').toLowerCase();
+  const hit = SIM_ANSWERS.find(r => r.k.some(k => lower.includes(k)));
+  if(hit) return hit.a;
+  return "I didn't quite catch a specific request there. I can help with permits, tax payments, local regulations, government schemes, or appointments — what would you like to ask?";
+}
+
+/* ----- call reference number, line and running duration ----- */
+function newCallRef(){
+  callRef = 'CALL-' + String(Math.floor(1000 + Math.random() * 9000));
+  callLine = 'Line ' + String(Math.floor(1 + Math.random() * 8)).padStart(2, '0');
+}
+function renderCallMeta(){
+  const el = document.getElementById('talkOverlayMeta');
+  if(!el) return;
+  const secs = callStartedAt ? Math.floor((Date.now() - callStartedAt) / 1000) : 0;
+  const mm = String(Math.floor(secs / 60)).padStart(2, '0');
+  const ss = String(secs % 60).padStart(2, '0');
+  el.innerHTML = `${simMode ? '<span class="call-sim-badge">Simulated</span>' : ''}
+    <span>Ref ${callRef}</span><span class="dot">•</span><span>${callLine}</span><span class="dot">•</span><span>${mm}:${ss}</span>`;
+}
+function startCallTimer(){
+  callStartedAt = Date.now();
+  renderCallMeta();
+  clearInterval(callTimer);
+  callTimer = setInterval(renderCallMeta, 1000);
+}
+
+/* ----- the simulated call itself ----- */
+function startSimulatedCall(){
+  if(!callActive) return;
+  simMode = true;
+  clearTimeout(connectWatchdog);
+  try { if(callSocket) { callSocket.onclose = null; callSocket.close(); } } catch {}
+  callSocket = null;
+  try { mediaRecorder && mediaRecorder.state !== 'inactive' && mediaRecorder.stop(); } catch {}
+  mediaRecorder = null;
+  renderCallMeta();
+
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(SR){
+    try {
+      simRec = new SR();
+      simRec.continuous = false;
+      simRec.interimResults = true;
+      simRec.lang = currentLang === 'es' ? 'es-ES' : currentLang === 'hi' ? 'hi-IN' : 'en-US';
+      simRec.onresult = (e) => {
+        const res = e.results[e.results.length - 1];
+        const text = res[0].transcript;
+        talkOverlayCaption.textContent = text;
+        talkOverlayCaption.classList.add('user-line');
+        if(res.isFinal) handleSimQuestion(text);
+      };
+      simRec.onerror = () => {};
+      simRec.onend = () => {
+        if(simMode && callActive && !callPaused && orbCurrentState === 'listening'){
+          try { simRec.start(); } catch {}
+        }
+      };
+    } catch { simRec = null; }
+  }
+
+  setOrbState('listening', simRec ? 'Listening…' : 'Simulated caller…');
+  if(simRec){ try { simRec.start(); } catch {} }
+  else { simTimer = setTimeout(()=> runScriptedTurn(), 1400); }
+}
+
+function runScriptedTurn(){
+  if(!simMode || !callActive || callPaused) return;
+  const q = SIM_SCRIPT[simScriptIdx % SIM_SCRIPT.length];
+  simScriptIdx++;
+  talkOverlayCaption.textContent = q;
+  talkOverlayCaption.classList.add('user-line');
+  handleSimQuestion(q);
+}
+
+async function handleSimQuestion(text){
+  if(!simMode || !callActive) return;
+  try { simRec && simRec.stop(); } catch {}
+  setOrbState('thinking', 'Thinking…');
+  beginCallLedgerEntry(text);
+
+  let answer = null;
+  try {
+    const cat = currentCat === 'all' ? 'general' : currentCat;
+    const r = await fetch(`${BACKEND_URL}/api/chat`, {
+      method:"POST", headers:{ "Content-Type":"application/json" },
+      body: JSON.stringify({ message:text, category:cat, mode:"chat", language:currentLang, context:"" })
+    });
+    const j = await r.json();
+    if(r.ok && j.answer) answer = j.answer;
+  } catch { answer = null; }
+  if(!answer) answer = simAnswerFor(text);
+
+  if(!simMode || !callActive) return;
+  talkOverlayCaption.textContent = answer;
   talkOverlayCaption.classList.remove('user-line');
-  if(!('speechSynthesis' in window)){ onDone && onDone(); return; }
+  finishCallLedgerEntry(answer);
+  simSpeak(answer, ()=>{
+    if(!simMode || !callActive || callPaused) return;
+    setOrbState('listening', simRec ? 'Listening…' : 'Simulated caller…');
+    if(simRec){ try { simRec.start(); } catch {} }
+    else { simTimer = setTimeout(()=> runScriptedTurn(), 2200); }
+  });
+}
+
+function simSpeak(text, done){
+  if(!('speechSynthesis' in window)){ setTimeout(done, 900); return; }
+  setOrbState('speaking', 'Speaking…');
+  try { window.speechSynthesis.cancel(); } catch {}
   const utter = new SpeechSynthesisUtterance(text);
   utter.lang = currentLang === 'es' ? 'es-ES' : currentLang === 'hi' ? 'hi-IN' : 'en-US';
-  utter.onend = () => onDone && onDone();
-  setOrbState('speaking', 'Speaking…');
+  utter.rate = 1.02;
+  utter.onend = done;
+  utter.onerror = done;
   window.speechSynthesis.speak(utter);
 }
+
+function stopSimulatedCall(){
+  simMode = false;
+  clearTimeout(simTimer); simTimer = null;
+  simScriptIdx = 0;
+  try { simRec && simRec.stop(); } catch {}
+  simRec = null;
+  try { window.speechSynthesis && window.speechSynthesis.cancel(); } catch {}
+}
+
+// Kept so the typed-entry path still has somewhere to hand a spoken reply.
+// The call pipeline does its own speech, so these are deliberately inert.
+function speakText(text, onDone){ onDone && onDone(); }
+function resumeListening(){}
 
 // ---------- Document attach ----------
 const attachBtn = document.getElementById('attachBtn');
@@ -2753,15 +3495,6 @@ async function addEntry(question, opts){
   attachedContext = ""; attachedFileName = ""; fileInput.value = ""; renderAttachChip();
 }
 
-function resumeListening(){
-  if(talkModeActive){
-    setOrbState('listening', 'Listening…');
-    try { talkRecognition.start(); } catch {}
-  } else {
-    setOrbState('idle');
-  }
-}
-
 function setStatus(online){
   document.getElementById('statusDot').classList.toggle('offline', !online);
   document.getElementById('statusText').textContent = online ? "Connected" : "Backend offline";
@@ -2825,7 +3558,7 @@ const I18N = {
   "Continue": ["आगे बढ़ें", "Continuar"],
 
   /* --- hero --- */
-  "Public Service Information Access": ["सार्वजनिक सेवा सूचना पहुँच", "Acceso a información de servicios públicos"],
+  "Conversational AI Chatbot · Public Service Information Access": ["सार्वजनिक सेवा सूचना पहुँच के लिए संवादी AI चैटबॉट", "Chatbot conversacional de IA para el acceso a información de servicios públicos"],
   "One desk for every civic question.": ["हर नागरिक सवाल के लिए एक ही डेस्क।", "Una sola mesa para cada consulta ciudadana."],
   "Permits, tax payments, and local regulations — ask by voice or text, and get a routed answer instead of digging through department websites.":
     ["अनुमतियाँ, कर भुगतान और स्थानीय नियम — आवाज़ या टेक्स्ट से पूछिए और विभागीय वेबसाइटें खंगालने के बजाय सीधा उत्तर पाइए।",
@@ -3054,24 +3787,6 @@ const I18N = {
   "Health": ["स्वास्थ्य", "Salud"], "Housing": ["आवास", "Vivienda"], "Agriculture": ["कृषि", "Agricultura"],
   "Energy": ["ऊर्जा", "Energía"], "Savings": ["बचत", "Ahorro"], "Livelihood": ["आजीविका", "Medios de vida"],
   "Pension": ["पेंशन", "Pensión"], "Artisans": ["कारीगर", "Artesanos"], "Water": ["जल", "Agua"],
-  "Ayushman Bharat PM-JAY": ["आयुष्मान भारत पीएम-जय", "Ayushman Bharat PM-JAY"],
-  "PM Awas Yojana (Urban)": ["प्रधानमंत्री आवास योजना (शहरी)", "PM Awas Yojana (Urbana)"],
-  "PM-KISAN": ["पीएम-किसान", "PM-KISAN"],
-  "PM Ujjwala Yojana": ["प्रधानमंत्री उज्ज्वला योजना", "PM Ujjwala Yojana"],
-  "Sukanya Samriddhi Yojana": ["सुकन्या समृद्धि योजना", "Sukanya Samriddhi Yojana"],
-  "PM Mudra Yojana": ["प्रधानमंत्री मुद्रा योजना", "PM Mudra Yojana"],
-  "Atal Pension Yojana": ["अटल पेंशन योजना", "Atal Pension Yojana"],
-  "PM Vishwakarma": ["प्रधानमंत्री विश्वकर्मा", "PM Vishwakarma"],
-  "Jal Jeevan Mission": ["जल जीवन मिशन", "Jal Jeevan Mission"],
-  "Health cover of ₹5 lakh per family each year": ["प्रति परिवार प्रति वर्ष ₹5 लाख का स्वास्थ्य कवर", "Cobertura médica de ₹5 lakh por familia al año"],
-  "Assistance towards a pucca house for urban households": ["शहरी परिवारों को पक्के मकान के लिए सहायता", "Apoyo para vivienda firme en hogares urbanos"],
-  "₹6,000 a year paid directly in three instalments": ["प्रति वर्ष ₹6,000, तीन किस्तों में सीधे खाते में", "₹6,000 al año en tres pagos directos"],
-  "Subsidised LPG connection with deposit-free cylinder": ["जमा-मुक्त सिलेंडर के साथ सब्सिडी वाला एलपीजी कनेक्शन", "Conexión de gas subsidiada sin depósito"],
-  "Long-term savings account for a girl child with tax benefits": ["बालिका के लिए कर लाभ सहित दीर्घकालिक बचत खाता", "Cuenta de ahorro a largo plazo para niñas, con beneficios fiscales"],
-  "Collateral-free credit for micro and small enterprises": ["सूक्ष्म एवं लघु उद्यमों के लिए बिना गारंटी ऋण", "Crédito sin garantía para micro y pequeñas empresas"],
-  "Guaranteed monthly pension of ₹1,000–₹5,000 from age 60": ["60 वर्ष की आयु से ₹1,000–₹5,000 मासिक निश्चित पेंशन", "Pensión mensual garantizada de ₹1,000 a ₹5,000 desde los 60"],
-  "Skill training, toolkit support and collateral-free credit for artisans": ["कारीगरों के लिए कौशल प्रशिक्षण, औज़ार सहायता और बिना गारंटी ऋण", "Capacitación, herramientas y crédito sin garantía para artesanos"],
-  "Functional tap water connection for every rural household": ["हर ग्रामीण घर तक नल से जल कनेक्शन", "Conexión de agua potable para cada hogar rural"],
   "Ongoing · apply any time": ["चालू · कभी भी आवेदन करें", "Vigente · solicita en cualquier momento"],
   "Applications open": ["आवेदन खुले हैं", "Solicitudes abiertas"],
   "Instalments released periodically": ["किस्तें समय-समय पर जारी", "Pagos liberados periódicamente"],
@@ -3079,8 +3794,36 @@ const I18N = {
   "Open at post offices and authorised banks": ["डाकघरों और अधिकृत बैंकों में उपलब्ध", "Disponible en oficinas postales y bancos autorizados"],
   "Apply through any participating bank": ["किसी भी भागीदार बैंक से आवेदन करें", "Solicita en cualquier banco participante"],
   "Enrol at your bank branch": ["अपनी बैंक शाखा में नामांकन कराएँ", "Inscríbete en tu sucursal bancaria"],
-  "Registration open at common service centres": ["कॉमन सर्विस सेंटर पर पंजीकरण खुला", "Registro abierto en centros de servicio"],
   "Implementation ongoing": ["कार्यान्वयन जारी", "Implementación en curso"],
+  "Universal Health Cover": ["सर्वजन स्वास्थ्य कवर", "Cobertura universal de salud"],
+  "Affordable Housing Assistance": ["किफ़ायती आवास सहायता", "Apoyo a la vivienda asequible"],
+  "Farmer Income Support": ["किसान आय सहायता", "Apoyo al ingreso agrícola"],
+  "Clean Cooking Fuel Access": ["स्वच्छ रसोई ईंधन पहुँच", "Acceso a combustible limpio para cocinar"],
+  "Girl Child Education Fund": ["बालिका शिक्षा निधि", "Fondo educativo para niñas"],
+  "Micro Enterprise Credit Guarantee": ["सूक्ष्म उद्यम ऋण गारंटी", "Garantía de crédito para microempresas"],
+  "Contributory Pension Plan": ["अंशदायी पेंशन योजना", "Plan de pensión contributiva"],
+  "Artisan Livelihood Programme": ["कारीगर आजीविका कार्यक्रम", "Programa de sustento para artesanos"],
+  "Safe Drinking Water Mission": ["सुरक्षित पेयजल मिशन", "Misión de agua potable segura"],
+  "Skills & Apprenticeship Grant": ["कौशल एवं प्रशिक्षु अनुदान", "Beca de formación y aprendizaje"],
+  "National Health Assurance Programme": ["राष्ट्रीय स्वास्थ्य आश्वासन कार्यक्रम", "Programa nacional de aseguramiento en salud"],
+  "Urban Housing Support Programme": ["शहरी आवास सहायता कार्यक्रम", "Programa de apoyo a la vivienda urbana"],
+  "Direct Income Support for Smallholders": ["लघु किसानों को प्रत्यक्ष आय सहायता", "Apoyo directo al ingreso de pequeños productores"],
+  "Household Energy Transition Programme": ["घरेलू ऊर्जा परिवर्तन कार्यक्रम", "Programa de transición energética doméstica"],
+  "Long-Term Savings Scheme for Girls": ["बालिकाओं हेतु दीर्घकालिक बचत योजना", "Plan de ahorro a largo plazo para niñas"],
+  "Small Business Credit Programme": ["लघु व्यवसाय ऋण कार्यक्रम", "Programa de crédito para pequeñas empresas"],
+  "Guaranteed Retirement Income Programme": ["निश्चित सेवानिवृत्ति आय कार्यक्रम", "Programa de ingreso garantizado de jubilación"],
+  "Support for Traditional Crafts": ["पारंपरिक शिल्प हेतु सहायता", "Apoyo a las artesanías tradicionales"],
+  "Household Water Connection Programme": ["घरेलू जल कनेक्शन कार्यक्रम", "Programa de conexión de agua domiciliaria"],
+  "Youth Employability Programme": ["युवा रोज़गार-योग्यता कार्यक्रम", "Programa de empleabilidad juvenil"],
+  "Skills": ["कौशल", "Competencias"],
+  "Registration open at service centres": ["सेवा केंद्रों पर पंजीकरण खुला", "Registro abierto en centros de servicio"],
+  "Intake open each quarter": ["हर तिमाही प्रवेश खुला", "Admisión abierta cada trimestre"],
+  "Pause call": ["कॉल रोकें", "Pausar llamada"],
+  "Resume call": ["कॉल जारी रखें", "Reanudar llamada"],
+  "End call": ["कॉल समाप्त करें", "Finalizar llamada"],
+  "Paused — microphone is off": ["रुका हुआ — माइक्रोफ़ोन बंद है", "En pausa: micrófono apagado"],
+  "Connecting…": ["जुड़ रहा है…", "Conectando…"],
+  "Start a call with the assistant": ["सहायक से कॉल शुरू करें", "Iniciar una llamada con el asistente"],
 
   /* --- long-form paragraphs (matched with whitespace normalised) --- */
   "Scheme names shown here are real central-government programmes, but the summaries are condensed prototype content for demonstration. Always confirm eligibility, amounts and deadlines on the official scheme portal before applying.":
@@ -3142,6 +3885,9 @@ function i18nWalk(){
       if(!p) return NodeFilter.FILTER_REJECT;
       const tag = p.nodeName;
       if(tag === 'SCRIPT' || tag === 'STYLE' || tag === 'TEXTAREA') return NodeFilter.FILTER_REJECT;
+      // Live counters (the call timer) opt out — they change every second and
+      // would otherwise trigger a full re-walk on each tick.
+      if(p.closest && p.closest('[data-i18n-skip]')) return NodeFilter.FILTER_REJECT;
       return n.nodeValue && n.nodeValue.trim() ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
     }
   });
@@ -3191,7 +3937,15 @@ function setLanguage(lang){
   applyI18n();
 }
 
-i18nObserver = new MutationObserver(scheduleI18n);
+i18nObserver = new MutationObserver((records)=>{
+  for(const r of records){
+    const node = r.target;
+    const el = node.nodeType === 1 ? node : node.parentElement;
+    if(el && el.closest && el.closest('[data-i18n-skip]')) continue;
+    scheduleI18n();
+    return;
+  }
+});
 setLanguage(localStorage.getItem('civicLang') || 'en');
 
 </script>
