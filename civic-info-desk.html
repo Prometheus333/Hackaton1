@@ -671,7 +671,274 @@
   footer{text-align:center; font-family:'IBM Plex Mono', monospace; font-size:0.66rem; letter-spacing:0.06em; color:var(--ink-soft); padding:16px 10px 30px;}
 
   @media (prefers-reduced-motion: reduce){ .stamp-mark, .spin, .view, .icon-btn.recording, .hero-stamp, .talk-ring, .talk-icon-bars span{animation:none !important;} }
+  /* ==========================================================================
+     ADDITIONS — (1) CivicBot mascot, (2) Government Scheme spotlight + posters
+     ========================================================================== */
+
+  /* ----- 1a. Home "Ask CivicBot" hub band ----- */
+  .bot-band{
+    background:linear-gradient(135deg,#101A24 0%,#1B2B3C 45%,#233A50 100%);
+    color:#fff; padding:54px 24px 58px; position:relative; overflow:hidden;
+  }
+  .bot-band::before{
+    content:""; position:absolute; inset:0;
+    background:radial-gradient(circle at 50% 120%, rgba(232,135,30,.28), transparent 60%);
+    pointer-events:none;
+  }
+  .bot-band-inner{
+    max-width:1100px; margin:0 auto; position:relative; z-index:1;
+    display:flex; align-items:center; gap:38px; justify-content:center; flex-wrap:wrap; text-align:left;
+  }
+  .bot-stage{position:relative; width:190px; height:190px; flex:0 0 auto; cursor:pointer; border:0; background:transparent; padding:0;}
+  .bot-stage .bot-halo{
+    position:absolute; inset:0; border-radius:50%;
+    border:1px dashed rgba(232,135,30,.55); animation:botSpin 18s linear infinite;
+  }
+  .bot-stage .bot-halo.h2{inset:16px; border-color:rgba(255,255,255,.22); animation-duration:26s; animation-direction:reverse;}
+  .bot-stage .bot-glow{
+    position:absolute; left:50%; bottom:10px; transform:translateX(-50%);
+    width:120px; height:18px; border-radius:50%;
+    background:rgba(0,0,0,.45); filter:blur(7px); animation:botShadow 1.9s ease-in-out infinite;
+  }
+  @keyframes botSpin{to{transform:rotate(360deg);}}
+  @keyframes botShadow{0%,100%{width:120px; opacity:.45;} 50%{width:88px; opacity:.28;}}
+
+  /* the robot itself — the "dance" is a bob + tilt + swinging arms */
+  .robot{width:118px; height:auto; position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); animation:botDance 1.9s ease-in-out infinite;}
+  .robot .r-arm-l,.robot .r-arm-r,.robot .r-antenna{transform-box:view-box;}
+  .robot .r-arm-l{transform-origin:31px 58px; animation:armL 1.9s ease-in-out infinite;}
+  .robot .r-arm-r{transform-origin:89px 58px; animation:armR 1.9s ease-in-out infinite;}
+  .robot .r-antenna{transform-origin:60px 22px; animation:antenna 1.9s ease-in-out infinite;}
+  .robot .r-eye{transform-box:fill-box; transform-origin:center; animation:blink 4.2s ease-in-out infinite;}
+  @keyframes botDance{
+    0%,100%{transform:translate(-50%,-50%) rotate(-5deg) translateY(0);}
+    25%{transform:translate(-50%,-50%) rotate(0deg) translateY(-9px);}
+    50%{transform:translate(-50%,-50%) rotate(5deg) translateY(0);}
+    75%{transform:translate(-50%,-50%) rotate(0deg) translateY(-9px);}
+  }
+  @keyframes armL{0%,100%{transform:rotate(-22deg);} 50%{transform:rotate(26deg);}}
+  @keyframes armR{0%,100%{transform:rotate(22deg);} 50%{transform:rotate(-26deg);}}
+  @keyframes antenna{0%,100%{transform:rotate(-14deg);} 50%{transform:rotate(14deg);}}
+  @keyframes blink{0%,92%,100%{transform:scaleY(1);} 96%{transform:scaleY(.12);}}
+
+  .bot-copy{max-width:520px;}
+  .bot-copy .bot-eyebrow{
+    font-family:'IBM Plex Mono', monospace; font-size:0.66rem; letter-spacing:0.16em;
+    text-transform:uppercase; color:var(--gold); margin-bottom:10px;
+  }
+  .bot-copy h2{font-family:'Archivo', sans-serif; font-size:1.9rem; line-height:1.15; margin:0 0 10px; color:#fff;}
+  .bot-copy p{margin:0 0 18px; color:rgba(255,255,255,.78); font-size:0.95rem; line-height:1.6;}
+  .bot-copy .bot-cta{
+    background:var(--gold); color:#101A24; border:0; border-radius:999px;
+    padding:13px 26px; font-weight:700; font-size:0.92rem; cursor:pointer;
+    box-shadow:0 8px 22px rgba(232,135,30,.32); transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .bot-copy .bot-cta:hover{transform:translateY(-2px); box-shadow:0 12px 28px rgba(232,135,30,.42);}
+  .bot-skills{display:flex; flex-wrap:wrap; gap:8px; margin-top:16px;}
+  .bot-skills span{
+    font-size:0.72rem; padding:5px 11px; border-radius:999px;
+    border:1px solid rgba(255,255,255,.24); color:rgba(255,255,255,.8);
+    font-family:'IBM Plex Mono', monospace; letter-spacing:0.04em;
+  }
+
+  /* ----- 1b. Floating mascot, present on every view ----- */
+  .bot-fab{
+    position:fixed; right:22px; bottom:22px; z-index:120;
+    width:78px; height:78px; border-radius:50%; border:0; cursor:pointer; padding:0;
+    background:linear-gradient(140deg,#1B2B3C,#33475C);
+    box-shadow:0 10px 26px rgba(16,26,36,.34); display:grid; place-items:center;
+    transition:transform .18s ease, box-shadow .18s ease;
+  }
+  .bot-fab:hover{transform:scale(1.07);}
+  .bot-fab .robot{width:52px; position:static; transform:none; animation:botDanceSm 1.9s ease-in-out infinite;}
+  @keyframes botDanceSm{
+    0%,100%{transform:rotate(-6deg) translateY(0);}
+    25%{transform:rotate(0deg) translateY(-5px);}
+    50%{transform:rotate(6deg) translateY(0);}
+    75%{transform:rotate(0deg) translateY(-5px);}
+  }
+  .bot-fab .fab-ping{
+    position:absolute; inset:-4px; border-radius:50%; border:2px solid var(--gold);
+    opacity:0; animation:fabPing 2.8s ease-out infinite;
+  }
+  @keyframes fabPing{0%{transform:scale(.85); opacity:.75;} 70%,100%{transform:scale(1.35); opacity:0;}}
+  .bot-tip{
+    position:fixed; right:108px; bottom:44px; z-index:120;
+    background:#101A24; color:#fff; font-size:0.78rem; padding:9px 14px; border-radius:10px;
+    box-shadow:var(--shadow-md); max-width:200px; line-height:1.4;
+    opacity:0; transform:translateX(8px); pointer-events:none; transition:opacity .2s ease, transform .2s ease;
+  }
+  .bot-tip::after{
+    content:""; position:absolute; right:-5px; bottom:16px; width:10px; height:10px;
+    background:#101A24; transform:rotate(45deg);
+  }
+  .bot-tip.show{opacity:1; transform:translateX(0);}
+
+  /* ----- 2a. Government scheme spotlight ----- */
+  .scheme-section{
+    max-width:1100px; margin:0 auto; padding:34px 24px 20px;
+  }
+  .scheme-head{display:flex; align-items:flex-end; justify-content:space-between; gap:16px; flex-wrap:wrap; margin-bottom:20px;}
+  .scheme-head h2{font-family:'Archivo', sans-serif; font-size:1.3rem; margin:0 0 4px;}
+  .scheme-head p{margin:0; color:var(--ink-soft); font-size:0.86rem;}
+  .scheme-head .scheme-live{
+    display:inline-flex; align-items:center; gap:7px; font-family:'IBM Plex Mono', monospace;
+    font-size:0.66rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--stamp);
+  }
+  .scheme-head .scheme-live i{width:7px; height:7px; border-radius:50%; background:var(--stamp); animation:livePulse 1.6s ease-in-out infinite; font-style:normal;}
+  @keyframes livePulse{0%,100%{opacity:1; transform:scale(1);} 50%{opacity:.35; transform:scale(.7);}}
+
+  .scheme-body{display:grid; grid-template-columns:320px 1fr; gap:22px; align-items:start;}
+  @media (max-width:880px){ .scheme-body{grid-template-columns:1fr;} }
+
+  /* the requested "column" of recent schemes */
+  .scheme-column{
+    background:var(--paper); border:1px solid var(--line); border-radius:14px;
+    box-shadow:var(--shadow-sm); overflow:hidden;
+  }
+  .scheme-column-head{
+    padding:13px 16px; border-bottom:1px solid var(--line-soft);
+    font-family:'IBM Plex Mono', monospace; font-size:0.66rem; letter-spacing:0.14em;
+    text-transform:uppercase; color:var(--ink-soft); display:flex; justify-content:space-between; align-items:center;
+  }
+  .scheme-list{max-height:430px; overflow-y:auto;}
+  .scheme-row{
+    width:100%; text-align:left; background:transparent; border:0; cursor:pointer;
+    padding:13px 16px; border-bottom:1px solid var(--line-soft);
+    display:flex; gap:12px; align-items:flex-start; transition:background .15s ease;
+  }
+  .scheme-row:hover{background:#F5F8FB;}
+  .scheme-row.active{background:#F0F5FA; box-shadow:inset 3px 0 0 var(--stamp);}
+  .scheme-row .sr-badge{
+    width:32px; height:32px; border-radius:9px; flex:0 0 auto; display:grid; place-items:center;
+    font-size:1rem; color:#fff;
+  }
+  .scheme-row .sr-name{font-weight:600; font-size:0.86rem; line-height:1.35; display:block; color:var(--ink);}
+  .scheme-row .sr-meta{font-size:0.7rem; color:var(--ink-soft); margin-top:3px; display:block;}
+  .scheme-row .sr-tag{
+    font-family:'IBM Plex Mono', monospace; font-size:0.6rem; letter-spacing:0.08em;
+    text-transform:uppercase; color:var(--sage); margin-top:5px; display:inline-block;
+  }
+
+  /* featured scheme poster */
+  .scheme-feature{
+    border-radius:16px; overflow:hidden; border:1px solid var(--line);
+    box-shadow:var(--shadow-md); background:var(--paper);
+  }
+  .sf-poster{position:relative; padding:26px 26px 22px; color:#fff; overflow:hidden;}
+  .sf-poster::after{
+    content:""; position:absolute; right:-60px; top:-60px; width:230px; height:230px;
+    border-radius:50%; background:rgba(255,255,255,.09);
+  }
+  .sf-poster::before{
+    content:""; position:absolute; right:-20px; bottom:-90px; width:180px; height:180px;
+    border-radius:50%; border:1px solid rgba(255,255,255,.22);
+  }
+  .sf-govbar{
+    display:flex; align-items:center; gap:10px; margin-bottom:16px;
+    font-family:'IBM Plex Mono', monospace; font-size:0.62rem; letter-spacing:0.14em; text-transform:uppercase;
+    color:rgba(255,255,255,.85); position:relative; z-index:1;
+  }
+  .sf-govbar svg{width:24px; height:24px; flex:0 0 auto;}
+  .sf-poster h3{font-family:'Archivo', sans-serif; font-size:1.75rem; line-height:1.12; margin:0 0 4px; position:relative; z-index:1; max-width:80%;}
+  .sf-native{font-size:0.95rem; color:rgba(255,255,255,.82); margin:0 0 12px; position:relative; z-index:1;}
+  .sf-poster .sf-tagline{
+    font-size:0.9rem; color:rgba(255,255,255,.9); margin:0; max-width:78%;
+    position:relative; z-index:1; line-height:1.55;
+  }
+  .sf-emblem{
+    position:absolute; right:26px; top:50%; transform:translateY(-40%);
+    width:96px; height:96px; border-radius:50%; display:grid; place-items:center;
+    background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.3); font-size:2.6rem; z-index:1;
+  }
+  .sf-meta{display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--line-soft);}
+  .sf-meta div{background:var(--paper); padding:14px 16px;}
+  .sf-meta .k{
+    font-family:'IBM Plex Mono', monospace; font-size:0.6rem; letter-spacing:0.1em;
+    text-transform:uppercase; color:var(--ink-soft); margin-bottom:4px;
+  }
+  .sf-meta .v{font-size:0.82rem; font-weight:600; line-height:1.35;}
+  @media (max-width:640px){ .sf-meta{grid-template-columns:1fr;} .sf-emblem{display:none;} .sf-poster h3,.sf-poster .sf-tagline{max-width:100%;} }
+  .sf-foot{padding:16px; display:flex; gap:10px; flex-wrap:wrap; align-items:center; border-top:1px solid var(--line-soft);}
+  .sf-foot .sf-ask{
+    background:var(--ink); color:#fff; border:0; border-radius:9px; padding:11px 18px;
+    font-size:0.82rem; font-weight:600; cursor:pointer;
+  }
+  .sf-foot .sf-ask:hover{background:var(--stamp);}
+  .sf-foot .sf-note{font-size:0.72rem; color:var(--ink-soft); flex:1 1 200px;}
+
+  /* ----- 2b. Scheme poster wall ----- */
+  .poster-wall-section{max-width:1100px; margin:0 auto; padding:10px 24px 60px;}
+  .poster-wall-head{display:flex; align-items:baseline; justify-content:space-between; gap:14px; flex-wrap:wrap; margin-bottom:8px;}
+  .poster-wall-head h2{font-family:'Archivo', sans-serif; font-size:1.3rem; margin:0;}
+  .poster-wall-head span{font-size:0.78rem; color:var(--ink-soft);}
+  .poster-wall{
+    display:flex; gap:16px; overflow-x:auto; padding:16px 4px 22px;
+    scroll-snap-type:x mandatory; scrollbar-width:thin;
+  }
+  .scheme-poster{
+    flex:0 0 232px; scroll-snap-align:start; border-radius:12px; overflow:hidden;
+    cursor:pointer; border:1px solid var(--line); background:var(--paper);
+    box-shadow:var(--shadow-sm); transition:transform .18s ease, box-shadow .18s ease;
+    display:flex; flex-direction:column;
+  }
+  .scheme-poster:hover{transform:translateY(-5px); box-shadow:var(--shadow-lg);}
+  .sp-art{position:relative; height:250px; padding:14px; color:#fff; display:flex; flex-direction:column; overflow:hidden;}
+  .sp-art::after{
+    content:""; position:absolute; left:-40px; bottom:-70px; width:170px; height:170px;
+    border-radius:50%; background:rgba(255,255,255,.10);
+  }
+  .sp-strip{
+    position:absolute; left:0; right:0; top:0; height:5px;
+    background:linear-gradient(90deg,#FF9933 0 33%,#FFFFFF 33% 66%,#138808 66% 100%);
+  }
+  .sp-gov{
+    font-family:'IBM Plex Mono', monospace; font-size:0.53rem; letter-spacing:0.12em;
+    text-transform:uppercase; color:rgba(255,255,255,.82); margin:8px 0 auto; position:relative; z-index:1;
+  }
+  .sp-icon{font-size:2.4rem; position:relative; z-index:1; margin-bottom:8px;}
+  .sp-art h4{
+    font-family:'Archivo', sans-serif; font-size:1.02rem; line-height:1.2; margin:0 0 3px;
+    position:relative; z-index:1;
+  }
+  .sp-art .sp-native{font-size:0.76rem; color:rgba(255,255,255,.85); position:relative; z-index:1; margin-bottom:8px;}
+  .sp-art .sp-benefit{
+    position:relative; z-index:1; font-size:0.7rem; font-weight:600;
+    background:rgba(255,255,255,.18); border:1px solid rgba(255,255,255,.28);
+    border-radius:6px; padding:5px 8px; align-self:flex-start;
+  }
+  .sp-foot{padding:11px 13px; display:flex; flex-direction:column; gap:4px;}
+  .sp-foot .sp-min{font-size:0.68rem; color:var(--ink-soft); line-height:1.35;}
+  .sp-foot .sp-link{font-size:0.72rem; font-weight:600; color:var(--stamp);}
+
+  .scheme-disclaimer{
+    max-width:1100px; margin:0 auto 10px; padding:0 24px;
+    font-size:0.72rem; color:var(--ink-soft); line-height:1.6;
+  }
+
+  /* ----- unified-assistant window button ----- */
+  .window-btn.all-btn{
+    background:linear-gradient(135deg,#1B2B3C,#33475C); color:#fff; border-color:transparent;
+  }
+  .window-btn.all-btn svg{stroke:#fff;}
+  .window-btn.all-btn.active{box-shadow:0 0 0 2px var(--gold);}
+  .all-mode-note{
+    margin:0 20px 12px; padding:10px 13px; border-radius:9px;
+    background:#F0F5FA; border:1px solid var(--line); font-size:0.78rem; color:var(--ink-soft);
+  }
+
+  @media (max-width:700px){
+    .bot-band-inner{flex-direction:column; text-align:center;}
+    .bot-copy{text-align:center;}
+    .bot-skills{justify-content:center;}
+    .bot-tip{display:none;}
+    .bot-fab{width:64px; height:64px; right:14px; bottom:14px;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .robot, .robot *, .bot-stage .bot-halo, .bot-glow, .fab-ping, .scheme-live i{animation:none !important;}
+  }
 </style>
+
 </head>
 <body>
 
@@ -712,6 +979,7 @@
   <div class="nav-links">
     <button class="nav-link" data-nav="home">Home</button>
     <button class="nav-link" data-nav="services">Services</button>
+    <button class="nav-link" data-scroll="schemeSection">Schemes</button>
     <button class="nav-link" data-nav="assistant">Assistant</button>
     <button class="nav-link" data-nav="insights">Insights</button>
     <button class="nav-link" data-nav="help">Help Center</button>
@@ -752,7 +1020,7 @@
 
       <div class="hero-search">
         <select id="heroSearchCat" aria-label="Service category">
-          <option value="general">All Departments</option>
+          <option value="all">All Departments</option>
           <option value="permits">Permits &amp; Licensing</option>
           <option value="tax">Tax &amp; Revenue</option>
           <option value="regulations">Regulatory Affairs</option>
@@ -776,9 +1044,73 @@
     <div class="metric-band-inner" id="metricBand"></div>
   </div>
 
+  <div class="bot-band" id="botBand">
+    <div class="bot-band-inner">
+      <button class="bot-stage" id="botStage" aria-label="Open the CivicBot assistant">
+        <span class="bot-halo"></span><span class="bot-halo h2"></span>
+        <svg class="robot" viewBox="0 0 120 120" fill="none" aria-hidden="true">
+        <g class="r-antenna"><line x1="60" y1="22" x2="60" y2="10" stroke="#E8871E" stroke-width="3" stroke-linecap="round"/><circle cx="60" cy="8" r="5" fill="#E8871E"/></g>
+        <g class="r-arm-l"><rect x="26" y="56" width="10" height="30" rx="5" fill="#8FA6BD"/><circle cx="31" cy="88" r="6" fill="#E8871E"/></g>
+        <g class="r-arm-r"><rect x="84" y="56" width="10" height="30" rx="5" fill="#8FA6BD"/><circle cx="89" cy="88" r="6" fill="#E8871E"/></g>
+        <rect x="38" y="80" width="44" height="26" rx="9" fill="#6E88A3"/>
+        <rect x="46" y="102" width="10" height="12" rx="4" fill="#40566E"/>
+        <rect x="64" y="102" width="10" height="12" rx="4" fill="#40566E"/>
+        <rect x="34" y="22" width="52" height="44" rx="15" fill="#EDF1F5" stroke="#40566E" stroke-width="2.5"/>
+        <rect x="42" y="34" width="36" height="20" rx="9" fill="#101A24"/>
+        <circle class="r-eye" cx="52" cy="44" r="4.2" fill="#4FD1C5"/>
+        <circle class="r-eye" cx="68" cy="44" r="4.2" fill="#4FD1C5"/>
+        <path d="M54 57 q6 5 12 0" stroke="#40566E" stroke-width="2" stroke-linecap="round"/>
+        <rect x="44" y="66" width="32" height="16" rx="6" fill="#8FA6BD"/>
+        <circle cx="60" cy="74" r="4" fill="#E8871E"/>
+      </svg>
+        <span class="bot-glow"></span>
+      </button>
+      <div class="bot-copy">
+        <div class="bot-eyebrow">Central AI Assistant</div>
+        <h2>Meet CivicBot — one assistant for every department.</h2>
+        <p>Permits, taxes, regulations, schemes, appointments, office locations — ask anything in one place. CivicBot answers across all categories and routes you onward only when a specialist window is genuinely needed.</p>
+        <button class="bot-cta" id="botCta">Ask CivicBot anything</button>
+        <div class="bot-skills">
+          <span>All departments</span><span>Voice &amp; text</span><span>3 languages</span><span>Scheme guidance</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="home-section">
     <h2>Important Services</h2>
     <div class="pill-row" id="importantServices"></div>
+  </div>
+
+  <div class="scheme-section" id="schemeSection">
+    <div class="scheme-head">
+      <div>
+        <h2>Scheme Spotlight</h2>
+        <p>Recently highlighted government schemes, with eligibility and benefits at a glance.</p>
+      </div>
+      <div class="scheme-live"><i></i>Updated this week</div>
+    </div>
+    <div class="scheme-body">
+      <div class="scheme-column">
+        <div class="scheme-column-head"><span>Latest Schemes</span><span id="schemeCount"></span></div>
+        <div class="scheme-list" id="schemeList"></div>
+      </div>
+      <div class="scheme-feature" id="schemeFeature"></div>
+    </div>
+  </div>
+
+  <div class="poster-wall-section">
+    <div class="poster-wall-head">
+      <h2>Scheme Posters</h2>
+      <span>Scroll sideways &middot; tap a poster to ask CivicBot about it</span>
+    </div>
+    <div class="poster-wall" id="posterWall"></div>
+  </div>
+
+  <div class="scheme-disclaimer">
+    Scheme names shown here are real central-government programmes, but the summaries are
+    condensed prototype content for demonstration. Always confirm eligibility, amounts and
+    deadlines on the official scheme portal before applying.
   </div>
 
   <div class="poster-section">
@@ -879,6 +1211,10 @@
   <div class="assistant-wrap">
     <aside class="windows">
       <div class="windows-label">Service Windows</div>
+      <button class="window-btn all-btn" data-cat="all">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><rect x="4" y="7" width="16" height="12" rx="3"/><path d="M12 3v4M8.5 12h.01M15.5 12h.01M9 16h6"/></svg>
+        CivicBot — All Departments
+      </button>
       <button class="window-btn active" data-cat="permits">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4"/><path d="M9 12h6M9 16h6"/></svg>
         Permits &amp; Licenses
@@ -911,6 +1247,7 @@
         <h1>Inquiry Ledger</h1>
         <span id="dateStamp"></span>
       </div>
+      <div class="all-mode-note" id="allModeNote" style="display:none;">You are in the all-department window — ask about permits, taxes, regulations, government schemes, offices or appointments in the same conversation.</div>
       <div id="reminderWrap" style="padding:0 20px;"></div>
       <div class="ledger" id="ledger" aria-live="polite"></div>
       <div id="attachChipWrap"></div>
@@ -1013,6 +1350,26 @@
 
 <footer>Prototype — TCS AI Friday Season 2 · Conversational AI Chatbot for Public Service Information Access</footer>
 
+<button class="bot-fab" id="botFab" aria-label="Ask CivicBot — the all-department AI assistant">
+  <span class="fab-ping"></span>
+  <svg class="robot" viewBox="0 0 120 120" fill="none" aria-hidden="true">
+        <g class="r-antenna"><line x1="60" y1="22" x2="60" y2="10" stroke="#E8871E" stroke-width="3" stroke-linecap="round"/><circle cx="60" cy="8" r="5" fill="#E8871E"/></g>
+        <g class="r-arm-l"><rect x="26" y="56" width="10" height="30" rx="5" fill="#8FA6BD"/><circle cx="31" cy="88" r="6" fill="#E8871E"/></g>
+        <g class="r-arm-r"><rect x="84" y="56" width="10" height="30" rx="5" fill="#8FA6BD"/><circle cx="89" cy="88" r="6" fill="#E8871E"/></g>
+        <rect x="38" y="80" width="44" height="26" rx="9" fill="#6E88A3"/>
+        <rect x="46" y="102" width="10" height="12" rx="4" fill="#40566E"/>
+        <rect x="64" y="102" width="10" height="12" rx="4" fill="#40566E"/>
+        <rect x="34" y="22" width="52" height="44" rx="15" fill="#EDF1F5" stroke="#40566E" stroke-width="2.5"/>
+        <rect x="42" y="34" width="36" height="20" rx="9" fill="#101A24"/>
+        <circle class="r-eye" cx="52" cy="44" r="4.2" fill="#4FD1C5"/>
+        <circle class="r-eye" cx="68" cy="44" r="4.2" fill="#4FD1C5"/>
+        <path d="M54 57 q6 5 12 0" stroke="#40566E" stroke-width="2" stroke-linecap="round"/>
+        <rect x="44" y="66" width="32" height="16" rx="6" fill="#8FA6BD"/>
+        <circle cx="60" cy="74" r="4" fill="#E8871E"/>
+      </svg>
+</button>
+<div class="bot-tip" id="botTip">Hi! I'm CivicBot — ask me anything across all departments.</div>
+
 <script>
 const BACKEND_URL = "http://127.0.0.1:5000";
 
@@ -1020,7 +1377,8 @@ const SAMPLES = {
   permits: ["How do I apply for a building permit?", "How do I get a business license?", "How do I get a residential parking permit?", "How do I check my permit status?"],
   tax: ["When is property tax due?", "How can I pay my taxes?", "What happens if I pay late?", "How do I file my income tax return?"],
   regulations: ["What are the noise ordinance hours?", "What are the waste disposal rules?", "How do I check zoning for a property?"],
-  general: ["Hi", "Can I talk to a person?", "What can you help me with?"]
+  general: ["Hi", "Can I talk to a person?", "What can you help me with?"],
+  all: ["What government schemes am I likely to be eligible for?", "I want to open a small shop — what permits and loans do I need?", "When is property tax due and can I pay online?", "What are the quiet hours in a residential area?", "Book an appointment"]
 };
 const DEPARTMENTS = {
   permits: "Permits & Licensing Office", tax: "Tax & Revenue Office",
@@ -1030,14 +1388,21 @@ const ICONS = {
   permits: `<path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4"/><path d="M9 12h6M9 16h6"/>`,
   tax: `<circle cx="12" cy="12" r="9"/><path d="M12 7v10M9 9.5c0-1.4 1.3-2.5 3-2.5s3 1 3 2.2c0 3-6 1.3-6 4.2 0 1.4 1.3 2.6 3 2.6s3-1 3-2.4"/>`,
   regulations: `<path d="M12 3v3M12 3l-6 3.5M12 3l6 3.5M3 8l3-1.5M21 8l-3-1.5M4 8h4l-2 5-2-5zM16 8h4l-2 5-2-5zM6 13v6M18 13v6M4 21h16M9 21V10M15 21V10"/>`,
-  general: `<circle cx="12" cy="12" r="9"/><path d="M9.2 9.2a2.8 2.8 0 1 1 3.7 2.6c-.9.35-1 .9-1 1.7M12 17h.01"/>`
+  general: `<circle cx="12" cy="12" r="9"/><path d="M9.2 9.2a2.8 2.8 0 1 1 3.7 2.6c-.9.35-1 .9-1 1.7M12 17h.01"/>`,
+  all: `<rect x="4" y="7" width="16" height="12" rx="3"/><path d="M12 3v4M8.5 12h.01M15.5 12h.01M9 16h6"/>`
 };
 const DESCRIPTIONS = {
   permits: { short:"Building permits, business licenses, and parking permits.", bullets:["Building & renovation permits","Business licensing","Residential parking permits"] },
   tax: { short:"Property tax, payment methods, penalties, and filing.", bullets:["Property tax due dates","Payment methods & portals","Penalties and payment plans"] },
   regulations: { short:"Noise ordinances, waste disposal, and zoning.", bullets:["Noise & quiet hours","Waste & recycling schedules","Zoning and land use"] },
-  general: { short:"Not sure which window you need? Start here.", bullets:["General orientation","Route to the right department","Speak to a human agent"] }
+  general: { short:"Not sure which window you need? Start here.", bullets:["General orientation","Route to the right department","Speak to a human agent"] },
+  all: { short:"One assistant across every department, plus government schemes.", bullets:["Answers spanning all four departments","Government scheme eligibility and benefits","Appointments, offices and documents"] }
 };
+
+// The unified window is not a department, so it lives outside DEPARTMENTS
+// (which is iterated to build the department cards and the booking dropdown).
+const ALL_DEPT_LABEL = "CivicBot \u2014 All Departments";
+function deptLabel(cat){ return cat === 'all' ? ALL_DEPT_LABEL : DEPARTMENTS[cat]; }
 const HELP_ARTICLES = [
   { cat:"permits", q:"What documents do I need for a building permit?", a:"Typically proof of property ownership, site/construction plans, and a completed application form. Requirements scale with project size." },
   { cat:"permits", q:"Can I start construction while my permit is pending?", a:"No — starting work before approval can result in a stop-work order and fines. Wait for confirmation." },
@@ -1504,6 +1869,204 @@ function renderDirectories(){
 }
 renderDirectories();
 
+/* =========================================================================
+   Government scheme spotlight + poster wall.
+   Scheme names are real central-government programmes; the one-line
+   summaries are condensed for the prototype and are not a substitute for
+   the official scheme guidelines.
+   ========================================================================= */
+const SCHEMES = [
+  { name:"Ayushman Bharat PM-JAY", native:"आयुष्मान भारत प्रधानमंत्री जन आरोग्य योजना",
+    ministry:"Ministry of Health & Family Welfare", tag:"Health",
+    benefit:"Health cover of ₹5 lakh per family each year",
+    who:"Eligible low-income families identified through the official beneficiary database",
+    status:"Ongoing · apply any time", icon:"🏥",
+    bg:"linear-gradient(135deg,#A82A39 0%,#D2394B 60%,#E2635F 100%)",
+    question:"What is Ayushman Bharat PM-JAY, who is eligible, and how do I apply for the card?" },
+
+  { name:"PM Awas Yojana (Urban)", native:"प्रधानमंत्री आवास योजना (शहरी)",
+    ministry:"Ministry of Housing & Urban Affairs", tag:"Housing",
+    benefit:"Assistance towards a pucca house for urban households",
+    who:"Urban families without a pucca house, within the notified income categories",
+    status:"Applications open", icon:"🏠",
+    bg:"linear-gradient(135deg,#1E2A38 0%,#33475C 60%,#4A6480 100%)",
+    question:"What is PM Awas Yojana Urban, who qualifies, and what documents are needed to apply?" },
+
+  { name:"PM-KISAN", native:"प्रधानमंत्री किसान सम्मान निधि",
+    ministry:"Ministry of Agriculture & Farmers' Welfare", tag:"Agriculture",
+    benefit:"₹6,000 a year paid directly in three instalments",
+    who:"Eligible landholding farmer families, subject to exclusion criteria",
+    status:"Instalments released periodically", icon:"🌾",
+    bg:"linear-gradient(135deg,#3D5245 0%,#57715F 60%,#7B9683 100%)",
+    question:"What is PM-KISAN, who is eligible, and how do I check my instalment status?" },
+
+  { name:"PM Ujjwala Yojana", native:"प्रधानमंत्री उज्ज्वला योजना",
+    ministry:"Ministry of Petroleum & Natural Gas", tag:"Energy",
+    benefit:"Subsidised LPG connection with deposit-free cylinder",
+    who:"Adult women from eligible low-income households without an existing LPG connection",
+    status:"Ongoing", icon:"🔥",
+    bg:"linear-gradient(135deg,#6B4A18 0%,#C4762A 55%,#E8871E 100%)",
+    question:"What is PM Ujjwala Yojana, who can apply, and what documents does the LPG distributor need?" },
+
+  { name:"Sukanya Samriddhi Yojana", native:"सुकन्या समृद्धि योजना",
+    ministry:"Ministry of Finance · Small Savings", tag:"Savings",
+    benefit:"Long-term savings account for a girl child with tax benefits",
+    who:"Guardian of a girl child below ten years of age",
+    status:"Open at post offices and authorised banks", icon:"👧",
+    bg:"linear-gradient(135deg,#4A2B6B 0%,#6A5AC9 60%,#8D82E0 100%)",
+    question:"How does Sukanya Samriddhi Yojana work, and how do I open an account for my daughter?" },
+
+  { name:"PM Mudra Yojana", native:"प्रधानमंत्री मुद्रा योजना",
+    ministry:"Ministry of Finance · MUDRA", tag:"Livelihood",
+    benefit:"Collateral-free credit for micro and small enterprises",
+    who:"Non-corporate, non-farm micro enterprises and first-time entrepreneurs",
+    status:"Apply through any participating bank", icon:"💼",
+    bg:"linear-gradient(135deg,#0A5F5E 0%,#0E9594 60%,#3FB7B0 100%)",
+    question:"What is PM Mudra Yojana, what are the loan categories, and how do I apply through a bank?" },
+
+  { name:"Atal Pension Yojana", native:"अटल पेंशन योजना",
+    ministry:"Ministry of Finance · PFRDA", tag:"Pension",
+    benefit:"Guaranteed monthly pension of ₹1,000–₹5,000 from age 60",
+    who:"Savings bank account holders in the eligible age band, contributing regularly",
+    status:"Enrol at your bank branch", icon:"🧓",
+    bg:"linear-gradient(135deg,#2C3E50 0%,#4B5D6E 55%,#7285A0 100%)",
+    question:"How does Atal Pension Yojana work, what does it cost per month, and how do I enrol?" },
+
+  { name:"PM Vishwakarma", native:"प्रधानमंत्री विश्वकर्मा योजना",
+    ministry:"Ministry of Micro, Small & Medium Enterprises", tag:"Artisans",
+    benefit:"Skill training, toolkit support and collateral-free credit for artisans",
+    who:"Traditional artisans and craftspeople in the notified trades",
+    status:"Registration open at common service centres", icon:"🛠",
+    bg:"linear-gradient(135deg,#6B5A2E 0%,#93803F 55%,#C6AE63 100%)",
+    question:"What support does PM Vishwakarma give artisans, and how do I register for it?" },
+
+  { name:"Jal Jeevan Mission", native:"जल जीवन मिशन",
+    ministry:"Ministry of Jal Shakti", tag:"Water",
+    benefit:"Functional tap water connection for every rural household",
+    who:"Rural households, implemented through village water committees",
+    status:"Implementation ongoing", icon:"💧",
+    bg:"linear-gradient(135deg,#123E5C 0%,#1D6D9C 55%,#3FA0CC 100%)",
+    question:"What is the Jal Jeevan Mission and how does a village get a tap water connection under it?" },
+];
+
+const GOV_EMBLEM = `<svg viewBox="0 0 48 48" fill="none" aria-hidden="true">
+  <circle cx="24" cy="24" r="21" stroke="currentColor" stroke-width="1.6"/>
+  <circle cx="24" cy="24" r="15" stroke="currentColor" stroke-width="1"/>
+  <circle cx="24" cy="24" r="5.5" stroke="currentColor" stroke-width="1.4"/>
+  <path d="M24 3v42M3 24h42M9 9l30 30M39 9L9 39" stroke="currentColor" stroke-width="0.7" opacity="0.5"/>
+</svg>`;
+
+let schemeIndex = 0;
+
+function renderSchemeColumn(){
+  const list = document.getElementById('schemeList');
+  const count = document.getElementById('schemeCount');
+  if(!list) return;
+  if(count) count.textContent = SCHEMES.length + " listed";
+  list.innerHTML = SCHEMES.map((s, i) => `
+    <button type="button" class="scheme-row ${i===schemeIndex?'active':''}" data-scheme="${i}">
+      <span class="sr-badge" style="background:${s.bg}">${s.icon}</span>
+      <span>
+        <span class="sr-name">${escapeHTML(s.name)}</span>
+        <span class="sr-meta">${escapeHTML(s.ministry)}</span>
+        <span class="sr-tag">${escapeHTML(s.tag)} · ${escapeHTML(s.status)}</span>
+      </span>
+    </button>`).join('');
+  list.querySelectorAll('[data-scheme]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      schemeIndex = parseInt(btn.dataset.scheme, 10);
+      renderSchemeColumn();
+      renderSchemeFeature();
+    });
+  });
+}
+
+function renderSchemeFeature(){
+  const wrap = document.getElementById('schemeFeature');
+  if(!wrap) return;
+  const s = SCHEMES[schemeIndex];
+  wrap.innerHTML = `
+    <div class="sf-poster" style="background:${s.bg}">
+      <div class="sf-govbar">${GOV_EMBLEM}<span>Government Scheme · ${escapeHTML(s.ministry)}</span></div>
+      <h3>${escapeHTML(s.name)}</h3>
+      <div class="sf-native">${escapeHTML(s.native)}</div>
+      <p class="sf-tagline">${escapeHTML(s.benefit)}</p>
+      <div class="sf-emblem">${s.icon}</div>
+    </div>
+    <div class="sf-meta">
+      <div><div class="k">Benefit</div><div class="v">${escapeHTML(s.benefit)}</div></div>
+      <div><div class="k">Who can apply</div><div class="v">${escapeHTML(s.who)}</div></div>
+      <div><div class="k">Status</div><div class="v">${escapeHTML(s.status)}</div></div>
+    </div>
+    <div class="sf-foot">
+      <button type="button" class="sf-ask" id="schemeAsk">Ask CivicBot about this scheme</button>
+      <span class="sf-note">Confirm eligibility and deadlines on the official scheme portal before applying.</span>
+    </div>`;
+  const ask1 = document.getElementById('schemeAsk');
+  if(ask1) ask1.addEventListener('click', ()=>{ openAssistant('all'); ask(s.question); });
+}
+
+function renderPosterWall(){
+  const wall = document.getElementById('posterWall');
+  if(!wall) return;
+  wall.innerHTML = SCHEMES.map((s, i) => `
+    <div class="scheme-poster" data-poster="${i}">
+      <div class="sp-art" style="background:${s.bg}">
+        <span class="sp-strip"></span>
+        <div class="sp-gov">Government Scheme</div>
+        <div class="sp-icon">${s.icon}</div>
+        <h4>${escapeHTML(s.name)}</h4>
+        <div class="sp-native">${escapeHTML(s.native)}</div>
+        <div class="sp-benefit">${escapeHTML(s.benefit)}</div>
+      </div>
+      <div class="sp-foot">
+        <span class="sp-min">${escapeHTML(s.ministry)}</span>
+        <span class="sp-link">Ask CivicBot →</span>
+      </div>
+    </div>`).join('');
+  wall.querySelectorAll('[data-poster]').forEach(card=>{
+    card.addEventListener('click', ()=>{
+      const s = SCHEMES[parseInt(card.dataset.poster, 10)];
+      openAssistant('all');
+      ask(s.question);
+    });
+  });
+}
+
+renderSchemeColumn();
+renderSchemeFeature();
+renderPosterWall();
+
+// ---------- CivicBot mascot: opens the all-department assistant ----------
+function openCivicBot(){ openAssistant('all'); }
+['botStage','botCta','botFab'].forEach(id=>{
+  const el = document.getElementById(id);
+  if(el) el.addEventListener('click', openCivicBot);
+});
+const botFabEl = document.getElementById('botFab');
+const botTipEl = document.getElementById('botTip');
+if(botFabEl && botTipEl){
+  botFabEl.addEventListener('mouseenter', ()=> botTipEl.classList.add('show'));
+  botFabEl.addEventListener('mouseleave', ()=> botTipEl.classList.remove('show'));
+  // Nudge once shortly after load so the mascot is discoverable.
+  setTimeout(()=>{
+    botTipEl.classList.add('show');
+    setTimeout(()=> botTipEl.classList.remove('show'), 5200);
+  }, 2200);
+}
+
+// "Schemes" nav item scrolls to the spotlight on the home view.
+document.querySelectorAll('[data-scroll]').forEach(el=>{
+  el.addEventListener('click', ()=>{
+    const targetId = el.dataset.scroll;
+    goTo('home');
+    setTimeout(()=>{
+      const target = document.getElementById(targetId);
+      if(target) target.scrollIntoView({ behavior:'smooth', block:'start' });
+    }, 60);
+  });
+});
+
 
 function triggerStampWall(){
   const field = document.getElementById('heroStampfield');
@@ -1546,7 +2109,9 @@ function addPassportStamp(department, question){
 // ---------- Assistant sidebar: department card + quick actions + upcoming appointments ----------
 function renderDeptCard(cat){
   const desc = DESCRIPTIONS[cat];
-  document.getElementById('deptCardTitle').textContent = DEPARTMENTS[cat];
+  document.getElementById('deptCardTitle').textContent = deptLabel(cat);
+  const note = document.getElementById('allModeNote');
+  if(note) note.style.display = (cat === 'all') ? 'block' : 'none';
   document.getElementById('deptCardDesc').textContent = desc.short;
   document.getElementById('deptCardBullets').innerHTML = desc.bullets.map(b => `<li>${escapeHTML(b)}</li>`).join('');
 }
@@ -1724,7 +2289,7 @@ function renderHelp(query){
   wrap.innerHTML = list.map(a => `<div class="help-item"><div class="cat-tag">${escapeHTML(DEPARTMENTS[a.cat]||a.cat)}</div><h4>${escapeHTML(a.q)}</h4><p>${escapeHTML(a.a)}</p></div>`).join('');
 }
 document.getElementById('helpSearch').addEventListener('input', (e)=> renderHelp(e.target.value));
-document.getElementById('langSelect').addEventListener('change', (e)=>{ currentLang = e.target.value; });
+document.getElementById('langSelect').addEventListener('change', (e)=>{ setLanguage(e.target.value); });
 
 // ---------- Assistant chrome ----------
 document.getElementById('dateStamp').textContent = new Date().toLocaleDateString('en-US', { day:'2-digit', month:'short', year:'numeric' }).toUpperCase();
@@ -1823,7 +2388,7 @@ function openTalkOverlay(){
   if(!talkRecognition){ alert("Voice conversation isn't supported in this browser — try Chrome or Edge."); return; }
   talkModeActive = true;
   talkOverlay.classList.remove('hidden');
-  talkOverlayDept.textContent = DEPARTMENTS[currentCat];
+  talkOverlayDept.textContent = deptLabel(currentCat);
   talkOverlayCaption.textContent = '';
   talkOverlayCaption.classList.remove('user-line');
   talkRecognition.lang = currentLang === 'es' ? 'es-ES' : currentLang === 'hi' ? 'hi-IN' : 'en-US';
@@ -2120,7 +2685,7 @@ async function addEntry(question, opts){
 
   const sendBtn = document.getElementById('sendBtn');
   sendBtn.disabled = true;
-  const department = DEPARTMENTS[currentCat];
+  const department = deptLabel(currentCat);
 
   const journeyRow = document.createElement('div');
   journeyRow.className = "a-row";
@@ -2133,12 +2698,24 @@ async function addEntry(question, opts){
   advanceJourney(journeyEl, 1); await sleep(280);
   advanceJourney(journeyEl, 2);
 
-  try {
-    const res = await fetch(`${BACKEND_URL}/api/chat`, {
+  // The unified CivicBot window sends category "all". Older backends only know
+  // the four department personas, so if "all" is rejected we quietly retry as
+  // "general" — the citizen still gets an answer either way.
+  async function callChat(cat){
+    const r = await fetch(`${BACKEND_URL}/api/chat`, {
       method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message: question, category: currentCat, mode: scenarioMode ? "scenario" : "chat", language: currentLang, context: attachedContext })
+      body: JSON.stringify({ message: question, category: cat, mode: scenarioMode ? "scenario" : "chat", language: currentLang, context: attachedContext })
     });
-    const data = await res.json();
+    let j; try { j = await r.json(); } catch { j = { error: "Malformed response from server" }; }
+    return { ok: r.ok, data: j };
+  }
+
+  try {
+    let { ok, data } = await callChat(currentCat);
+    if(currentCat === 'all' && (!ok || data.error)){
+      ({ ok, data } = await callChat('general'));
+    }
+    const res = { ok };
     advanceJourney(journeyEl, 3); await sleep(220);
     journeyRow.remove();
 
@@ -2212,6 +2789,413 @@ window.addEventListener('error', (e) => {
 
 const initial = window.location.hash.replace('#','') || 'home';
 goTo(document.getElementById('view-' + initial) ? initial : 'home');
+
+/* =========================================================================
+   Page translation.
+   The language selector used to change only the language the backend replied
+   in — the page chrome stayed in English. This walks the live DOM instead, so
+   every rendered label, heading, button, placeholder and card is swapped, and
+   a MutationObserver re-applies the swap to anything rendered later.
+
+   Each entry is: "English source" : ["हिन्दी", "Español"]
+   Anything not listed simply falls through in English, so the dictionary can
+   be extended a line at a time without touching the engine.
+   ========================================================================= */
+const I18N_ORDER = { hi: 0, es: 1 };
+const I18N = {
+  /* --- navigation & chrome --- */
+  "Civic Information Desk": ["नागरिक सूचना डेस्क", "Mesa de Información Cívica"],
+  "Home": ["होम", "Inicio"],
+  "Services": ["सेवाएँ", "Servicios"],
+  "Schemes": ["योजनाएँ", "Programas"],
+  "Assistant": ["सहायक", "Asistente"],
+  "Insights": ["विश्लेषण", "Análisis"],
+  "Help Center": ["सहायता केंद्र", "Centro de ayuda"],
+  "About": ["परिचय", "Acerca de"],
+  "Announcements": ["घोषणाएँ", "Anuncios"],
+  "Connecting…": ["जुड़ रहा है…", "Conectando…"],
+  "Connected": ["जुड़ा हुआ", "Conectado"],
+  "Backend offline": ["सर्वर उपलब्ध नहीं", "Servidor desconectado"],
+  "Sign out": ["साइन आउट", "Cerrar sesión"],
+
+  /* --- name gate --- */
+  "Welcome to the Civic Desk": ["नागरिक डेस्क में आपका स्वागत है", "Bienvenido a la Mesa Cívica"],
+  "Before we start, what should we call you?": ["शुरू करने से पहले बताइए, हम आपको क्या कहकर बुलाएँ?", "Antes de empezar, ¿cómo te llamamos?"],
+  "Your name": ["आपका नाम", "Tu nombre"],
+  "Continue": ["आगे बढ़ें", "Continuar"],
+
+  /* --- hero --- */
+  "Public Service Information Access": ["सार्वजनिक सेवा सूचना पहुँच", "Acceso a información de servicios públicos"],
+  "One desk for every civic question.": ["हर नागरिक सवाल के लिए एक ही डेस्क।", "Una sola mesa para cada consulta ciudadana."],
+  "Permits, tax payments, and local regulations — ask by voice or text, and get a routed answer instead of digging through department websites.":
+    ["अनुमतियाँ, कर भुगतान और स्थानीय नियम — आवाज़ या टेक्स्ट से पूछिए और विभागीय वेबसाइटें खंगालने के बजाय सीधा उत्तर पाइए।",
+     "Permisos, pagos de impuestos y normativa local: pregunta por voz o texto y recibe una respuesta dirigida en lugar de recorrer webs de cada departamento."],
+  "All Departments": ["सभी विभाग", "Todos los departamentos"],
+  "Permits & Licensing": ["अनुमति एवं लाइसेंस", "Permisos y licencias"],
+  "Tax & Revenue": ["कर एवं राजस्व", "Impuestos y recaudación"],
+  "Regulatory Affairs": ["नियामक मामले", "Asuntos regulatorios"],
+  "Search": ["खोजें", "Buscar"],
+  "Ask a question, or search a service…": ["कोई सवाल पूछें या सेवा खोजें…", "Haz una pregunta o busca un servicio…"],
+  "Trending:": ["लोकप्रिय:", "Tendencias:"],
+  "Start an Inquiry": ["पूछताछ शुरू करें", "Iniciar una consulta"],
+  "Browse Services": ["सेवाएँ देखें", "Ver servicios"],
+  "Building permit": ["भवन अनुमति", "Permiso de construcción"],
+  "Property tax due date": ["संपत्ति कर की अंतिम तिथि", "Vencimiento del impuesto predial"],
+  "Business licence renewal": ["व्यापार लाइसेंस नवीनीकरण", "Renovación de licencia comercial"],
+  "Noise ordinance hours": ["शोर नियम के समय", "Horario de la ordenanza de ruido"],
+  "Zoning check": ["ज़ोनिंग जाँच", "Consulta de zonificación"],
+
+  /* --- metric band --- */
+  "Departments covered": ["शामिल विभाग", "Departamentos cubiertos"],
+  "Services catalogued": ["सूचीबद्ध सेवाएँ", "Servicios catalogados"],
+  "Languages supported": ["समर्थित भाषाएँ", "Idiomas disponibles"],
+  "Always open, no queue": ["हमेशा खुला, कोई कतार नहीं", "Siempre abierto, sin filas"],
+
+  /* --- CivicBot band --- */
+  "Central AI Assistant": ["केंद्रीय एआई सहायक", "Asistente de IA central"],
+  "Meet CivicBot — one assistant for every department.": ["मिलिए सिविकबॉट से — हर विभाग के लिए एक ही सहायक।", "Conoce a CivicBot: un asistente para todos los departamentos."],
+  "Permits, taxes, regulations, schemes, appointments, office locations — ask anything in one place. CivicBot answers across all categories and routes you onward only when a specialist window is genuinely needed.":
+    ["अनुमति, कर, नियम, योजनाएँ, अपॉइंटमेंट, कार्यालय का पता — सब कुछ एक ही जगह पूछिए। सिविकबॉट सभी श्रेणियों के उत्तर देता है और ज़रूरत होने पर ही किसी विशेष विंडो पर भेजता है।",
+     "Permisos, impuestos, normativa, programas, citas y ubicaciones de oficinas: pregunta todo en un solo lugar. CivicBot responde en todas las categorías y te deriva a una ventanilla especializada solo cuando hace falta."],
+  "Ask CivicBot anything": ["सिविकबॉट से कुछ भी पूछें", "Pregúntale lo que sea a CivicBot"],
+  "All departments": ["सभी विभाग", "Todos los departamentos"],
+  "Voice & text": ["आवाज़ और टेक्स्ट", "Voz y texto"],
+  "3 languages": ["3 भाषाएँ", "3 idiomas"],
+  "Scheme guidance": ["योजना मार्गदर्शन", "Guía de programas"],
+  "Hi! I'm CivicBot — ask me anything across all departments.": ["नमस्ते! मैं सिविकबॉट हूँ — किसी भी विभाग से जुड़ा सवाल पूछिए।", "¡Hola! Soy CivicBot: pregúntame lo que sea de cualquier departamento."],
+  "CivicBot — All Departments": ["सिविकबॉट — सभी विभाग", "CivicBot — Todos los departamentos"],
+  "You are in the all-department window — ask about permits, taxes, regulations, government schemes, offices or appointments in the same conversation.":
+    ["आप सर्व-विभाग विंडो में हैं — एक ही बातचीत में अनुमति, कर, नियम, सरकारी योजनाएँ, कार्यालय या अपॉइंटमेंट के बारे में पूछिए।",
+     "Estás en la ventanilla de todos los departamentos: pregunta sobre permisos, impuestos, normativa, programas de gobierno, oficinas o citas en la misma conversación."],
+  "One assistant across every department, plus government schemes.": ["हर विभाग के साथ-साथ सरकारी योजनाओं के लिए भी एक ही सहायक।", "Un asistente para todos los departamentos y también para programas de gobierno."],
+  "Answers spanning all four departments": ["चारों विभागों से जुड़े उत्तर", "Respuestas de los cuatro departamentos"],
+  "Government scheme eligibility and benefits": ["सरकारी योजना की पात्रता और लाभ", "Requisitos y beneficios de programas de gobierno"],
+  "Appointments, offices and documents": ["अपॉइंटमेंट, कार्यालय और दस्तावेज़", "Citas, oficinas y documentos"],
+
+  /* --- section headings --- */
+  "Important Services": ["महत्वपूर्ण सेवाएँ", "Servicios importantes"],
+  "Scheme Spotlight": ["योजना विशेष", "Programas destacados"],
+  "Recently highlighted government schemes, with eligibility and benefits at a glance.": ["हाल ही में चर्चित सरकारी योजनाएँ — पात्रता और लाभ एक नज़र में।", "Programas de gobierno destacados recientemente, con requisitos y beneficios de un vistazo."],
+  "Updated this week": ["इस सप्ताह अद्यतन", "Actualizado esta semana"],
+  "Latest Schemes": ["नवीनतम योजनाएँ", "Programas recientes"],
+  "Scheme Posters": ["योजना पोस्टर", "Carteles de programas"],
+  "Scroll sideways · tap a poster to ask CivicBot about it": ["बगल में स्क्रॉल करें · किसी पोस्टर पर टैप कर सिविकबॉट से पूछें", "Desplázate en horizontal · toca un cartel para preguntarle a CivicBot"],
+  "Civic Campaigns": ["नागरिक अभियान", "Campañas cívicas"],
+  "Services by Category": ["श्रेणी अनुसार सेवाएँ", "Servicios por categoría"],
+  "Featured Services": ["प्रमुख सेवाएँ", "Servicios destacados"],
+  "Spotlight": ["विशेष", "Destacado"],
+  "Stories from the desks that serve this city.": ["इस शहर की सेवा करने वाले डेस्कों की कहानियाँ।", "Historias de las oficinas que atienden a esta ciudad."],
+  "Previous Editions": ["पिछले अंक", "Ediciones anteriores"],
+  "Notices & Bulletins": ["सूचनाएँ एवं बुलेटिन", "Avisos y boletines"],
+  "Directories": ["निर्देशिकाएँ", "Directorios"],
+  "Most Viewed Services": ["सर्वाधिक देखी गई सेवाएँ", "Servicios más consultados"],
+  "Suggest / Report a Service": ["सेवा सुझाएँ / रिपोर्ट करें", "Sugerir o reportar un servicio"],
+  "Help us improve! Suggest a service that isn't listed, or flag something that looks off.": ["हमें बेहतर बनाने में मदद कीजिए! कोई सेवा छूट गई हो या कुछ गलत लगे तो बताइए।", "¡Ayúdanos a mejorar! Sugiere un servicio que falte o señala algo que no cuadre."],
+  "Notify Us": ["हमें बताएँ", "Avísanos"],
+  "Civic Services Accessible From This Desk": ["इस डेस्क से उपलब्ध नागरिक सेवाएँ", "Servicios cívicos disponibles desde esta mesa"],
+  "Streamline your interactions and save time.": ["अपनी प्रक्रिया आसान बनाइए और समय बचाइए।", "Simplifica tus trámites y ahorra tiempo."],
+  "Frequently Asked Questions": ["अक्सर पूछे जाने वाले प्रश्न", "Preguntas frecuentes"],
+
+  /* --- departments --- */
+  "Permits & Licensing Office": ["अनुमति एवं लाइसेंस कार्यालय", "Oficina de Permisos y Licencias"],
+  "Tax & Revenue Office": ["कर एवं राजस्व कार्यालय", "Oficina de Impuestos y Recaudación"],
+  "Regulatory Affairs Office": ["नियामक मामले कार्यालय", "Oficina de Asuntos Regulatorios"],
+  "General Inquiries Desk": ["सामान्य पूछताछ डेस्क", "Mesa de Consultas Generales"],
+  "Building permits, business licenses, and parking permits.": ["भवन अनुमति, व्यापार लाइसेंस और पार्किंग परमिट।", "Permisos de obra, licencias comerciales y permisos de estacionamiento."],
+  "Property tax, payment methods, penalties, and filing.": ["संपत्ति कर, भुगतान के तरीके, जुर्माना और रिटर्न।", "Impuesto predial, formas de pago, recargos y declaración."],
+  "Noise ordinances, waste disposal, and zoning.": ["शोर नियम, कचरा निपटान और ज़ोनिंग।", "Ordenanzas de ruido, gestión de residuos y zonificación."],
+  "Not sure which window you need? Start here.": ["कौन-सी विंडो चाहिए, पता नहीं? यहीं से शुरू कीजिए।", "¿No sabes qué ventanilla necesitas? Empieza aquí."],
+  "Building & renovation permits": ["भवन एवं नवीनीकरण अनुमति", "Permisos de obra y remodelación"],
+  "Business licensing": ["व्यापार लाइसेंस", "Licencias comerciales"],
+  "Residential parking permits": ["आवासीय पार्किंग परमिट", "Permisos de estacionamiento residencial"],
+  "Property tax due dates": ["संपत्ति कर की अंतिम तिथियाँ", "Fechas de vencimiento del predial"],
+  "Payment methods & portals": ["भुगतान के तरीके एवं पोर्टल", "Métodos de pago y portales"],
+  "Penalties and payment plans": ["जुर्माना और किस्त योजनाएँ", "Recargos y planes de pago"],
+  "Noise & quiet hours": ["शोर एवं शांति के समय", "Ruido y horas de silencio"],
+  "Waste & recycling schedules": ["कचरा एवं रीसाइक्लिंग समय-सारणी", "Calendario de residuos y reciclaje"],
+  "Zoning and land use": ["ज़ोनिंग और भूमि उपयोग", "Zonificación y uso de suelo"],
+  "General orientation": ["सामान्य मार्गदर्शन", "Orientación general"],
+  "Route to the right department": ["सही विभाग तक पहुँचाना", "Derivación al departamento correcto"],
+  "Speak to a human agent": ["किसी व्यक्ति से बात करें", "Hablar con una persona"],
+  "Open Window": ["विंडो खोलें", "Abrir ventanilla"],
+  "Start →": ["शुरू करें →", "Comenzar →"],
+
+  /* --- featured services --- */
+  "Building Permit Application": ["भवन अनुमति आवेदन", "Solicitud de permiso de obra"],
+  "Start a new building or renovation permit.": ["नया भवन या नवीनीकरण अनुमति आवेदन शुरू करें।", "Inicia un permiso de obra o remodelación."],
+  "Business License Renewal": ["व्यापार लाइसेंस नवीनीकरण", "Renovación de licencia comercial"],
+  "Renew or apply for a business license.": ["व्यापार लाइसेंस नवीनीकरण करें या नया आवेदन दें।", "Renueva o solicita una licencia comercial."],
+  "Property Tax Payment": ["संपत्ति कर भुगतान", "Pago del impuesto predial"],
+  "Find out how and when to pay property tax.": ["जानिए संपत्ति कर कब और कैसे भरना है।", "Consulta cómo y cuándo pagar el impuesto predial."],
+  "Income Tax Filing Help": ["आयकर रिटर्न सहायता", "Ayuda para declarar el ISR"],
+  "Guidance on filing your income tax return.": ["आयकर रिटर्न भरने का मार्गदर्शन।", "Orientación para presentar tu declaración."],
+  "Noise Complaint Reporting": ["शोर शिकायत दर्ज करना", "Reporte de quejas por ruido"],
+  "Check noise ordinance hours and how to report.": ["शोर नियम के समय और शिकायत का तरीका देखें।", "Consulta el horario de la ordenanza y cómo reportar."],
+  "Zoning Verification": ["ज़ोनिंग सत्यापन", "Verificación de zonificación"],
+  "Check zoning rules for a property.": ["किसी संपत्ति के ज़ोनिंग नियम देखें।", "Consulta las reglas de zonificación de un predio."],
+  "Book an Appointment": ["अपॉइंटमेंट बुक करें", "Reservar una cita"],
+  "Schedule an in-person visit with a department.": ["किसी विभाग में व्यक्तिगत मुलाक़ात तय करें।", "Agenda una visita presencial con un departamento."],
+  "General Inquiries": ["सामान्य पूछताछ", "Consultas generales"],
+
+  /* --- campaign posters --- */
+  "Pay early, pay less.": ["जल्दी भरिए, कम भरिए।", "Paga antes, paga menos."],
+  "Settle your full-year property tax before 31 August and claim the 5% early-payment rebate.": ["31 अगस्त से पहले पूरे वर्ष का संपत्ति कर जमा कीजिए और 5% छूट पाइए।", "Liquida el predial anual antes del 31 de agosto y obtén el 5% de descuento."],
+  "Check tax deadlines": ["कर की तिथियाँ देखें", "Ver fechas límite"],
+  "Check before you build.": ["निर्माण से पहले जाँच लीजिए।", "Consulta antes de construir."],
+  "Describe your project in plain language and find out whether it needs a permit — before you file anything.": ["अपनी योजना सरल भाषा में बताइए और जानिए कि अनुमति चाहिए या नहीं — आवेदन से पहले ही।", "Describe tu proyecto en lenguaje sencillo y averigua si necesita permiso, antes de presentar nada."],
+  "Run a scenario check": ["परिदृश्य जाँच चलाएँ", "Hacer una comprobación"],
+  "Rules, in plain words.": ["नियम, सरल शब्दों में।", "Las normas, en palabras claras."],
+  "Quiet hours, waste collection days and zoning limits — explained without the legal jargon.": ["शांति का समय, कचरा उठाने के दिन और ज़ोनिंग सीमाएँ — बिना कानूनी भाषा के।", "Horas de silencio, días de recolección y límites de zonificación, sin jerga legal."],
+  "Ask about regulations": ["नियमों के बारे में पूछें", "Preguntar sobre normativa"],
+  "Skip the queue.": ["कतार से बचिए।", "Evita la fila."],
+  "Reserve a counter slot at the department you need and get a reminder on the day.": ["ज़रूरी विभाग में काउंटर का समय आरक्षित कीजिए और उस दिन याद दिलाया जाएगा।", "Reserva un turno en el departamento que necesites y recibe un recordatorio ese día."],
+  "Book an appointment": ["अपॉइंटमेंट बुक करें", "Reservar cita"],
+  "Ask in your language.": ["अपनी भाषा में पूछिए।", "Pregunta en tu idioma."],
+  "The desk answers in English, Spanish or Hindi — by typing or by speaking, whichever is easier.": ["डेस्क अंग्रेज़ी, स्पेनिश या हिंदी में उत्तर देता है — लिखकर या बोलकर, जो आसान लगे।", "La mesa responde en inglés, español o hindi, escribiendo o hablando, como prefieras."],
+  "Accessibility": ["सुलभता", "Accesibilidad"],
+  "Appointments": ["अपॉइंटमेंट", "Citas"],
+
+  /* --- directories --- */
+  "Who's Who": ["कौन कहाँ", "Quién es quién"],
+  "Department heads and officers": ["विभाग प्रमुख एवं अधिकारी", "Titulares y funcionarios"],
+  "Contact Directory": ["संपर्क निर्देशिका", "Directorio de contactos"],
+  "Office phone and email lines": ["कार्यालय फ़ोन एवं ईमेल", "Teléfonos y correos de oficina"],
+  "Helplines": ["हेल्पलाइन", "Líneas de ayuda"],
+  "Emergency and grievance numbers": ["आपात एवं शिकायत नंबर", "Números de emergencia y quejas"],
+  "Public Utilities": ["सार्वजनिक सुविधाएँ", "Servicios públicos"],
+  "Water, power and sanitation": ["जल, बिजली और स्वच्छता", "Agua, energía y saneamiento"],
+  "Office Locator": ["कार्यालय खोजें", "Localizador de oficinas"],
+  "Find the nearest counter": ["निकटतम काउंटर खोजें", "Encuentra la ventanilla más cercana"],
+
+  /* --- notices --- */
+  "Civic Bulletin": ["नागरिक बुलेटिन", "Boletín cívico"],
+  "Public Notice": ["सार्वजनिक सूचना", "Aviso público"],
+  "Service Update": ["सेवा अद्यतन", "Actualización de servicio"],
+  "Tax office extends counter hours through August": ["कर कार्यालय ने अगस्त तक काउंटर समय बढ़ाया", "La oficina de impuestos amplía su horario durante agosto"],
+  "Draft zoning revision open for public comment": ["ज़ोनिंग संशोधन का मसौदा जन-टिप्पणी के लिए खुला", "Revisión de zonificación abierta a comentarios"],
+  "Permit tracking now shows stage-by-stage status": ["अनुमति ट्रैकिंग अब चरणवार स्थिति दिखाती है", "El seguimiento de permisos ya muestra el estado por etapas"],
+  "Ask the desk about this →": ["इस बारे में डेस्क से पूछें →", "Pregunta a la mesa sobre esto →"],
+
+  /* --- FAQ --- */
+  "What documents do I need for a building permit?": ["भवन अनुमति के लिए कौन-से दस्तावेज़ चाहिए?", "¿Qué documentos necesito para un permiso de obra?"],
+  "Can I start construction while my permit is pending?": ["क्या अनुमति लंबित रहते निर्माण शुरू कर सकते हैं?", "¿Puedo comenzar la obra con el permiso pendiente?"],
+  "What if I can't pay my full tax bill at once?": ["अगर पूरा कर एक साथ न भर पाऊँ तो?", "¿Y si no puedo pagar todo el impuesto de una vez?"],
+  "Who enforces noise complaints?": ["शोर की शिकायतें कौन देखता है?", "¿Quién atiende las quejas por ruido?"],
+  "How do I know which service window to use?": ["कौन-सी सेवा विंडो चुनें, कैसे जानें?", "¿Cómo sé qué ventanilla usar?"],
+
+  /* --- assistant --- */
+  "Service Windows": ["सेवा विंडो", "Ventanillas de servicio"],
+  "Permits & Licenses": ["अनुमति एवं लाइसेंस", "Permisos y licencias"],
+  "Tax Payments": ["कर भुगतान", "Pago de impuestos"],
+  "Local Regulations": ["स्थानीय नियम", "Normativa local"],
+  "General Help": ["सामान्य सहायता", "Ayuda general"],
+  "Try Asking": ["ऐसे पूछकर देखिए", "Prueba a preguntar"],
+  "Scenario Check mode": ["परिदृश्य जाँच मोड", "Modo comprobación"],
+  "Describe something you're planning — get a verdict before you file anything.": ["जो योजना बना रहे हैं उसे बताइए — आवेदन से पहले ही निर्णय पाइए।", "Describe lo que planeas y obtén una respuesta antes de presentar nada."],
+  "Inquiry Ledger": ["पूछताछ रजिस्टर", "Registro de consultas"],
+  "This Window": ["यह विंडो", "Esta ventanilla"],
+  "Quick Actions": ["त्वरित कार्य", "Acciones rápidas"],
+  "📅 Book an appointment": ["📅 अपॉइंटमेंट बुक करें", "📅 Reservar una cita"],
+  "📍 Find nearby office": ["📍 पास का कार्यालय खोजें", "📍 Buscar oficina cercana"],
+  "📎 Attach a document": ["📎 दस्तावेज़ संलग्न करें", "📎 Adjuntar un documento"],
+  "Upcoming Appointments": ["आगामी अपॉइंटमेंट", "Próximas citas"],
+  "No upcoming appointments.": ["कोई आगामी अपॉइंटमेंट नहीं।", "No hay citas próximas."],
+  "Ask about a permit, tax payment, or local regulation…": ["अनुमति, कर भुगतान या स्थानीय नियम के बारे में पूछें…", "Pregunta sobre un permiso, un pago de impuestos o una norma local…"],
+  "Describe what you're planning (e.g. 'add a second floor to my house')…": ["बताइए आप क्या योजना बना रहे हैं (जैसे 'घर पर दूसरी मंज़िल बनाना')…", "Describe lo que planeas (p. ej. «añadir un segundo piso»)…"],
+  "Submit": ["भेजें", "Enviar"],
+  "Not satisfied? Find a nearby office →": ["संतुष्ट नहीं? पास का कार्यालय खोजें →", "¿No te sirvió? Busca una oficina cercana →"],
+  "View all in Insights →": ["सब कुछ विश्लेषण में देखें →", "Ver todo en Análisis →"],
+  "Find a nearby office": ["पास का कार्यालय खोजें", "Buscar una oficina cercana"],
+  "Open in Google Maps": ["गूगल मैप्स में खोलें", "Abrir en Google Maps"],
+  "Cancel": ["रद्द करें", "Cancelar"],
+  "Reschedule": ["समय बदलें", "Reprogramar"],
+  "Full name": ["पूरा नाम", "Nombre completo"],
+  "Contact (email or phone)": ["संपर्क (ईमेल या फ़ोन)", "Contacto (correo o teléfono)"],
+  "Preferred date": ["पसंदीदा तिथि", "Fecha preferida"],
+  "Preferred time": ["पसंदीदा समय", "Hora preferida"],
+  "Department": ["विभाग", "Departamento"],
+  "Reason (optional)": ["कारण (वैकल्पिक)", "Motivo (opcional)"],
+  "Book Appointment": ["अपॉइंटमेंट बुक करें", "Reservar cita"],
+  "Listening…": ["सुन रहा हूँ…", "Escuchando…"],
+  "Thinking…": ["सोच रहा हूँ…", "Pensando…"],
+  "Speaking…": ["बोल रहा हूँ…", "Hablando…"],
+
+  /* --- other pages --- */
+  "Service Windows ": ["सेवा विंडो ", "Ventanillas "],
+  "Each window is staffed by a specialized assistant that only answers within its own department — pick the one that matches your question.":
+    ["हर विंडो पर एक विशेषज्ञ सहायक है जो केवल अपने विभाग के सवालों का उत्तर देता है — अपने सवाल से मेल खाती विंडो चुनिए।",
+     "Cada ventanilla tiene un asistente especializado que solo responde de su departamento: elige la que corresponda a tu consulta."],
+  "A live view of your inquiry activity and appointments, computed from what's saved in this browser.":
+    ["इस ब्राउज़र में सहेजे गए डेटा से बनी आपकी पूछताछ और अपॉइंटमेंट की सजीव झलक।",
+     "Una vista en vivo de tus consultas y citas, calculada con lo guardado en este navegador."],
+  "Inquiries by department": ["विभाग अनुसार पूछताछ", "Consultas por departamento"],
+  "Full inquiry history": ["पूरा पूछताछ इतिहास", "Historial completo de consultas"],
+  "Common questions, answered directly — no need to ask the assistant for these.":
+    ["सामान्य सवालों के सीधे उत्तर — इनके लिए सहायक से पूछने की ज़रूरत नहीं।",
+     "Preguntas comunes respondidas directamente: no hace falta consultar al asistente."],
+  "Search help articles…": ["सहायता लेख खोजें…", "Buscar artículos de ayuda…"],
+  "About this prototype": ["इस प्रोटोटाइप के बारे में", "Acerca de este prototipo"],
+  "Important: what's real vs. simulated": ["महत्वपूर्ण: क्या वास्तविक है और क्या नकली", "Importante: qué es real y qué es simulado"],
+  "How it works": ["यह कैसे काम करता है", "Cómo funciona"],
+  "Nothing viewed yet — ask a question in the Assistant to see your most-used services here.":
+    ["अभी कुछ नहीं देखा गया — सहायक से सवाल पूछिए, फिर सर्वाधिक उपयोग की सेवाएँ यहाँ दिखेंगी।",
+     "Aún no hay nada: haz una pregunta en el Asistente para ver aquí tus servicios más usados."],
+  "No data yet — ask a question in the Assistant to see it here.": ["अभी कोई डेटा नहीं — सहायक से सवाल पूछिए और यहाँ देखिए।", "Aún no hay datos: haz una pregunta en el Asistente."],
+  "No appointments booked yet.": ["अभी कोई अपॉइंटमेंट बुक नहीं है।", "Todavía no hay citas reservadas."],
+
+  /* --- scheme spotlight --- */
+  "Government Scheme": ["सरकारी योजना", "Programa de gobierno"],
+  "Benefit": ["लाभ", "Beneficio"],
+  "Who can apply": ["कौन आवेदन कर सकता है", "Quién puede solicitar"],
+  "Status": ["स्थिति", "Estado"],
+  "Ask CivicBot about this scheme": ["इस योजना के बारे में सिविकबॉट से पूछें", "Pregúntale a CivicBot sobre este programa"],
+  "Ask CivicBot →": ["सिविकबॉट से पूछें →", "Preguntar a CivicBot →"],
+  "Confirm eligibility and deadlines on the official scheme portal before applying.": ["आवेदन से पहले आधिकारिक पोर्टल पर पात्रता और अंतिम तिथि की पुष्टि करें।", "Confirma requisitos y plazos en el portal oficial antes de solicitar."],
+  "Health": ["स्वास्थ्य", "Salud"], "Housing": ["आवास", "Vivienda"], "Agriculture": ["कृषि", "Agricultura"],
+  "Energy": ["ऊर्जा", "Energía"], "Savings": ["बचत", "Ahorro"], "Livelihood": ["आजीविका", "Medios de vida"],
+  "Pension": ["पेंशन", "Pensión"], "Artisans": ["कारीगर", "Artesanos"], "Water": ["जल", "Agua"],
+  "Ayushman Bharat PM-JAY": ["आयुष्मान भारत पीएम-जय", "Ayushman Bharat PM-JAY"],
+  "PM Awas Yojana (Urban)": ["प्रधानमंत्री आवास योजना (शहरी)", "PM Awas Yojana (Urbana)"],
+  "PM-KISAN": ["पीएम-किसान", "PM-KISAN"],
+  "PM Ujjwala Yojana": ["प्रधानमंत्री उज्ज्वला योजना", "PM Ujjwala Yojana"],
+  "Sukanya Samriddhi Yojana": ["सुकन्या समृद्धि योजना", "Sukanya Samriddhi Yojana"],
+  "PM Mudra Yojana": ["प्रधानमंत्री मुद्रा योजना", "PM Mudra Yojana"],
+  "Atal Pension Yojana": ["अटल पेंशन योजना", "Atal Pension Yojana"],
+  "PM Vishwakarma": ["प्रधानमंत्री विश्वकर्मा", "PM Vishwakarma"],
+  "Jal Jeevan Mission": ["जल जीवन मिशन", "Jal Jeevan Mission"],
+  "Health cover of ₹5 lakh per family each year": ["प्रति परिवार प्रति वर्ष ₹5 लाख का स्वास्थ्य कवर", "Cobertura médica de ₹5 lakh por familia al año"],
+  "Assistance towards a pucca house for urban households": ["शहरी परिवारों को पक्के मकान के लिए सहायता", "Apoyo para vivienda firme en hogares urbanos"],
+  "₹6,000 a year paid directly in three instalments": ["प्रति वर्ष ₹6,000, तीन किस्तों में सीधे खाते में", "₹6,000 al año en tres pagos directos"],
+  "Subsidised LPG connection with deposit-free cylinder": ["जमा-मुक्त सिलेंडर के साथ सब्सिडी वाला एलपीजी कनेक्शन", "Conexión de gas subsidiada sin depósito"],
+  "Long-term savings account for a girl child with tax benefits": ["बालिका के लिए कर लाभ सहित दीर्घकालिक बचत खाता", "Cuenta de ahorro a largo plazo para niñas, con beneficios fiscales"],
+  "Collateral-free credit for micro and small enterprises": ["सूक्ष्म एवं लघु उद्यमों के लिए बिना गारंटी ऋण", "Crédito sin garantía para micro y pequeñas empresas"],
+  "Guaranteed monthly pension of ₹1,000–₹5,000 from age 60": ["60 वर्ष की आयु से ₹1,000–₹5,000 मासिक निश्चित पेंशन", "Pensión mensual garantizada de ₹1,000 a ₹5,000 desde los 60"],
+  "Skill training, toolkit support and collateral-free credit for artisans": ["कारीगरों के लिए कौशल प्रशिक्षण, औज़ार सहायता और बिना गारंटी ऋण", "Capacitación, herramientas y crédito sin garantía para artesanos"],
+  "Functional tap water connection for every rural household": ["हर ग्रामीण घर तक नल से जल कनेक्शन", "Conexión de agua potable para cada hogar rural"],
+  "Ongoing · apply any time": ["चालू · कभी भी आवेदन करें", "Vigente · solicita en cualquier momento"],
+  "Applications open": ["आवेदन खुले हैं", "Solicitudes abiertas"],
+  "Instalments released periodically": ["किस्तें समय-समय पर जारी", "Pagos liberados periódicamente"],
+  "Ongoing": ["चालू", "Vigente"],
+  "Open at post offices and authorised banks": ["डाकघरों और अधिकृत बैंकों में उपलब्ध", "Disponible en oficinas postales y bancos autorizados"],
+  "Apply through any participating bank": ["किसी भी भागीदार बैंक से आवेदन करें", "Solicita en cualquier banco participante"],
+  "Enrol at your bank branch": ["अपनी बैंक शाखा में नामांकन कराएँ", "Inscríbete en tu sucursal bancaria"],
+  "Registration open at common service centres": ["कॉमन सर्विस सेंटर पर पंजीकरण खुला", "Registro abierto en centros de servicio"],
+  "Implementation ongoing": ["कार्यान्वयन जारी", "Implementación en curso"],
+
+  /* --- long-form paragraphs (matched with whitespace normalised) --- */
+  "Scheme names shown here are real central-government programmes, but the summaries are condensed prototype content for demonstration. Always confirm eligibility, amounts and deadlines on the official scheme portal before applying.":
+    ["यहाँ दिखाई गई योजनाएँ वास्तविक केंद्र सरकार की योजनाएँ हैं, पर विवरण इस प्रोटोटाइप के लिए संक्षिप्त किया गया है। आवेदन से पहले पात्रता, राशि और अंतिम तिथि की पुष्टि आधिकारिक पोर्टल पर अवश्य करें।",
+     "Los programas mostrados son programas reales del gobierno central, pero los resúmenes están condensados para este prototipo. Confirma siempre requisitos, montos y plazos en el portal oficial antes de solicitar."],
+  "Announcements, campaigns, spotlight stories, notices and directories on this page are":
+    ["इस पृष्ठ की घोषणाएँ, अभियान, विशेष कहानियाँ, सूचनाएँ और निर्देशिकाएँ",
+     "Los anuncios, campañas, historias destacadas, avisos y directorios de esta página son"],
+  "illustrative prototype content": ["उदाहरण स्वरूप प्रोटोटाइप सामग्री हैं", "contenido ilustrativo de prototipo"],
+  "for the TCS AI Friday demo — they are not official government notices. Only the AI assistant's answers and the nearby-office map use live data.":
+    ["— ये आधिकारिक सरकारी सूचनाएँ नहीं हैं। केवल एआई सहायक के उत्तर और निकटवर्ती कार्यालय मानचित्र ही सजीव डेटा का उपयोग करते हैं।",
+     "para la demo de TCS AI Friday; no son avisos oficiales. Solo las respuestas del asistente y el mapa de oficinas usan datos en vivo."],
+  "The Civic Information Desk is a conversational AI chatbot for public service information access, built for TCS AI Friday Season 2. It routes citizen questions to a specialized assistant per department, with voice conversation (\"Talk Mode\"), a live nearby-office map, and a simulated appointment booking flow with reminders.":
+    ["नागरिक सूचना डेस्क सार्वजनिक सेवा सूचना तक पहुँच के लिए बनाया गया एक संवादात्मक एआई चैटबॉट है, जिसे TCS AI Friday Season 2 के लिए तैयार किया गया है। यह नागरिकों के सवाल हर विभाग के विशेषज्ञ सहायक तक पहुँचाता है, साथ में आवाज़ से बातचीत (\"टॉक मोड\"), निकटवर्ती कार्यालय का सजीव मानचित्र और अनुस्मारक सहित नकली अपॉइंटमेंट बुकिंग देता है।",
+     "La Mesa de Información Cívica es un chatbot conversacional para acceder a información de servicios públicos, creado para TCS AI Friday Season 2. Dirige las consultas ciudadanas a un asistente especializado por departamento, con conversación por voz (\"Talk Mode\"), un mapa de oficinas cercanas y un flujo simulado de reserva de citas con recordatorios."],
+  "The AI answers are real (generated live by the connected model). The nearby-office map uses your real location against live Google Maps data.":
+    ["एआई के उत्तर वास्तविक हैं (जुड़े हुए मॉडल द्वारा तुरंत बनाए गए)। निकटवर्ती कार्यालय मानचित्र आपकी वास्तविक लोकेशन और सजीव गूगल मैप्स डेटा का उपयोग करता है।",
+     "Las respuestas de la IA son reales (generadas en vivo por el modelo conectado). El mapa de oficinas usa tu ubicación real con datos en vivo de Google Maps."],
+  "Appointment booking is a simulation": ["अपॉइंटमेंट बुकिंग एक सिमुलेशन है", "La reserva de citas es una simulación"],
+  "— no booking is actually created with any real government office. Reference numbers are generated locally and stored only in this browser. Reminders only appear when this page is open on the appointment day; there is no server-side notification system.":
+    ["— किसी वास्तविक सरकारी कार्यालय में कोई बुकिंग नहीं होती। संदर्भ संख्या यहीं बनती है और केवल इसी ब्राउज़र में सहेजी जाती है। अनुस्मारक तभी दिखते हैं जब अपॉइंटमेंट वाले दिन यह पृष्ठ खुला हो; कोई सर्वर-आधारित सूचना प्रणाली नहीं है।",
+     "— no se crea ninguna cita real con una oficina de gobierno. Los números de referencia se generan localmente y solo se guardan en este navegador. Los recordatorios aparecen únicamente si la página está abierta ese día; no hay notificaciones desde el servidor."],
+  "Each question is sent to a Flask backend, which calls a large language model with a department-specific persona and the selected language. The frontend never talks to the model directly — the API key stays server-side.":
+    ["हर सवाल एक Flask बैकएंड को भेजा जाता है, जो विभाग-विशेष भूमिका और चुनी हुई भाषा के साथ एक बड़े भाषा मॉडल को कॉल करता है। फ़्रंटएंड कभी सीधे मॉडल से बात नहीं करता — API कुंजी सर्वर पर ही रहती है।",
+     "Cada pregunta se envía a un backend en Flask, que llama a un modelo de lenguaje con una personalidad por departamento y el idioma elegido. El frontend nunca habla directamente con el modelo: la clave de API permanece en el servidor."],
+  "Prototype — TCS AI Friday Season 2 · Conversational AI Chatbot for Public Service Information Access":
+    ["प्रोटोटाइप — TCS AI Friday Season 2 · सार्वजनिक सेवा सूचना पहुँच हेतु संवादात्मक एआई चैटबॉट",
+     "Prototipo — TCS AI Friday Season 2 · Chatbot conversacional para acceso a información pública"],
+  "Type your question": ["अपना सवाल लिखें", "Escribe tu pregunta"],
+};
+
+/* ---------- engine ---------- */
+// Long paragraphs in the markup are wrapped across several source lines, so a
+// second index keyed on whitespace-collapsed text catches those too.
+const I18N_LOOSE = {};
+Object.keys(I18N).forEach(k => { I18N_LOOSE[k.replace(/\s+/g, ' ')] = I18N[k]; });
+
+function tr(s){
+  if(!s || currentLang === 'en') return s;
+  const key = s.trim();
+  if(!key) return s;
+  const row = I18N[key] || I18N_LOOSE[key.replace(/\s+/g, ' ')];
+  if(!row) return s;
+  const out = row[I18N_ORDER[currentLang]];
+  if(!out) return s;
+  // preserve the original leading/trailing whitespace of the text node
+  return s.replace(key, out);
+}
+
+const I18N_ATTRS = ['placeholder', 'title', 'aria-label'];
+let i18nTimer = null, i18nObserver = null;
+
+function i18nWalk(){
+  // Text nodes. A node whose value has changed since we last wrote it (a live
+  // counter, a status line, a chat message) is re-captured rather than reverted.
+  const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
+    acceptNode(n){
+      const p = n.parentNode;
+      if(!p) return NodeFilter.FILTER_REJECT;
+      const tag = p.nodeName;
+      if(tag === 'SCRIPT' || tag === 'STYLE' || tag === 'TEXTAREA') return NodeFilter.FILTER_REJECT;
+      return n.nodeValue && n.nodeValue.trim() ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+    }
+  });
+  const nodes = [];
+  while(walker.nextNode()) nodes.push(walker.currentNode);
+  nodes.forEach(n=>{
+    if(n.__i18nOut !== undefined && n.nodeValue !== n.__i18nOut) n.__i18nSrc = n.nodeValue;
+    else if(n.__i18nSrc === undefined) n.__i18nSrc = n.nodeValue;
+    const out = tr(n.__i18nSrc);
+    if(n.nodeValue !== out) n.nodeValue = out;
+    n.__i18nOut = out;
+  });
+
+  // Attributes (placeholders, tooltips, labels).
+  document.querySelectorAll('[placeholder],[title],[aria-label]').forEach(el=>{
+    el.__i18nAttr = el.__i18nAttr || {};
+    I18N_ATTRS.forEach(a=>{
+      if(!el.hasAttribute(a)) return;
+      const cur = el.getAttribute(a);
+      const rec = el.__i18nAttr[a];
+      if(rec && cur !== rec.out) el.__i18nAttr[a] = { src: cur, out: null };
+      else if(!rec) el.__i18nAttr[a] = { src: cur, out: null };
+      const src = el.__i18nAttr[a].src;
+      const out = tr(src);
+      if(cur !== out) el.setAttribute(a, out);
+      el.__i18nAttr[a].out = out;
+    });
+  });
+}
+
+function applyI18n(){
+  if(i18nObserver) i18nObserver.disconnect();
+  try { i18nWalk(); } catch (e) { /* never let translation break the page */ }
+  if(i18nObserver) i18nObserver.observe(document.body, { childList:true, subtree:true, characterData:true });
+}
+function scheduleI18n(){
+  clearTimeout(i18nTimer);
+  i18nTimer = setTimeout(applyI18n, 90);
+}
+
+function setLanguage(lang){
+  currentLang = lang;
+  localStorage.setItem('civicLang', lang);
+  document.documentElement.lang = lang;
+  const sel = document.getElementById('langSelect');
+  if(sel && sel.value !== lang) sel.value = lang;
+  applyI18n();
+}
+
+i18nObserver = new MutationObserver(scheduleI18n);
+setLanguage(localStorage.getItem('civicLang') || 'en');
+
 </script>
+
+
 </body>
 </html>
