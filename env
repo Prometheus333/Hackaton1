@@ -1,4 +1,0 @@
-# LLM (endpoint interno compatible con OpenAI)
-LITELLM_BASE_URL=https://genailab.tcs.in/
-LITELLM_API_KEY=sk-jWv3S024HWtDlOH8VXe0Dw
-LITELLM_MODEL=azure/genailab-maas-gpt-4.1

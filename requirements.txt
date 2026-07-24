@@ -1,4 +1,11 @@
 flask
 flask-cors
+flask-sock
 openai
+langchain-openai
 python-dotenv
+httpx
+requests
+certifi
+websocket-client
+python-dateutil

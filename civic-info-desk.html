@@ -2574,6 +2574,7 @@ let callPaused = false;
 let callGotReady = false;
 let callCategory = null;
 let callRetriedAsGeneral = false;
+let callReconnectedOnce = false;
 
 function callWsURL(){
   const u = new URL(BACKEND_URL);
@@ -2594,6 +2595,8 @@ async function startCall(){
   talkOverlayCaption.classList.remove('user-line');
   callPaused = false;
   callRetriedAsGeneral = false;
+  callReconnectedOnce = false;
+  callEndedByServer = false;
   simMode = false;
   newCallRef();
   startCallTimer();
@@ -2616,7 +2619,7 @@ async function startCall(){
   clearTimeout(connectWatchdog);
   connectWatchdog = setTimeout(()=>{
     if(callActive && !callGotReady && !simMode) startSimulatedCall();
-  }, 3500);
+  }, 6000);
 }
 
 function openCallSocket(cat){
@@ -2634,7 +2637,10 @@ function openCallSocket(cat){
     callSocket.send(JSON.stringify({
       category: cat,
       language: currentLang,
-      mode: scenarioMode ? "scenario" : "chat"
+      mode: scenarioMode ? "scenario" : "chat",
+      userName,
+      timeOfDay: getTimeOfDay(),
+      history: getRecentHistory()
     }));
   };
   callSocket.onmessage = (ev) => {
@@ -2647,6 +2653,8 @@ function openCallSocket(cat){
   };
   callSocket.onerror = () => {};
   callSocket.onclose = () => {
+    if(callEndedByServer) return; // graceful hangup already being handled
+
     // The unified CivicBot window sends category "all". A backend that only
     // knows the four department personas will drop the socket before sending
     // "ready" — in that case retry once as "general" so the call still works.
@@ -2656,6 +2664,16 @@ function openCallSocket(cat){
       return;
     }
     if(callActive && !callGotReady && !simMode){ startSimulatedCall(); return; }
+
+    // The socket dropped mid-call without the server saying goodbye — most
+    // likely a brief network hiccup rather than an intentional hangup. Try
+    // reconnecting once, quietly, before giving up on the live pipeline.
+    if(callActive && callGotReady && !simMode && !callReconnectedOnce){
+      callReconnectedOnce = true;
+      setOrbState('thinking', 'Reconnecting…');
+      openCallSocket(cat);
+      return;
+    }
     if(callActive && !simMode) endCall();
   };
 }
@@ -2692,10 +2710,26 @@ function handleCallMessage(msg){
       renderBookingForm(currentCat === 'all' ? 'general' : currentCat);
       setTimeout(()=> fillBookingForm(msg.data), 60);
       break;
+    case 'call_ended':
+      // The server is hanging up on its own (goodbye detected, or an idle
+      // timeout after checking in). Let the farewell audio that's already
+      // queued finish playing, then close the overlay — don't cut it off.
+      callEndedByServer = true;
+      waitForAudioThenEndCall();
+      break;
     case 'error':
       talkOverlayCaption.textContent = msg.message;
       break;
   }
+}
+
+let callEndedByServer = false;
+function waitForAudioThenEndCall(){
+  if(isPlayingAudio || audioQueue.length > 0){
+    setTimeout(waitForAudioThenEndCall, 200);
+    return;
+  }
+  if(callActive) endCall();
 }
 
 function startMicStreaming(){
