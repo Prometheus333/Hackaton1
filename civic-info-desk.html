@@ -275,7 +275,9 @@
   @keyframes tickerScroll{from{transform:translateX(0);} to{transform:translateX(-50%);}}
   .announce-item{
     display:inline-flex; align-items:center; gap:9px; padding:9px 30px; font-size:0.79rem; color:#DCE3EA;
+    cursor:pointer; border-bottom:1px solid transparent; transition:border-color .12s ease;
   }
+  .announce-item:hover{border-bottom-color:var(--gold);}
   .announce-item::before{
     content:attr(data-tag); font-family:'IBM Plex Mono', monospace; font-size:0.58rem; letter-spacing:0.1em;
     text-transform:uppercase; color:var(--gold); border:1px solid #3D4E60; padding:2px 6px; flex-shrink:0;
@@ -285,6 +287,29 @@
     cursor:pointer; padding:0 14px; font-size:0.6rem; letter-spacing:0.08em;
   }
   .announce-toggle:hover{color:var(--parchment);}
+
+  /* ===== What-changed modal ===== */
+  .change-modal{
+    position:fixed; inset:0; z-index:180; background:rgba(30,42,56,0.5);
+    display:flex; align-items:flex-start; justify-content:center; padding:80px 20px;
+  }
+  .change-modal.hidden{display:none;}
+  .change-modal-card{background:var(--paper); border:1px solid var(--line); max-width:480px; width:100%; padding:26px 28px; box-shadow:0 20px 50px rgba(0,0,0,.25);}
+  .change-modal-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;}
+  .change-modal-tag{
+    font-family:'IBM Plex Mono', monospace; font-size:0.62rem; letter-spacing:0.1em; text-transform:uppercase;
+    color:var(--stamp); border:1px solid var(--line); padding:3px 9px;
+  }
+  .change-modal-close{background:none; border:none; cursor:pointer; color:var(--ink-soft); font-size:0.9rem;}
+  .change-modal-close:hover{color:var(--stamp);}
+  .change-modal-card h3{font-size:1.15rem; margin:0 0 14px;}
+  .change-modal-diff{display:flex; flex-direction:column; gap:8px; margin-bottom:14px;}
+  .change-row{display:flex; gap:10px; font-size:0.85rem; padding:8px 10px; border:1px solid var(--line-soft);}
+  .change-row.was{color:var(--ink-soft); text-decoration:line-through; text-decoration-color:#B99; }
+  .change-row.now{color:var(--ink); background:#F4EFE2; border-color:var(--line);}
+  .change-row .lbl{font-family:'IBM Plex Mono', monospace; font-size:0.62rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--ink-soft); flex-shrink:0; width:44px;}
+  .change-modal-effective{font-size:0.8rem; color:var(--ink-soft); margin:0 0 12px;}
+  .change-modal-note{font-size:0.72rem; color:var(--ink-soft); font-style:italic; border-top:1px solid var(--line-soft); padding-top:10px; margin:0;}
 
   /* ===== Hero search + trending ===== */
   .hero-search{
@@ -1299,6 +1324,19 @@
   <button class="announce-toggle" id="announceToggle" title="Pause announcements" aria-label="Pause announcements">❚❚</button>
 </div>
 
+<div class="change-modal hidden" id="changeModal">
+  <div class="change-modal-card">
+    <div class="change-modal-head">
+      <span class="change-modal-tag" id="changeModalTag"></span>
+      <button class="change-modal-close" id="changeModalClose" aria-label="Close">✕</button>
+    </div>
+    <h3 id="changeModalTitle"></h3>
+    <div class="change-modal-diff" id="changeModalDiff"></div>
+    <p class="change-modal-effective" id="changeModalEffective"></p>
+    <p class="change-modal-note">This reflects a recorded update to the service — shown here as illustrative sample content for the prototype.</p>
+  </div>
+</div>
+
 <section class="view" id="view-home">
   <div class="hero-wrap">
     <div class="coffee-ring"></div>
@@ -1712,6 +1750,13 @@ let attachedContext = "";
 let attachedFileName = "";
 let userName = localStorage.getItem('civicName') || "";
 
+function getTimeOfDay(){
+  const h = new Date().getHours();
+  if(h < 12) return "morning";
+  if(h < 17) return "afternoon";
+  return "evening";
+}
+
 // ---------- Name gate ----------
 const nameGate = document.getElementById('nameGate');
 function initNameGate(){
@@ -1906,12 +1951,18 @@ renderFAQAccordion();
    ========================================================================= */
 
 const ANNOUNCEMENTS = [
-  { tag:"Tax", text:"Property tax early-payment rebate window closes 31 August — 5% off the full-year amount." },
-  { tag:"Permits", text:"Building permit portal maintenance this Sunday, 02:00–06:00. Applications may be delayed." },
-  { tag:"Licensing", text:"Business licence renewal is now a single combined form — no separate trade annexure." },
-  { tag:"Regulations", text:"Ward 12 waste collection moves to Tuesdays with effect from 1 August." },
-  { tag:"Public Notice", text:"Draft zoning map revision open for public comment until 15 September." },
-  { tag:"Service", text:"Counter hours at the Tax & Revenue office extended to 18:00 through August." },
+  { tag:"Tax", text:"Property tax early-payment rebate window closes 31 August — 5% off the full-year amount.",
+    was:"No early-payment rebate on property tax.", now:"5% rebate for paying the full-year amount before 31 August.", effective:"Effective this tax cycle." },
+  { tag:"Permits", text:"Building permit portal maintenance this Sunday, 02:00–06:00. Applications may be delayed.",
+    was:"Portal available 24/7 with no scheduled downtime.", now:"Scheduled maintenance window Sunday 02:00–06:00 — submissions queue and process after.", effective:"This Sunday only." },
+  { tag:"Licensing", text:"Business licence renewal is now a single combined form — no separate trade annexure.",
+    was:"Renewal required the main form plus a separate trade annexure.", now:"One combined form covers both.", effective:"Effective immediately." },
+  { tag:"Regulations", text:"Ward 12 waste collection moves to Tuesdays with effect from 1 August.",
+    was:"Ward 12 collection day: Thursday.", now:"Ward 12 collection day: Tuesday.", effective:"From 1 August." },
+  { tag:"Public Notice", text:"Draft zoning map revision open for public comment until 15 September.",
+    was:"No open comment period for this zoning revision.", now:"Public comment window open until 15 September.", effective:"Until 15 September." },
+  { tag:"Service", text:"Counter hours at the Tax & Revenue office extended to 18:00 through August.",
+    was:"Tax & Revenue counter closed at 17:00.", now:"Counter open until 18:00 through August.", effective:"Through end of August." },
 ];
 
 const TRENDING_SEARCHES = [
@@ -2004,13 +2055,33 @@ const DIRECTORIES = [
 function renderAnnouncements(){
   const track = document.getElementById('announceTrack');
   if(!track) return;
-  const itemHTML = ANNOUNCEMENTS.map(a =>
-    `<span class="announce-item" data-tag="${escapeHTML(a.tag)}">${escapeHTML(a.text)}</span>`
+  const itemHTML = ANNOUNCEMENTS.map((a, i) =>
+    `<span class="announce-item" data-tag="${escapeHTML(a.tag)}" data-idx="${i}">${escapeHTML(a.text)}</span>`
   ).join('');
   // Duplicated once so the -50% scroll loops seamlessly.
   track.innerHTML = itemHTML + itemHTML;
+  track.querySelectorAll('.announce-item').forEach(el => {
+    el.addEventListener('click', () => openChangeModal(ANNOUNCEMENTS[parseInt(el.dataset.idx, 10)]));
+  });
 }
 renderAnnouncements();
+
+function openChangeModal(a){
+  document.getElementById('changeModalTag').textContent = a.tag;
+  document.getElementById('changeModalTitle').textContent = a.text;
+  document.getElementById('changeModalDiff').innerHTML = `
+    <div class="change-row was"><span class="lbl">Was</span><span>${escapeHTML(a.was)}</span></div>
+    <div class="change-row now"><span class="lbl">Now</span><span>${escapeHTML(a.now)}</span></div>
+  `;
+  document.getElementById('changeModalEffective').textContent = a.effective;
+  document.getElementById('changeModal').classList.remove('hidden');
+}
+document.getElementById('changeModalClose').addEventListener('click', ()=>{
+  document.getElementById('changeModal').classList.add('hidden');
+});
+document.getElementById('changeModal').addEventListener('click', (e)=>{
+  if(e.target.id === 'changeModal') document.getElementById('changeModal').classList.add('hidden');
+});
 
 const announceToggle = document.getElementById('announceToggle');
 if(announceToggle){
@@ -3022,18 +3093,27 @@ const SIM_ANSWERS = [
     a:"I can set up an appointment for you. Tell me which department you need and a date that suits you, and I'll open the booking form on screen." },
   { k:["office","near","location","address"],
     a:"The nearest civic office to most residents is the district counter, open on weekdays from nine thirty to six during the current extended hours. I can pull it up on the map for you." },
-  { k:["hello","hi","hey","good morning","good evening"],
-    a:"Hello, you've reached the Civic Information Desk. I can help with permits, tax payments, local regulations, government schemes and appointments. What do you need today?" },
   { k:["your name","who are you","what are you"],
     a:"I'm CivicBot, the AI assistant for the Civic Information Desk. I help with permits, tax payments and local regulations — what can I help you with?" },
-  { k:["my name","who am i"],
-    a:"I don't have your name on file yet — happy to note it if you tell me. In the meantime, what can I help you with today?" },
   { k:["how are you","how's it going","how you doing"],
     a:"Doing well, thanks for asking! I'm here and ready to help with permits, tax payments, or local regulations — what's on your mind?" }
 ];
 
+function greetingLine(){
+  const tod = getTimeOfDay();
+  const capTod = tod.charAt(0).toUpperCase() + tod.slice(1);
+  const opener = userName ? `Good ${tod}, ${userName}!` : `Good ${tod}!`;
+  return `${opener} You've reached the Civic Information Desk. I can help with permits, tax payments, local regulations, government schemes and appointments. What do you need today?`;
+}
+
 function simAnswerFor(q){
   const lower = (q || '').toLowerCase();
+  if(["hello","hi","hey","good morning","good evening","good afternoon"].some(k => lower.includes(k))) return greetingLine();
+  if(["my name","who am i"].some(k => lower.includes(k))){
+    return userName
+      ? `You're ${userName}, at least that's what you told me! What can I help you with today?`
+      : "I don't have your name on file yet — happy to note it if you tell me. In the meantime, what can I help you with today?";
+  }
   const hit = SIM_ANSWERS.find(r => r.k.some(k => lower.includes(k)));
   if(hit) return hit.a;
   return "I didn't quite catch a specific request there. I can help with permits, tax payments, local regulations, government schemes, or appointments — what would you like to ask?";
@@ -3119,7 +3199,8 @@ async function handleSimQuestion(text){
     const cat = currentCat === 'all' ? 'general' : currentCat;
     const r = await fetch(`${BACKEND_URL}/api/chat`, {
       method:"POST", headers:{ "Content-Type":"application/json" },
-      body: JSON.stringify({ message:text, category:cat, mode:"chat", language:currentLang, context:"" })
+      body: JSON.stringify({ message:text, category:cat, mode:"chat", language:currentLang, context:"",
+        userName, timeOfDay:getTimeOfDay(), history:getRecentHistory() })
     });
     const j = await r.json();
     if(r.ok && j.answer) answer = j.answer;
@@ -3348,6 +3429,9 @@ function detectIntent(text){
 }
 
 function loadLedgerEntries(){ try { return JSON.parse(localStorage.getItem('civicLedger') || '[]'); } catch { return []; } }
+function getRecentHistory(){
+  return loadLedgerEntries().slice(-6).map(e => ({ question: e.question, answer: e.answer }));
+}
 function saveLedgerEntries(list){ localStorage.setItem('civicLedger', JSON.stringify(list)); }
 function persistLedgerEntry(entry){
   const list = loadLedgerEntries();
@@ -3446,7 +3530,8 @@ async function addEntry(question, opts){
   async function callChat(cat){
     const r = await fetch(`${BACKEND_URL}/api/chat`, {
       method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message: question, category: cat, mode: scenarioMode ? "scenario" : "chat", language: currentLang, context: attachedContext })
+      body: JSON.stringify({ message: question, category: cat, mode: scenarioMode ? "scenario" : "chat", language: currentLang, context: attachedContext,
+        userName, timeOfDay: getTimeOfDay(), history: getRecentHistory() })
     });
     let j; try { j = await r.json(); } catch { j = { error: "Malformed response from server" }; }
     return { ok: r.ok, data: j };
