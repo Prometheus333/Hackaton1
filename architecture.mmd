@@ -1,0 +1,50 @@
+flowchart TB
+    subgraph CLIENT["🖥️ CLIENT — civic-info-desk.html (single-page app)"]
+        UI["Portal UI<br/>Home · Services · Assistant · Insights · Help · About"]
+        TEXT["Text Composer<br/>type a question, attach .txt/.md/.csv"]
+        VOICE["Talk Mode (voice call overlay)"]
+        LOCAL["Browser localStorage<br/>ledger · appointments · passport · name"]
+
+        UI --> TEXT
+        UI --> VOICE
+        TEXT -.-> LOCAL
+        VOICE -.-> LOCAL
+    end
+
+    subgraph VOICEPATH["🎙️ Voice call — two paths"]
+        direction TB
+        REALCALL["Real-time call<br/>continuous mic stream over WebSocket"]
+        FALLBACK["Fallback call<br/>browser SpeechRecognition + speechSynthesis<br/>+ local canned answers if offline"]
+        REALCALL -- "no connection within ~6s" --> FALLBACK
+    end
+
+    VOICE --> VOICEPATH
+
+    subgraph SERVER["⚙️ BACKEND — server.py (Flask)"]
+        CHAT["/api/chat<br/>text + voice-fallback answers"]
+        WS["/ws/call<br/>continuous voice call socket"]
+        BOOK["/api/extract-booking<br/>pulls booking details from conversation"]
+        HEALTH["/health"]
+        PROMPT["Shared prompt builder<br/>department persona + manners + narrowing<br/>questions + Mexico reference context +<br/>conversation history"]
+        CHAT --> PROMPT
+        WS --> PROMPT
+    end
+
+    TEXT -- "POST message + category + history" --> CHAT
+    REALCALL <-- "mic audio in / spoken reply out" --> WS
+    FALLBACK -. "POST (same endpoint, short replies)" .-> CHAT
+
+    subgraph EXTERNAL["☁️ External services"]
+        LLM["genailab.tcs.in (LiteLLM)<br/>GPT-4.1 — generates every answer"]
+        STT["Deepgram<br/>speech → text"]
+        TTS["ElevenLabs<br/>text → speech"]
+    end
+
+    PROMPT --> LLM
+    WS --> STT
+    WS --> TTS
+
+    style CLIENT fill:#EFE9DA,stroke:#1E2A38,color:#1E2A38
+    style SERVER fill:#F4EFE2,stroke:#1E2A38,color:#1E2A38
+    style EXTERNAL fill:#FBF8F0,stroke:#A93226,color:#1E2A38
+    style VOICEPATH fill:#FFFFFF,stroke:#57715F,color:#1E2A38
