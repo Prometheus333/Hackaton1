@@ -75,7 +75,7 @@
   }
   .brand{display:flex; align-items:center; gap:12px; cursor:pointer;}
   .brand svg{width:34px; height:34px; flex-shrink:0;}
-  .brand-text{font-family:'Fraunces', serif; font-weight:600; font-size:1.15rem;}
+  .brand-text{font-family:'Fraunces', serif; font-weight:600; font-size:1.15rem; color:var(--ink);}
   .nav-links{display:flex; gap:2px; align-items:center; flex-wrap:wrap;}
   .nav-link{
     font-size:0.8rem; font-weight:500; padding:8px 12px; cursor:pointer;
@@ -994,10 +994,7 @@
   }
   .nav-link.active{border-bottom-color:var(--gold); color:#fff;}
   .nav-link:hover{color:#fff; background:rgba(255,255,255,.05);}
-  .brand-text{
-    background:linear-gradient(90deg,#FFFFFF 0%,#F0D9A8 100%);
-    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
-  }
+  .brand-text{color:#fff;}
   .announce-label{background:var(--stamp); color:#fff;}
 
   /* --- section headings get a coloured rule --- */
@@ -1129,7 +1126,7 @@
     border-bottom:3px solid transparent;
     border-image:linear-gradient(90deg,var(--gold) 0%,var(--stamp) 40%,var(--sage) 78%,var(--violet) 100%) 1;
   }
-  .brand-text{background:linear-gradient(90deg,var(--ink) 0%,var(--stamp) 100%);}
+  .brand-text{color:var(--ink);}
   .brand svg circle{stroke:var(--stamp);}
   .brand svg path{fill:var(--gold);}
   .nav-link{color:#5C6C7D;}
@@ -2413,10 +2410,18 @@ renderPosterWall();
 
 // ---------- CivicBot mascot: opens the all-department assistant ----------
 function openCivicBot(){ openAssistant('all'); }
-['botStage','botCta','botFab'].forEach(id=>{
+['botStage','botCta'].forEach(id=>{
   const el = document.getElementById(id);
   if(el) el.addEventListener('click', openCivicBot);
 });
+// The floating corner launcher jumps straight into voice — that's the
+// instant, one-tap expectation for a floating assistant bubble.
+function openCivicBotVoice(){
+  currentCat = 'all';
+  startCall();
+}
+const botFabEl0 = document.getElementById('botFab');
+if(botFabEl0) botFabEl0.addEventListener('click', openCivicBotVoice);
 const botFabEl = document.getElementById('botFab');
 const botTipEl = document.getElementById('botTip');
 if(botFabEl && botTipEl){
@@ -3193,6 +3198,36 @@ async function handleSimQuestion(text){
   try { simRec && simRec.stop(); } catch {}
   setOrbState('thinking', 'Thinking…');
   beginCallLedgerEntry(text);
+
+  const intent = detectIntent(text);
+  if(intent === 'booking'){
+    const answer = "Sure — I've opened the appointment form on screen so you can fill in the details.";
+    talkOverlayCaption.textContent = answer;
+    talkOverlayCaption.classList.remove('user-line');
+    finishCallLedgerEntry(answer);
+    renderBookingForm(currentCat === 'all' ? 'general' : currentCat);
+    simSpeak(answer, ()=>{
+      if(!simMode || !callActive || callPaused) return;
+      setOrbState('listening', simRec ? 'Listening…' : 'Simulated caller…');
+      if(simRec){ try { simRec.start(); } catch {} }
+      else { simTimer = setTimeout(()=> runScriptedTurn(), 2200); }
+    });
+    return;
+  }
+  if(intent === 'location'){
+    const answer = "Let me pull up the nearest office for you — check the screen for the map.";
+    talkOverlayCaption.textContent = answer;
+    talkOverlayCaption.classList.remove('user-line');
+    finishCallLedgerEntry(answer);
+    renderNearbyOfficeCard();
+    simSpeak(answer, ()=>{
+      if(!simMode || !callActive || callPaused) return;
+      setOrbState('listening', simRec ? 'Listening…' : 'Simulated caller…');
+      if(simRec){ try { simRec.start(); } catch {} }
+      else { simTimer = setTimeout(()=> runScriptedTurn(), 2200); }
+    });
+    return;
+  }
 
   let answer = null;
   try {
