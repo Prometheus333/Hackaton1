@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Civic Information Desk — Problem, Solution, Architecture, Benefits</title>
+<style>
+  :root{
+    --parchment:#FBF8F0;
+    --parchment-2:#F4EFE3;
+    --ink:#1E2A38;
+    --slate:#3A4A5C;
+    --muted:#8FA0B3;
+    --seal:#A93226;
+    --gold:#D9C98C;
+    --rule:#D8DEE4;
+    --display:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+    --body:"Segoe UI",Inter,system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+    --mono:ui-monospace,"SF Mono","Cascadia Mono",Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    background:#161d26;
+    font-family:var(--body);
+    color:var(--ink);
+    display:flex;align-items:center;justify-content:center;
+    overflow:hidden;
+  }
+  #stage{position:relative;width:1280px;height:720px;transform-origin:center center;flex:none}
+
+  .slide{
+    position:absolute;inset:0;
+    background:var(--parchment);
+    padding:52px 64px 58px;
+    display:none;
+    flex-direction:column;
+    /* faint ledger ruling — the page this desk writes on */
+    background-image:repeating-linear-gradient(to bottom,transparent 0 43px,rgba(30,42,56,.045) 43px 44px);
+    background-position:0 120px;
+  }
+  .slide.is-active{display:flex;animation:rise .32s ease-out both}
+  @keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+  /* ---------- masthead ---------- */
+  .masthead{display:flex;justify-content:space-between;align-items:baseline;
+    border-bottom:1px solid var(--ink);padding-bottom:10px}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--seal)}
+  .filed{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+  h1{font-family:var(--display);font-size:46px;line-height:1.06;font-weight:600;letter-spacing:-.01em;margin:26px 0 8px;max-width:22ch}
+  .kicker{font-size:16px;line-height:1.5;color:var(--slate);max-width:78ch}
+  .body-area{flex:1;display:flex;flex-direction:column;justify-content:center;padding:6px 0 4px}
+
+  /* ---------- shared parts ---------- */
+  .grid{display:grid;gap:18px}
+  .g2{grid-template-columns:repeat(2,1fr)}
+  .g3{grid-template-columns:repeat(3,1fr)}
+  .g4{grid-template-columns:repeat(4,1fr)}
+  .card{background:#fff;border:1px solid var(--rule);border-radius:2px;padding:18px 20px 19px;
+    box-shadow:0 1px 0 rgba(30,42,56,.05)}
+  .card h3{font-family:var(--display);font-size:20px;font-weight:600;line-height:1.2;margin-bottom:7px}
+  .card p{font-size:14px;line-height:1.5;color:var(--slate)}
+  .tag{font-family:var(--mono);font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--muted);display:block;margin-bottom:9px}
+
+  .panel{background:var(--parchment-2);border:1px solid var(--rule);border-radius:2px;padding:18px 22px}
+  .panel .tag{color:var(--seal)}
+  .panel p{font-size:14px;line-height:1.55;color:var(--slate)}
+
+  .note{font-size:13.5px;line-height:1.5;color:var(--slate);border-top:1px solid var(--rule);
+    padding-top:12px;margin-top:18px}
+  .note b{color:var(--ink);font-weight:600}
+
+  /* ---------- slide 1: problem ---------- */
+  .queue{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:20px}
+  .window{background:#fff;border:1px solid var(--rule);border-radius:2px;padding:16px 18px 18px}
+  .window .num{font-family:var(--mono);font-size:11px;letter-spacing:.2em;color:var(--seal);display:block;margin-bottom:10px}
+  .window h3{font-family:var(--display);font-size:19px;font-weight:600;margin-bottom:6px}
+  .window p{font-size:13.5px;line-height:1.5;color:var(--slate)}
+  .friction{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:1px solid var(--rule);
+    border-radius:2px;background:#fff;overflow:hidden}
+  .friction div{padding:15px 18px}
+  .friction div + div{border-left:1px solid var(--rule)}
+  .friction .lede{font-family:var(--display);font-size:17px;font-weight:600;line-height:1.25;margin-bottom:5px}
+  .friction p{font-size:13px;line-height:1.45;color:var(--slate)}
+
+  /* ---------- slide 2: solution ---------- */
+  .voices{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+  .voice{border:1px solid var(--rule);border-radius:2px;background:#fff;padding:15px 16px 16px}
+  .voice h3{font-family:var(--display);font-size:17.5px;font-weight:600;margin-bottom:5px}
+  .voice p{font-size:12.8px;line-height:1.45;color:var(--slate)}
+  .voice .tag{margin-bottom:8px}
+  .capsules{display:flex;flex-wrap:wrap;gap:8px}
+  .cap{font-size:12.6px;padding:7px 12px;border:1px solid var(--rule);border-radius:2px;
+    background:#fff;color:var(--slate)}
+  .cap b{color:var(--ink);font-weight:600}
+
+  /* ---------- slide 3: architecture ---------- */
+  .flow{display:flex;align-items:stretch;gap:0;margin-bottom:20px}
+  .node{flex:1;background:#fff;border:1px solid var(--rule);border-radius:2px;padding:16px 16px 17px}
+  .node .tag{color:var(--seal);margin-bottom:7px}
+  .node h3{font-family:var(--display);font-size:19px;font-weight:600;margin-bottom:5px}
+  .node p{font-family:var(--mono);font-size:11.5px;line-height:1.55;color:var(--slate);word-break:break-word}
+  .arrow{display:flex;align-items:center;justify-content:center;width:38px;flex:none;
+    color:var(--gold);font-size:20px}
+  pre{font-family:var(--mono);font-size:12.5px;line-height:1.65;color:var(--ink);white-space:pre-wrap}
+  .arch-bottom{display:grid;grid-template-columns:1.05fr 1fr;gap:18px}
+
+  /* ---------- slide 4: benefits ---------- */
+  .benefit-cols{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-bottom:18px}
+  .col-head{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;
+    color:var(--seal);border-bottom:1px solid var(--ink);padding-bottom:8px;margin-bottom:12px}
+  .ben{display:flex;gap:12px;padding:9px 0;border-bottom:1px solid var(--rule)}
+  .ben:last-child{border-bottom:0}
+  .ben .mark{font-family:var(--mono);font-size:12px;color:var(--gold);padding-top:2px}
+  .ben h4{font-family:var(--display);font-size:16.5px;font-weight:600;margin-bottom:2px}
+  .ben p{font-size:13px;line-height:1.45;color:var(--slate)}
+  .tally{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--rule);
+    border-radius:2px;background:#fff}
+  .tally div{padding:13px 18px}
+  .tally div + div{border-left:1px solid var(--rule)}
+  .tally .n{font-family:var(--display);font-size:30px;font-weight:600;line-height:1;color:var(--seal)}
+  .tally span{font-size:12.5px;color:var(--slate);display:block;margin-top:5px;line-height:1.35}
+
+  /* signature: the passport stamp the desk presses on a resolved inquiry */
+  .stamp{position:absolute;right:62px;top:88px;width:118px;height:118px;
+    border:2px solid var(--seal);border-radius:50%;color:var(--seal);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    transform:rotate(-11deg);opacity:.55;pointer-events:none;text-align:center}
+  .stamp::after{content:"";position:absolute;inset:6px;border:1px solid var(--seal);border-radius:50%}
+  .stamp .s1{font-family:var(--mono);font-size:8px;letter-spacing:.2em}
+  .stamp .s2{font-family:var(--display);font-size:15px;font-weight:600;line-height:1.05;margin:4px 0}
+  .stamp .s3{font-family:var(--mono);font-size:8px;letter-spacing:.12em}
+  .slide-benefits .kicker{max-width:60ch}
+
+  /* ---------- slide 4: services ---------- */
+  .svc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:15px}
+  .svc{background:#fff;border:1px solid var(--rule);border-radius:2px;padding:14px 16px 15px;
+    display:flex;flex-direction:column}
+  .svc .tag{margin-bottom:5px}
+  .svc h3{font-family:var(--display);font-size:17.5px;font-weight:600;line-height:1.18;margin-bottom:5px}
+  .svc p{font-size:12.6px;line-height:1.45;color:var(--slate);flex:1}
+  .svc .gain{margin-top:8px;padding-top:7px;border-top:1px solid var(--rule);
+    font-size:12.2px;line-height:1.35;color:var(--seal)}
+  .slide-benefits h1{font-size:40px;margin:20px 0 6px}
+  .slide-benefits .tally div{padding:10px 16px}
+  .slide-benefits .tally .n{font-size:26px}
+  .slide-benefits .tally span{font-size:11.8px;margin-top:4px}
+
+  /* ---------- slide 5: budget ---------- */
+  .cost{display:grid;grid-template-columns:1.4fr 1fr;gap:20px}
+  table.ledger{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--rule)}
+  .ledger th{font-family:var(--mono);font-size:9.5px;letter-spacing:.15em;text-transform:uppercase;
+    color:var(--muted);text-align:left;padding:8px 11px;border-bottom:1px solid var(--ink);font-weight:400}
+  .ledger th.r,.ledger td.r{text-align:right}
+  .ledger td{font-size:12px;padding:6px 11px;border-bottom:1px solid var(--rule);color:var(--slate)}
+  .ledger td:first-child{color:var(--ink);font-weight:600}
+  .ledger td.r{font-family:var(--mono);font-size:11.5px;color:var(--ink)}
+  .ledger tr.total td{background:var(--parchment-2);border-bottom:0;color:var(--ink);
+    font-weight:600;font-size:12.5px}
+  .ledger tr.total td.r{color:var(--seal);font-size:13px}
+  .rowline{display:flex;justify-content:space-between;gap:12px;font-size:12.2px;
+    padding:6px 0;border-bottom:1px solid var(--rule);color:var(--slate)}
+  .rowline b{color:var(--ink);font-weight:600}
+  .rowline span{font-family:var(--mono);font-size:11.5px;color:var(--ink);white-space:nowrap}
+  .grand{display:flex;justify-content:space-between;align-items:baseline;
+    margin-top:11px;padding-top:11px;border-top:1px solid var(--ink)}
+  .grand .lbl{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+  .grand .fig{font-family:var(--display);font-size:27px;font-weight:600;color:var(--seal);line-height:1}
+  .assume{font-family:var(--mono);font-size:10px;line-height:1.7;color:var(--muted);
+    border-top:1px solid var(--rule);padding-top:10px;margin-top:14px}
+  .assume b{color:var(--slate);font-weight:400}
+
+  /* ---------- slide 5: roadmap ---------- */
+  .track{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+  .stage-when{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;
+    color:var(--seal);margin-bottom:10px}
+  .stage-when.later{color:var(--muted)}
+  .rail{height:1px;background:var(--rule);position:relative;margin:0 0 20px}
+  .rail i{position:absolute;top:-3.5px;width:8px;height:8px;background:var(--seal);
+    border-radius:50%;transform:translateX(-50%)}
+  .rail i.dim{background:#fff;border:1.5px solid var(--muted);top:-4px}
+
+  /* ---------- chrome ---------- */
+  .footline{display:flex;justify-content:space-between;align-items:center;
+    border-top:1px solid var(--ink);padding-top:10px;
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+  #nav{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);
+    display:flex;align-items:center;gap:14px;z-index:10}
+  #nav button{background:none;border:1px solid rgba(251,248,240,.32);color:#FBF8F0;
+    font-family:var(--mono);font-size:11px;letter-spacing:.12em;padding:6px 12px;
+    border-radius:2px;cursor:pointer}
+  #nav button:hover{border-color:var(--gold);color:var(--gold)}
+  #nav button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+  .dots{display:flex;gap:7px}
+  .dots b{width:7px;height:7px;border-radius:50%;background:rgba(251,248,240,.3);cursor:pointer}
+  .dots b.on{background:var(--gold)}
+  #count{font-family:var(--mono);font-size:11px;color:rgba(251,248,240,.55);letter-spacing:.12em}
+
+  @media (prefers-reduced-motion:reduce){.slide.is-active{animation:none}}
+
+  @media print{
+    @page{size:1280px 720px;margin:0}
+    body{background:#fff;display:block;overflow:visible}
+    #stage{transform:none!important;width:1280px;height:auto}
+    .slide{display:flex!important;position:relative;page-break-after:always;height:720px;animation:none}
+    #nav{display:none}
+  }
+</style>
+</head>
+<body>
+
+<div id="stage">
+
+  <!-- ================= 01 PROBLEM ================= -->
+  <section class="slide is-active">
+    <div class="masthead">
+      <span class="eyebrow">01 · The problem</span>
+      <span class="filed">Civic Information Desk</span>
+    </div>
+    <h1>You have to know who to ask before you can ask.</h1>
+    <p class="kicker">A resident with one ordinary question — a fence, a late bill, a home bakery — has to first work out which counter owns it, then arrive during its hours, speaking its language.</p>
+
+    <div class="body-area">
+      <div class="queue">
+        <div class="window">
+          <span class="num">WINDOW 1</span>
+          <h3>Permits &amp; Licensing</h3>
+          <p>Its own forms, its own vocabulary, its own idea of what counts as a "structure."</p>
+        </div>
+        <div class="window">
+          <span class="num">WINDOW 2</span>
+          <h3>Tax &amp; Revenue</h3>
+          <p>Where penalty questions live — and where getting the timing wrong costs money.</p>
+        </div>
+        <div class="window">
+          <span class="num">WINDOW 3</span>
+          <h3>Regulatory Affairs</h3>
+          <p>The office you only learn exists after two other offices send you here.</p>
+        </div>
+      </div>
+
+      <div class="friction">
+        <div>
+          <div class="lede">FAQ pages answer the wrong question</div>
+          <p>They answer what the department wrote down, not what the resident actually asked.</p>
+        </div>
+        <div>
+          <div class="lede">One page, one language</div>
+          <p>Spanish- and Hindi-speaking residents get the English page and a translation guess.</p>
+        </div>
+        <div>
+          <div class="lede">No way to check first</div>
+          <p>"Do I even need a permit for this?" costs a trip to the counter to find out.</p>
+        </div>
+        <div>
+          <div class="lede">Escalation is a dead end</div>
+          <p>When the page fails, there's no thread to hand to a human — you start over.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="footline"><span>Problem statement</span><span>01 / 05</span></div>
+  </section>
+
+  <!-- ================= 02 SOLUTION ================= -->
+  <section class="slide">
+    <div class="masthead">
+      <span class="eyebrow">02 · The solution</span>
+      <span class="filed">Civic Information Desk</span>
+    </div>
+    <h1>One front desk. Four clerks. Same model.</h1>
+    <p class="kicker">A single chat surface routes each question to the right departmental persona and answers it with a live language model. The persona is a prompt, not a separate model — one endpoint, four voices.</p>
+
+    <div class="body-area">
+      <div class="voices">
+        <div class="voice">
+          <span class="tag">Persona 01</span>
+          <h3>Permits</h3>
+          <p>Brisk and efficient. No wasted words — the answer comes first.</p>
+        </div>
+        <div class="voice">
+          <span class="tag">Persona 02</span>
+          <h3>Tax</h3>
+          <p>Patient and reassuring. Flags how to avoid a penalty before it lands.</p>
+        </div>
+        <div class="voice">
+          <span class="tag">Persona 03</span>
+          <h3>Regulations</h3>
+          <p>Dry, a little wry — precise, and never sarcastic toward the resident.</p>
+        </div>
+        <div class="voice">
+          <span class="tag">Persona 04</span>
+          <h3>General</h3>
+          <p>Warm front-desk voice. Its job is helping you find the right window.</p>
+        </div>
+      </div>
+
+      <div class="capsules">
+        <span class="cap"><b>AI chat assistant</b> — routed to the department that owns the question</span>
+        <span class="cap"><b>Voice assistant</b> — a streaming call with the same clerk</span>
+        <span class="cap"><b>Document guidance</b> — the model reasons over the file you attach</span>
+        <span class="cap"><b>Multilingual support</b> — English, Spanish, Hindi</span>
+        <span class="cap"><b>Appointment booking</b> — the model reads the thread and drafts the form</span>
+        <span class="cap"><b>Nearby office finder</b> — the handoff when you want a person</span>
+        <span class="cap"><b>Scenario check</b> — a chat mode: verdict, why, and what to settle first</span>
+      </div>
+
+      <p class="note">Every persona is <b>BASE_RULES</b> plus one short paragraph of voice: 2–4 sentence answers, plain redirects when a question is out of scope, and never an invented fee, date, or phone number.</p>
+    </div>
+
+    <div class="footline"><span>Solution</span><span>02 / 05</span></div>
+  </section>
+
+  <!-- ================= 03 ARCHITECTURE ================= -->
+  <section class="slide">
+    <div class="masthead">
+      <span class="eyebrow">03 · Architecture</span>
+      <span class="filed">Civic Information Desk</span>
+    </div>
+    <h1>Four layers, one model call.</h1>
+    <p class="kicker">The request crosses the stack once. Category and mode select the persona, language appends an instruction, attached context is prepended — then a single <code>llm.invoke()</code> does the work.</p>
+
+    <div class="body-area">
+      <div class="flow">
+        <div class="node">
+          <span class="tag">Layer 01</span>
+          <h3>Browser UI</h3>
+          <p>civic-info-desk.html<br>vanilla JS · no framework</p>
+        </div>
+        <div class="arrow">&#8594;</div>
+        <div class="node">
+          <span class="tag">Layer 02</span>
+          <h3>Flask API</h3>
+          <p>server.py<br>/api/chat<br>/api/extract-booking<br>/health</p>
+        </div>
+        <div class="arrow">&#8594;</div>
+        <div class="node">
+          <span class="tag">Layer 03</span>
+          <h3>LangChain</h3>
+          <p>ChatOpenAI wrapper<br>builds the request</p>
+        </div>
+        <div class="arrow">&#8594;</div>
+        <div class="node">
+          <span class="tag">Layer 04</span>
+          <h3>LiteLLM Gateway</h3>
+          <p>genailab.tcs.in<br>model-agnostic routing</p>
+        </div>
+      </div>
+
+      <div class="arch-bottom">
+        <div class="panel">
+          <span class="tag">Request shape · POST /api/chat</span>
+          <pre>{ "message", "category", "mode",
+  "language", "context" }</pre>
+          <p style="margin-top:10px">Four routing fields around one question field — which is why adding a feature rarely means adding a code path.</p>
+        </div>
+        <div class="panel">
+          <span class="tag">Why a gateway</span>
+          <p>The app talks to one OpenAI-compatible endpoint, with BASE_URL, MODEL, and API_KEY read from <code>.env</code> and failing fast at startup if missing. Changing the model — or the provider — is a config edit, not a code change.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="footline"><span>System architecture</span><span>03 / 05</span></div>
+  </section>
+
+  <!-- ================= 04 SERVICES & BENEFITS ================= -->
+  <section class="slide slide-benefits">
+    <div class="masthead">
+      <span class="eyebrow">04 &middot; Services &amp; benefits</span>
+      <span class="filed">Civic Information Desk</span>
+    </div>
+    <h1>Six AI services. One counter.</h1>
+    <p class="kicker">What the desk offers a resident, and what each service is actually worth &mdash; to the person asking, and to the department answering.</p>
+
+    <div class="body-area">
+      <div class="svc-grid">
+        <div class="svc">
+          <span class="tag">Service 01</span>
+          <h3>AI chat assistant</h3>
+          <p>Typed questions are routed to the right department and answered in that clerk&rsquo;s voice.</p>
+          <div class="gain">No directory lookup before you can ask.</div>
+        </div>
+        <div class="svc">
+          <span class="tag">Service 02</span>
+          <h3>Appointment booking</h3>
+          <p>The model reads the conversation and pre-fills the booking form for the resident.</p>
+          <div class="gain">Shorter visits &mdash; the clerk starts with context.</div>
+        </div>
+        <div class="svc">
+          <span class="tag">Service 03</span>
+          <h3>Document guidance</h3>
+          <p>Attach a notice or a draft, and the answer is grounded in that document.</p>
+          <div class="gain">Advice on your paperwork, not the general case.</div>
+        </div>
+        <div class="svc">
+          <span class="tag">Service 04</span>
+          <h3>Multilingual support</h3>
+          <p>Ask and be answered in English, Spanish, or Hindi &mdash; in chat and in voice.</p>
+          <div class="gain">Three language communities, one desk to staff.</div>
+        </div>
+        <div class="svc">
+          <span class="tag">Service 05</span>
+          <h3>Voice assistant</h3>
+          <p>A live streaming call with the same clerk &mdash; microphone in, audio out.</p>
+          <div class="gain">Reaches residents who will not type a form.</div>
+        </div>
+        <div class="svc">
+          <span class="tag">Service 06</span>
+          <h3>Nearby office finder</h3>
+          <p>The escalation path for a resident who wants to speak to a person.</p>
+          <div class="gain">A clean handoff instead of a dead end.</div>
+        </div>
+      </div>
+
+      <div class="tally">
+        <div><span class="n">4</span><span>personas served by one endpoint</span></div>
+        <div><span class="n">3</span><span>languages from one instruction line</span></div>
+        <div><span class="n">2</span><span>ways in: typed chat and live voice</span></div>
+        <div><span class="n">1</span><span>call pattern behind all six services</span></div>
+      </div>
+    </div>
+
+    <div class="stamp" aria-hidden="true">
+      <span class="s1">INFORMATION DESK</span>
+      <span class="s2">INQUIRY<br>RESOLVED</span>
+      <span class="s3">ONE WINDOW</span>
+    </div>
+
+    <div class="footline"><span>Services &amp; benefits</span><span>04 / 05</span></div>
+  </section>
+
+  <!-- ================= 05 BUDGET ================= -->
+  <section class="slide">
+    <div class="masthead">
+      <span class="eyebrow">05 &middot; Budget &amp; estimated cost</span>
+      <span class="filed">Civic Information Desk</span>
+    </div>
+    <h1>What it costs, and what it returns.</h1>
+    <p class="kicker">Monthly running cost across every API and service the desk depends on, set against assumed revenue.</p>
+
+    <div class="body-area">
+      <div class="cost">
+        <table class="ledger">
+          <thead>
+            <tr><th>Line item</th><th class="r">Per month</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>LLM API</td><td class="r">$200</td></tr>
+            <tr><td>Speech to text</td><td class="r">$360</td></tr>
+            <tr><td>Twilio voice</td><td class="r">$80</td></tr>
+            <tr><td>Google Maps Platform</td><td class="r">$245</td></tr>
+            <tr><td>Cloud hosting / database</td><td class="r">$325</td></tr>
+            <tr><td>Maintenance</td><td class="r">$500</td></tr>
+            <tr class="total"><td>Total monthly cost</td><td class="r">$1,710</td></tr>
+          </tbody>
+        </table>
+
+        <div>
+          <div class="panel">
+            <span class="tag">Financial summary &middot; per month</span>
+            <div class="rowline"><b>API &amp; infrastructure</b><span>$1,210</span></div>
+            <div class="rowline"><b>Maintenance</b><span>$500</span></div>
+            <div class="rowline"><b>Total cost</b><span>$1,710</span></div>
+            <div class="rowline" style="border-bottom:0"><b>Assumed revenue</b><span>$10,000</span></div>
+            <div class="grand"><span class="lbl">Estimated monthly profit</span><span class="fig">$8,290</span></div>
+          </div>
+          <div class="grand" style="margin-top:16px;border-top:1px solid var(--ink);padding-top:12px">
+            <span class="lbl">Profit margin</span><span class="fig">82.9%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footline"><span>Budget &amp; estimated cost</span><span>05 / 05</span></div>
+  </section>
+
+</div>
+
+<div id="nav">
+  <button id="prev" aria-label="Previous slide">&#8592; Prev</button>
+  <div class="dots" id="dots"></div>
+  <button id="next" aria-label="Next slide">Next &#8594;</button>
+  <span id="count"></span>
+</div>
+
+<script>
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var dots = document.getElementById('dots');
+  var count = document.getElementById('count');
+  var i = 0;
+
+  slides.forEach(function(_, n){
+    var b = document.createElement('b');
+    b.setAttribute('role','button');
+    b.setAttribute('aria-label','Go to slide ' + (n+1));
+    b.addEventListener('click', function(){ go(n); });
+    dots.appendChild(b);
+  });
+
+  function go(n){
+    i = Math.max(0, Math.min(slides.length - 1, n));
+    slides.forEach(function(s, k){ s.classList.toggle('is-active', k === i); });
+    Array.prototype.forEach.call(dots.children, function(d, k){ d.classList.toggle('on', k === i); });
+    count.textContent = (i+1) + ' / ' + slides.length;
+  }
+
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { go(i+1); e.preventDefault(); }
+    if (e.key === 'ArrowLeft'  || e.key === 'PageUp')  { go(i-1); e.preventDefault(); }
+    if (e.key === 'Home') go(0);
+    if (e.key === 'End') go(slides.length - 1);
+  });
+  document.getElementById('next').addEventListener('click', function(){ go(i+1); });
+  document.getElementById('prev').addEventListener('click', function(){ go(i-1); });
+
+  function fit(){
+    var s = Math.min(window.innerWidth / 1280, (window.innerHeight - 70) / 720);
+    document.getElementById('stage').style.transform = 'scale(' + s + ')';
+  }
+  window.addEventListener('resize', fit);
+  fit();
+  go(0);
+</script>
+</body>
+</html>
