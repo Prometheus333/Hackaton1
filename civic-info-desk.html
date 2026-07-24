@@ -618,6 +618,16 @@
     line-height:1.5; color:var(--paper); padding:0 24px; min-height:1.6em;
   }
   .talk-overlay-caption.user-line{color:var(--gold); font-style:italic;}
+  .talk-booking-progress{
+    display:flex; flex-wrap:wrap; gap:8px 16px; justify-content:center; max-width:520px;
+    font-family:'IBM Plex Mono', monospace; font-size:0.72rem; color:#D8DEE4;
+    border:1px solid rgba(255,255,255,0.18); border-radius:6px; padding:12px 18px; background:rgba(255,255,255,0.05);
+  }
+  .talk-booking-progress.hidden{display:none;}
+  .talk-booking-progress .tbp-field{display:flex; gap:6px; align-items:baseline;}
+  .talk-booking-progress .tbp-label{color:#8FA0B2; text-transform:uppercase; letter-spacing:0.06em;}
+  .talk-booking-progress .tbp-value{color:var(--gold);}
+  .talk-booking-progress .tbp-value.empty{color:#5C6C7D;}
   .talk-overlay-close{
     width:52px; height:52px; border-radius:50%; background:var(--paper); border:none; cursor:pointer;
     display:flex; align-items:center; justify-content:center; color:var(--ink); margin:0; padding:0; align-self:center;
@@ -1268,6 +1278,7 @@
   </button>
   <div class="talk-overlay-status" id="talkOverlayStatus">Connecting…</div>
   <div class="talk-overlay-caption" id="talkOverlayCaption"></div>
+  <div class="talk-booking-progress hidden" id="talkBookingProgress"></div>
   <div class="talk-controls">
     <button class="talk-overlay-pause" id="talkPause" title="Pause call" aria-label="Pause call">
       <svg class="pause-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5v14M15 5v14"/></svg>
@@ -2822,6 +2833,8 @@ function endCall(){
   callActive = false;
   micSendEnabled = false;
   callPaused = false;
+  voiceBooking = null;
+  document.getElementById('talkBookingProgress')?.classList.add('hidden');
   clearTimeout(connectWatchdog);
   clearInterval(callTimer); callTimer = null; callStartedAt = 0;
   stopSimulatedCall();
@@ -2992,12 +3005,233 @@ function runScriptedTurn(){
   handleSimQuestion(q);
 }
 
+function resumeListening(){
+  if(!simMode || !callActive || callPaused) return;
+  setOrbState('listening', simRec ? 'Listening…' : 'Simulated caller…');
+  if(simRec){ try { simRec.start(); } catch {} }
+  else { simTimer = setTimeout(()=> runScriptedTurn(), 2200); }
+}
+
+// ---------- Voice-driven appointment booking ----------
+let voiceBooking = null; // { steps, idx, data, awaitingConfirm }
+
+const MONTH_NAMES = ["january","february","march","april","may","june","july","august","september","october","november","december"];
+function parseSpokenDate(text){
+  const lower = text.toLowerCase().trim();
+  const today = new Date();
+  if(/\btoday\b/.test(lower)) return todayStr();
+  if(/\btomorrow\b/.test(lower)){ const d = new Date(today); d.setDate(d.getDate()+1); return d.toISOString().slice(0,10); }
+  const weekdays = ["sunday","monday","tuesday","wednesday","thursday","friday","saturday"];
+  for(let i=0;i<weekdays.length;i++){
+    if(lower.includes(weekdays[i])){
+      const d = new Date(today);
+      let diff = (i - d.getDay() + 7) % 7;
+      if(diff === 0) diff = 7;
+      d.setDate(d.getDate() + diff);
+      return d.toISOString().slice(0,10);
+    }
+  }
+  // "31 august" / "31st of august" / "august 31"
+  for(let m=0;m<MONTH_NAMES.length;m++){
+    const name = MONTH_NAMES[m];
+    if(lower.includes(name)){
+      const dayMatch = lower.match(/\d{1,2}/);
+      if(dayMatch){
+        let year = today.getFullYear();
+        const d = new Date(year, m, parseInt(dayMatch[0],10));
+        if(d < today) d.setFullYear(year+1);
+        return d.toISOString().slice(0,10);
+      }
+    }
+  }
+  // numeric formats
+  const num = lower.match(/(\d{1,4})[\/\-](\d{1,2})[\/\-]?(\d{0,4})/);
+  if(num){
+    const parsed = new Date(text);
+    if(!isNaN(parsed)) return parsed.toISOString().slice(0,10);
+  }
+  const native = new Date(text);
+  if(!isNaN(native)) return native.toISOString().slice(0,10);
+  return null;
+}
+function parseSpokenTime(text){
+  const lower = text.toLowerCase().trim();
+  if(/\bnoon\b/.test(lower)) return "12:00";
+  if(/\bmidnight\b/.test(lower)) return "00:00";
+  let m = lower.match(/(\d{1,2})(?::(\d{2}))?\s*(am|pm)?/);
+  if(m){
+    let h = parseInt(m[1],10);
+    const min = m[2] ? parseInt(m[2],10) : 0;
+    const ampm = m[3];
+    if(ampm === 'pm' && h < 12) h += 12;
+    if(ampm === 'am' && h === 12) h = 0;
+    if(h >= 0 && h <= 23 && min >= 0 && min <= 59) return String(h).padStart(2,'0') + ':' + String(min).padStart(2,'0');
+  }
+  return null;
+}
+function formatDateForSpeech(iso){
+  const d = new Date(iso + 'T00:00:00');
+  if(isNaN(d)) return iso;
+  return d.toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric' });
+}
+function formatTimeForSpeech(hhmm){
+  const [h,min] = hhmm.split(':').map(Number);
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  const h12 = h % 12 === 0 ? 12 : h % 12;
+  return `${h12}:${String(min).padStart(2,'0')} ${ampm}`;
+}
+
+function bookingQuestionFor(step){
+  switch(step){
+    case 'name': return "What name should I put on the booking?";
+    case 'contact': return "What's the best email or phone number to reach you?";
+    case 'date': return "What date works for you?";
+    case 'time': return "And what time?";
+    case 'reason': return "Briefly, what's the appointment for? You can say 'skip' if you'd rather not say.";
+    default: return "";
+  }
+}
+function updateBookingProgressUI(){
+  const panel = document.getElementById('talkBookingProgress');
+  if(!panel || !voiceBooking) return;
+  const d = voiceBooking.data;
+  const rows = [
+    ['Name', d.name], ['Contact', d.contact],
+    ['Date', d.date ? formatDateForSpeech(d.date) : ''], ['Time', d.time ? formatTimeForSpeech(d.time) : ''],
+    ['Reason', d.reason],
+  ];
+  panel.innerHTML = rows.map(([label,val]) => `<div class="tbp-field"><span class="tbp-label">${label}</span><span class="tbp-value${val?'':' empty'}">${escapeHTML(val || '—')}</span></div>`).join('');
+  panel.classList.remove('hidden');
+}
+
+function startVoiceBooking(){
+  const dept = currentCat === 'all' ? 'general' : currentCat;
+  renderBookingForm(dept);
+  voiceBooking = {
+    steps: (userName ? [] : ['name']).concat(['contact','date','time','reason']),
+    idx: 0,
+    data: { name: userName || '', department: dept },
+    awaitingConfirm: false,
+  };
+  if(userName){ const el = document.getElementById('bkName'); if(el) el.value = userName; }
+  updateBookingProgressUI();
+  const answer = "Sure, let's get that booked. " + bookingQuestionFor(voiceBooking.steps[0]);
+  talkOverlayCaption.textContent = answer;
+  talkOverlayCaption.classList.remove('user-line');
+  finishCallLedgerEntry(answer);
+  simSpeak(answer, resumeListening);
+}
+
+function handleVoiceBookingAnswer(text){
+  beginCallLedgerEntry(text);
+  const step = voiceBooking.steps[voiceBooking.idx];
+  const captured = text.trim();
+  let spokenBack = captured;
+  let fieldId = null;
+
+  if(step === 'name'){ fieldId='bkName'; voiceBooking.data.name = captured; }
+  else if(step === 'contact'){ fieldId='bkContact'; voiceBooking.data.contact = captured; }
+  else if(step === 'date'){
+    fieldId='bkDate';
+    const parsed = parseSpokenDate(captured);
+    voiceBooking.data.date = parsed || '';
+    spokenBack = parsed ? formatDateForSpeech(parsed) : `${captured} — please double-check the date on screen`;
+  } else if(step === 'time'){
+    fieldId='bkTime';
+    const parsed = parseSpokenTime(captured);
+    voiceBooking.data.time = parsed || '';
+    spokenBack = parsed ? formatTimeForSpeech(parsed) : `${captured} — please double-check the time on screen`;
+  } else if(step === 'reason'){
+    fieldId='bkReason';
+    if(/^(skip|no|none|nothing|no thanks)$/i.test(captured)){ voiceBooking.data.reason = ''; spokenBack = ''; }
+    else voiceBooking.data.reason = captured;
+  }
+  if(fieldId){
+    const el = document.getElementById(fieldId);
+    if(el) el.value = (step === 'date' || step === 'time') ? (voiceBooking.data[step] || '') : captured;
+  }
+  updateBookingProgressUI();
+
+  voiceBooking.idx++;
+  const nextStep = voiceBooking.steps[voiceBooking.idx];
+  let answer;
+  if(nextStep){
+    answer = (spokenBack ? `Got it — ${spokenBack}. ` : `Got it. `) + bookingQuestionFor(nextStep);
+  } else {
+    voiceBooking.awaitingConfirm = true;
+    const d = voiceBooking.data;
+    answer = `Here's what I have: ${d.name}, contact ${d.contact}, ${formatDateForSpeech(d.date)} at ${formatTimeForSpeech(d.time)}${d.reason ? ', for ' + d.reason : ''}. Should I go ahead and book it?`;
+  }
+  talkOverlayCaption.textContent = answer;
+  talkOverlayCaption.classList.remove('user-line');
+  finishCallLedgerEntry(answer);
+  simSpeak(answer, resumeListening);
+}
+
+function submitVoiceBooking(){
+  const d = voiceBooking.data;
+  const name = (document.getElementById('bkName')?.value || d.name || userName || '').trim();
+  const contact = (document.getElementById('bkContact')?.value || d.contact || '').trim();
+  const date = document.getElementById('bkDate')?.value || d.date || '';
+  const time = document.getElementById('bkTime')?.value || d.time || '';
+  const dept = document.getElementById('bkDept')?.value || d.department || 'general';
+  const reason = (document.getElementById('bkReason')?.value || d.reason || '').trim();
+
+  const list = loadAppointments();
+  const ref = 'APT-' + Math.random().toString(36).slice(2,8).toUpperCase();
+  list.push({ ref, name, contact, date, time, department: DEPARTMENTS[dept], reason, status:'scheduled', createdAt: new Date().toISOString(), history: [] });
+  saveAppointments(list);
+  if('Notification' in window && Notification.permission === 'default'){ Notification.requestPermission(); }
+
+  const cards = document.querySelectorAll('.booking-card');
+  const card = cards[cards.length - 1];
+  if(card){
+    card.innerHTML = `
+      <div class="confirm-card">
+        <div style="font-family:'IBM Plex Mono',monospace; font-size:0.7rem; letter-spacing:0.06em; color:var(--gold);">APPOINTMENT REFERENCE</div>
+        <div class="confirm-ref">${escapeHTML(ref)}</div>
+        <div style="font-size:0.85rem;">${escapeHTML(DEPARTMENTS[dept])} · ${escapeHTML(date)} at ${escapeHTML(time)}</div>
+        <div class="confirm-disclaimer">This is a prototype simulation — no real appointment has been created with any government office.</div>
+      </div>`;
+  }
+  renderReminderBanner();
+  renderUpcomingAppointments();
+  return ref;
+}
+
+function handleVoiceBookingConfirmation(text){
+  beginCallLedgerEntry(text);
+  const lower = text.toLowerCase();
+  const yes = /\b(yes|yeah|yep|correct|confirm|go ahead|sure|that's right|thats right|book it)\b/.test(lower);
+  const no = /\b(no|nope|wrong|change|redo|start over)\b/.test(lower);
+  let answer;
+  if(yes){
+    const ref = submitVoiceBooking();
+    answer = `Perfect — you're booked. Your reference number is ${ref}. Anything else I can help with?`;
+    voiceBooking = null;
+    document.getElementById('talkBookingProgress')?.classList.add('hidden');
+  } else if(no){
+    voiceBooking = null;
+    document.getElementById('talkBookingProgress')?.classList.add('hidden');
+    answer = "No problem, I've left it unbooked for now. Anything else I can help with?";
+  } else {
+    answer = "Sorry, should I go ahead and book it — yes or no?";
+  }
+  talkOverlayCaption.textContent = answer;
+  talkOverlayCaption.classList.remove('user-line');
+  finishCallLedgerEntry(answer);
+  simSpeak(answer, resumeListening);
+}
+
 async function handleSimQuestion(text){
   if(!simMode || !callActive) return;
   try { simRec && simRec.stop(); } catch {}
   setOrbState('thinking', 'Thinking…');
-  beginCallLedgerEntry(text);
 
+  if(voiceBooking && voiceBooking.awaitingConfirm) return handleVoiceBookingConfirmation(text);
+  if(voiceBooking) return handleVoiceBookingAnswer(text);
+
+  beginCallLedgerEntry(text);
   const intent = detectIntent(text);
   if(isClosingPhrase(text)){
     const answer = userName ? `You're very welcome, ${userName}! Have a great ${getTimeOfDay()}.` : `You're very welcome! Have a great ${getTimeOfDay()}.`;
@@ -3008,12 +3242,7 @@ async function handleSimQuestion(text){
     return;
   }
   if(intent === 'booking'){
-    const answer = "Sure — I've opened the appointment form for you. Ending the call now so you can see it and fill it in.";
-    talkOverlayCaption.textContent = answer;
-    talkOverlayCaption.classList.remove('user-line');
-    finishCallLedgerEntry(answer);
-    renderBookingForm(currentCat === 'all' ? 'general' : currentCat);
-    simSpeak(answer, ()=> endCall());
+    startVoiceBooking();
     return;
   }
   if(intent === 'location'){
