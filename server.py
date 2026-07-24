@@ -5,7 +5,6 @@ import traceback
 from datetime import datetime
 
 import httpx
-import certifi
 import requests
 from dateutil import parser as dateparser
 from dotenv import load_dotenv
@@ -16,6 +15,7 @@ from langchain_openai import ChatOpenAI
 from websocket import create_connection
 import ssl
 
+import re
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -160,6 +160,10 @@ def ask_llm(user_message, category, mode, language, context=""):
     return getattr(response, "content", str(response))
 
 
+_elevenlabs_session = requests.Session()
+_elevenlabs_session.verify = False
+
+
 def synthesize_speech(text, language):
     """Calls ElevenLabs TTS and returns raw mp3 bytes."""
     if not ELEVENLABS_API_KEY:
@@ -175,9 +179,33 @@ def synthesize_speech(text, language):
         "model_id": "eleven_multilingual_v2",
         "voice_settings": {"stability": 0.4, "similarity_boost": 0.75},
     }
-    resp = requests.post(url, headers=headers, json=payload, timeout=30, verify=False)
+    resp = _elevenlabs_session.post(url, headers=headers, json=payload, timeout=30)
     resp.raise_for_status()
     return resp.content
+
+
+def split_into_speech_chunks(text, min_words=6):
+    """Splits a reply into speakable chunks so TTS/audio can start streaming
+    before the whole reply has been synthesized, without cutting it into
+    choppy one-or-two-word fragments.
+
+    Consecutive short sentences are merged until a chunk has at least
+    `min_words` words (the last chunk is kept as-is however short)."""
+    sentences = re.split(r"(?<=[.!?])\s+", (text or "").strip())
+    sentences = [s.strip() for s in sentences if s.strip()]
+    if not sentences:
+        return []
+
+    chunks = []
+    current = ""
+    for sentence in sentences:
+        current = f"{current} {sentence}".strip() if current else sentence
+        if len(current.split()) >= min_words:
+            chunks.append(current)
+            current = ""
+    if current:
+        chunks.append(current)
+    return chunks
 
 
 @app.route("/api/chat", methods=["POST"])
@@ -298,12 +326,20 @@ def call_socket(ws):
             stop_flag["stop"] = True
 
     def speak(text):
+        # Send the full caption once, immediately, for the on-screen
+        # transcript/ledger — this doesn't wait on TTS at all.
         send_json({"type": "assistant_text", "text": text})
-        try:
-            audio = synthesize_speech(text, language)
-            send_audio(audio)
-        except Exception as e:
-            send_json({"type": "error", "message": f"Text-to-speech failed: {e}"})
+
+        chunks = split_into_speech_chunks(text) or [text]
+        for chunk in chunks:
+            if stop_flag["stop"]:
+                return
+            try:
+                audio = synthesize_speech(chunk, language)
+                send_audio(audio)
+            except Exception as e:
+                send_json({"type": "error", "message": f"Text-to-speech failed: {e}"})
+                return
 
     def handle_utterance(text):
         text = (text or "").strip()
